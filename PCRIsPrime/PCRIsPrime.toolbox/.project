@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>PCRIsPrime</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>toolbox.builder.TLAParserBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>toolbox.natures.TLANature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>MainPCRIsPrime.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/MainPCRIsPrime.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRIsPrime.tla</name>
+			<type>1</type>
+			<location>PARENT-1-PROJECT_LOC/PCRIsPrime.tla</location>
+		</link>
+		<link>
+			<name>Theorems.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Theorems.tla</locationURI>
+		</link>
+		<link>
+			<name>Typedef.tla</name>
+			<type>1</type>
+			<location>PARENT-1-PROJECT_LOC/Typedef.tla</location>
+		</link>
+	</linkedResources>
+</projectDescription>

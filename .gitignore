@@ -1,0 +1,4 @@
+**/*.tlaps/
+**/*.toolbox/*SnapShot_*/
+**/*.toolbox/*___*_SnapShot*.launch
+**/*.toolbox/**/*/
