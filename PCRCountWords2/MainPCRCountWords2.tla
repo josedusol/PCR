@@ -4,7 +4,7 @@
    Main module for PCR CountWords2.
 *)
 
-EXTENDS Typedef, FiniteSets, TLC, Functions
+EXTENDS Typedef, FiniteSets
 
 VARIABLES T, W, map1, map2 
 
@@ -106,7 +106,7 @@ GTermination == [][ PCR1!Finished(<<0>>) <=> Done ]_vars
 
 
 (* 
-   This Spec is a more concrete implementation of Boot1!Spec. 
+   This Spec is a more concrete implementation of PCRCountWords1!Spec. 
 *)
             
 subst == 
@@ -132,6 +132,6 @@ PCRCountWords1 == INSTANCE MainPCRCountWords1 WITH map <- subst
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 20:10:02 UYT 2020 by josedu
+\* Last modified Fri Sep 11 01:51:25 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

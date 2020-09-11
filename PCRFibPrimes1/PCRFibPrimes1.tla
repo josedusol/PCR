@@ -29,7 +29,7 @@ InitCtx(input) == [in  |-> input,
 ----------------------------------------------------------------------------
 
 (* 
-   Basic functions that should be defined in host language                            
+   Basic functions                            
 *)
 
 fib(x, p, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
@@ -108,6 +108,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 20:11:26 UYT 2020 by josedu
+\* Last modified Thu Sep 10 01:49:08 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

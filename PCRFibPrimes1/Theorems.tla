@@ -1,6 +1,6 @@
 ------------------------------ MODULE Theorems ------------------------------
 
-EXTENDS MainPCRFibPrimes1
+EXTENDS MainPCRFibPrimes1, TLAPS
 
 
 ASSUME Fun_Assumptions == 
@@ -77,7 +77,7 @@ THEOREM Thm1_TypeInv == Spec => []TypeInv
 \*            BY <6>1
 \*          <6>3. j \in IndexType1 BY <5>2
 \*          <6>4. j # NULL
-          <6>1c. PCR1!fib(PCR1!in(i), PCR1!v_p(i), j) \in VarPType1 
+          <6>1c. PCR1!fib(PCR1!in(i), PCR1!v_p(i), j) \in VarPType1 BY Fun_Assumptions DEF VarPType1
           <6> HIDE DEF j
 \*          <6>2. map1[i].i_p # NULL
           <6>5. map1[i].v_p[j]' = [v |-> PCR1!fib(PCR1!in(i), PCR1!v_p(i), j), r |-> 0]
@@ -195,5 +195,5 @@ THEOREM Thm3_Termination ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Sep 08 23:53:14 UYT 2020 by josedu
+\* Last modified Fri Sep 11 15:25:06 UYT 2020 by josedu
 \* Created Tue Sep 08 23:52:38 UYT 2020 by josedu

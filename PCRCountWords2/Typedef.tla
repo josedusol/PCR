@@ -2,7 +2,7 @@
 
 EXTENDS Naturals, Sequences, Bags
 
-Word  == Nat
+Word  == STRING
 LType == Seq(Word)
 TType == Seq(LType)
 WType == Seq(Word)
@@ -46,5 +46,5 @@ Flatten(seq) ==
                 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 19:58:37 UYT 2020 by josedu
+\* Last modified Thu Sep 10 03:06:37 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu

@@ -29,7 +29,7 @@ InitCtx(input) == [in  |-> input,
 ----------------------------------------------------------------------------
 
 (* 
-   Basic functions that should be in host language                            
+   Basic functions                        
 *)
 
 elem(x, p, j) == x[2][j]
@@ -112,6 +112,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 19:34:30 UYT 2020 by josedu
+\* Last modified Thu Sep 10 01:48:58 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

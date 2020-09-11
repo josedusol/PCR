@@ -1,6 +1,6 @@
 ------------------------------ MODULE Theorems ------------------------------
 
-EXTENDS MainPCRCountWords1
+EXTENDS MainPCRCountWords1, TLAPS
 
 THEOREM Thm1_TypeInv == 
   \A <<t,w>> \in InType1 : /\ T = t 
@@ -25,5 +25,5 @@ THEOREM Thm3_Termination ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 16:41:56 UYT 2020 by josedu
+\* Last modified Thu Sep 10 02:44:38 UYT 2020 by josedu
 \* Created Wed Sep 09 16:41:05 UYT 2020 by josedu

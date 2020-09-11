@@ -12,7 +12,7 @@
      
      fun lbnd divisors = 2 
      fun ubnd divisors = lambda x. Sqrt(x)
-     fun step divisors = lambda x. 2*x - 1
+     fun step divisors = lambda x. if x == 2 then 3 else x+2
    
      PCR IsPrime(F):
        par
@@ -28,7 +28,7 @@ EXTENDS PCRBase, Sequences
 LOCAL INSTANCE TLC
 
 InitCtx(input) == [in  |-> input,
-                   i_p |-> LowerBnd(input),
+                   i_p |-> 0,
                    v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                    v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                    ret |-> input > 1,
@@ -37,7 +37,7 @@ InitCtx(input) == [in  |-> input,
 ----------------------------------------------------------------------------
 
 (* 
-   Basic functions that should be defined in host language                            
+   Basic functions                     
 *)
 
 divisors(x, p, i) == i
@@ -51,17 +51,17 @@ and(old, new) == old /\ new
 (* 
    Producer action
    
-   FXML:  for (j=LowerBnd(F); j < UpperBnd(F); Step(j))
-            p[j] = j             
+   FXML:  forall j \in (2,Sqrt(F),step)
+            p[j] = divisors F               
    
-   PCR:   p = produceSeq divisors F                            
+   PCR:   p = produceSeq divisors F
 *)
 P(i) == 
-  /\ Bound(i) 
-  /\ map' = [map EXCEPT 
-       ![i].v_p[i_p(i)] = [v |-> divisors(in(i), v_p(i), i_p(i)), r |-> 0],
-       ![i].i_p         = Step(@)]         
-\*  /\ PrintT("P" \o ToString(i) \o " : " \o ToString(v_p(i)[j].v'))           
+  \E j \in Iterator(i) :
+    /\ ~ Written(v_p(i), j)
+    /\ map' = [map EXCEPT 
+         ![i].v_p[j] = [v |-> divisors(in(i), v_p(i), j), r |-> 0]]         
+\*  /\ PrintT("P" \o ToString(i) \o " : " \o ToString(v_p(i)[j].v'))  
 
 (* 
    Consumer action
@@ -114,6 +114,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 20:13:31 UYT 2020 by josedu
+\* Last modified Fri Sep 11 18:14:31 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

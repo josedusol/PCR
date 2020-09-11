@@ -4,7 +4,7 @@
    Main module for PCR FibPrimes2.
 *)
 
-EXTENDS Typedef, FiniteSets, TLC, TLAPS, Functions
+EXTENDS Typedef, FiniteSets, TLC
 
 VARIABLES N, map1, map2 
 
@@ -31,7 +31,7 @@ PCR2 == INSTANCE PCRIsPrime WITH
   InType    <- InType2,  
   LowerBnd  <- LAMBDA x : 2,
   UpperBnd  <- LAMBDA x : Sqrt(x),  
-  Step      <- LAMBDA x : 2*x - 1,
+  Step      <- LAMBDA x : IF x = 2 THEN 3 ELSE x + 2,
   IndexType <- IndexType2,
   CtxIdType <- CtxIdType2,
   VarPType  <- VarPType2,
@@ -102,7 +102,7 @@ Termination == <> PCR1!Finished(<<0>>)
 GTermination == [][ PCR1!Finished(<<0>>) <=> Done ]_vars
 
 (* 
-   This Spec is a more concrete implementation of Boot1!Spec. 
+   This Spec is a more concrete implementation of PCRFibPrimes1!Spec. 
 *)
             
 subst ==                        
@@ -128,6 +128,6 @@ PCRFibPrimes1 == INSTANCE MainPCRFibPrimes1 WITH map1 <- subst
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 20:09:21 UYT 2020 by josedu
+\* Last modified Fri Sep 11 18:16:21 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

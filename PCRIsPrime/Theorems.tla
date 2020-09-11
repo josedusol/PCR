@@ -1,6 +1,6 @@
 ------------------------------ MODULE Theorems ------------------------------
 
-EXTENDS MainPCRIsPrime
+EXTENDS MainPCRIsPrime, TLAPS
 
 THEOREM Thm1_TypeInv ==
   \A n \in InType1 : /\ N = n 
@@ -22,5 +22,5 @@ THEOREM Thm3_Termination ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 00:30:49 UYT 2020 by josedu
+\* Last modified Thu Sep 10 02:47:45 UYT 2020 by josedu
 \* Created Wed Sep 09 00:30:16 UYT 2020 by josedu

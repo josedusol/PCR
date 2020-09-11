@@ -29,7 +29,7 @@ InitCtx(input) == [in  |-> input,
 ----------------------------------------------------------------------------
 
 (* 
-   Basic functions that should be in host language                            
+   Basic functions                 
 *)
 
 lines(x, p, j) == x[1][j]
@@ -53,7 +53,7 @@ joinCounts(old, new) == old (+) new
    Producer action
    
    FXML:  forall j \in 1..Len(T)
-            v_p[j] = lines T j             
+            v_p[j] = lines T             
    
    PCR:   v_p = produce lines T                              
 *)
@@ -116,6 +116,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 19:33:45 UYT 2020 by josedu
+\* Last modified Fri Sep 11 18:10:50 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

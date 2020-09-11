@@ -4,7 +4,7 @@
    Main module for PCR IsPrime.
 *)
 
-EXTENDS Typedef, FiniteSets, TLC, TLAPS, Functions
+EXTENDS Typedef, FiniteSets, TLC
 
 VARIABLES N, map1   
 
@@ -16,8 +16,8 @@ NULL == CHOOSE x : x \notin (Nat \union BOOLEAN)
 PCR1 == INSTANCE PCRIsPrime WITH
   InType    <- InType1,
   LowerBnd  <- LAMBDA x : 2, 
-  Step      <- LAMBDA x : 2*x - 1,
-  UpperBnd  <- LAMBDA x : Sqrt(x),  
+  UpperBnd  <- LAMBDA x : Sqrt(x),
+  Step      <- LAMBDA x : IF x = 2 THEN 3 ELSE x + 2,  
   IndexType <- IndexType1,   
   CtxIdType <- CtxIdType1,
   VarPType  <- VarPType1,
@@ -70,5 +70,5 @@ Termination == <> PCR1!Finished(<<0>>)
   
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 20:09:37 UYT 2020 by josedu
+\* Last modified Fri Sep 11 16:31:26 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

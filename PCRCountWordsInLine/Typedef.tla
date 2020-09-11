@@ -2,7 +2,7 @@
 
 EXTENDS Naturals, Sequences, Bags
 
-Word  == Nat
+Word  == STRING
 LType == Seq(Word)
 WType == Seq(Word)
 BagOf(S) == UNION {[xs -> Nat\{0}] : xs \in SUBSET S} \* The collection of all bags over S
@@ -33,5 +33,5 @@ Flatten(seq) ==
        
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 19:03:37 UYT 2020 by josedu
+\* Last modified Thu Sep 10 01:44:49 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu

@@ -4,7 +4,7 @@
    Main module for PCR FibPrimes1.
 *)
 
-EXTENDS Typedef, FiniteSets, TLC, TLAPS, Functions
+EXTENDS Typedef, FiniteSets, TLC
 
 VARIABLES N, map1   
 
@@ -77,9 +77,8 @@ Termination == <> PCR1!Finished(<<0>>)
 
 GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
-
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 20:09:09 UYT 2020 by josedu
+\* Last modified Fri Sep 11 03:02:24 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

@@ -1,6 +1,6 @@
 ------------------------------ MODULE Theorems ------------------------------
 
-EXTENDS MainPCRFibPrimes2
+EXTENDS MainPCRFibPrimes2, TLAPS
 
 THEOREM Thm1_TypeInv ==
   \A n \in InType1 : /\ N = n 
@@ -25,5 +25,5 @@ THEOREM Thm4_Refinement == Spec => PCRFibPrimes1!Spec
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 00:34:17 UYT 2020 by josedu
+\* Last modified Thu Sep 10 02:47:22 UYT 2020 by josedu
 \* Created Wed Sep 09 00:33:06 UYT 2020 by josedu

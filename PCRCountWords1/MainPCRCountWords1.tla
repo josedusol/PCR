@@ -4,7 +4,7 @@
    Main module for PCR CountWords1.
 *)
 
-EXTENDS Typedef, FiniteSets, TLC, TLAPS, Functions
+EXTENDS Typedef, FiniteSets, TLC
 
 VARIABLES T, W, map   
 
@@ -82,6 +82,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 20:09:52 UYT 2020 by josedu
+\* Last modified Thu Sep 10 02:49:51 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

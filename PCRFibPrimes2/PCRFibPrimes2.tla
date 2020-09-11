@@ -31,7 +31,7 @@ InitCtx(input) == [in  |-> input,
 ----------------------------------------------------------------------------
 
 (* 
-   Basic functions that should be defined in host language                            
+   Basic functions                          
 *)
 
 fib(x, p, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
@@ -42,7 +42,7 @@ isPrime == INSTANCE PCRIsPrime WITH
   InType    <- InType2,
   LowerBnd  <- LAMBDA x : 2,
   UpperBnd  <- LAMBDA x : Sqrt(x),  
-  Step      <- LAMBDA x : 2*x - 1,  
+  Step      <- LAMBDA x : IF x = 2 THEN 3 ELSE x + 2,  
   IndexType <- IndexType2,
   CtxIdType <- CtxIdType2,
   VarPType  <- VarPType2,
@@ -133,6 +133,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 20:11:56 UYT 2020 by josedu
+\* Last modified Fri Sep 11 18:18:21 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed
