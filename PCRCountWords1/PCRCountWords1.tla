@@ -109,9 +109,9 @@ R(i) ==
 \*       ELSE TRUE             
 
 Next(i) == 
-  \/ /\ Off(i) 
+  \/ /\ State(i) = OFF 
      /\ Start(i)
-  \/ /\ Running(i) 
+  \/ /\ State(i) = RUN 
      /\ \/ P(i) 
         \/ C(i) 
         \/ R(i)
@@ -119,6 +119,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 17:55:48 UYT 2020 by josedu
+\* Last modified Sat Sep 12 18:12:15 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed
