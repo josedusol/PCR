@@ -31,7 +31,7 @@
         <listEntry value="0Termination"/>
         <listEntry value="0Correctness"/>
         <listEntry value="0PCRCountWords1!FairSpec"/>
-        <listEntry value="0PCRCountWords1!Spec"/>
+        <listEntry value="1PCRCountWords1!Spec"/>
         <listEntry value="0GTermination"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>

@@ -101,33 +101,33 @@ Termination == <> PCR1!Finished(<<0>>)
 
 GTermination == [][ PCR1!Finished(<<0>>) <=> Done ]_vars
 
-(* 
-   This Spec is a more concrete implementation of PCRFibPrimes1!Spec. 
-*)
-            
+\* This Spec is a more concrete implementation of PCRFibPrimes1!Spec.
+\* The following provides a refinement mapping to prove this fact.
 subst ==                        
   [i \in DOMAIN map1 |-> 
-      IF map1[i] # NULL
-      THEN [map1[i] EXCEPT 
-              !.v_p= [j \in DOMAIN @ |-> 
-                         IF @[j].r = 1
-                         THEN IF PCR2!Finished(i \o <<j>>) 
-                              THEN [v |-> @[j].v, r |-> 1]  \* when CALL_RET, producer var is marked as read.
-                              ELSE [v |-> @[j].v, r |-> 0]  \* otherwise we pretend it didnt happen.
-                         ELSE @[j]
-                      ],
-              !.v_c= [j \in DOMAIN @ |-> 
-                         IF map1[i].v_p[j].r = 1 /\ PCR2!Finished(i \o <<j>>) 
-                         THEN [v |-> PCR2!Out(i \o <<j>>), r |-> @[j].r]  \* when CALL_RET, the consumer var gets the result.
-                         ELSE @[j]
-                     ]              
-            ]
-      ELSE NULL]     
+     IF map1[i] # NULL                               \* For any well-defined PCR context map1[i]
+     THEN [map1[i] EXCEPT                                 
+       !.v_p= [j \in DOMAIN @ |-> 
+                 IF @[j].r > 0                       \* For any read producer var v_p[j]
+                 THEN IF PCR2!Finished(i \o <<j>>)   \* If C_ret(i \o <j>) occurs (PCR2 finished at i\o<j>)
+                      THEN [v |-> @[j].v, r |-> 1]   \* then producer var is marked as read
+                      ELSE [v |-> @[j].v, r |-> 0]   \* else we pretend is still unread.
+                 ELSE @[j]
+              ],
+       !.v_c= [j \in DOMAIN @ |->                    \* For any consumer var v_c[j]
+                 IF /\ PCR1!Read(map1[i].v_p, j)     \* for which corresponding v_p[j] has been read
+                    /\ PCR2!Finished(i \o <<j>>)     \* and C_ret(i \o <<j>>) has occurred (PCR2 finished at i\o<j>)
+                 THEN [v |-> PCR2!Out(i \o <<j>>),   \* then consumer var gets result computed by PCR2
+                       r |-> @[j].r]                 
+                 ELSE @[j]                           \* else we leave it as is.
+              ]              
+          ]
+     ELSE NULL]     
               
 PCRFibPrimes1 == INSTANCE MainPCRFibPrimes1 WITH map1 <- subst
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 17:48:56 UYT 2020 by josedu
+\* Last modified Sat Sep 12 20:40:22 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed
