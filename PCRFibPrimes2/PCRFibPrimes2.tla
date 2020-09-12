@@ -69,7 +69,7 @@ P(i) ==
   /\ map' = [map EXCEPT 
        ![i].v_p[i_p(i)] = [v |-> fib(in(i), v_p(i), i_p(i)), r |-> 0],
        ![i].i_p         = Step(@)]         
-\*  /\ PrintT("P" \o ToString(j) \o " : " \o ToString(v_p(i)[j].v'))           
+\*  /\ PrintT("P" \o ToString(i_p(i)) \o " : " \o ToString(v_p(i)[i_p(i)].v'))           
 
 (*
    Consumer call action
@@ -136,6 +136,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 18:10:11 UYT 2020 by josedu
+\* Last modified Sat Sep 12 19:28:38 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

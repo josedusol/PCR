@@ -103,9 +103,9 @@ R(i) ==
          ![i].v_c[j].r = @ + 1,
          ![i].ste      = IF CDone(i, j) THEN END ELSE @]                                                                            
 \*    /\ IF   CDone(i, j)
-\*       THEN PrintT("CW: in T= " \o ToString(In1(i))
-\*                                \o " W= "   \o ToString(In2(i)) 
-\*                                \o " ret= " \o ToString(Out(i)'))
+\*       THEN PrintT("CW1: in T= " \o ToString(In1(i))
+\*                                 \o " W= "   \o ToString(In2(i)) 
+\*                                 \o " ret= " \o ToString(Out(i)'))
 \*       ELSE TRUE             
 
 Next(i) == 
@@ -119,6 +119,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 18:12:15 UYT 2020 by josedu
+\* Last modified Sat Sep 12 19:30:34 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed
