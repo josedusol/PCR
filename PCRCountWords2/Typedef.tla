@@ -15,7 +15,7 @@ InType1    == TType \X WType
 VarPType1  == LType 
 VarCType1  == BagOf(Word) 
 VarRType1  == BagOf(Word)
-IndexType1 == Nat\{0}
+IndexType1 == Nat
 CtxIdType1 == Seq(Nat)
 
 (* 
@@ -25,7 +25,7 @@ InType2    == LType \X WType
 VarPType2  == Word 
 VarCType2  == BagOf(Word) 
 VarRType2  == BagOf(Word) 
-IndexType2 == Nat\{0}
+IndexType2 == Nat
 CtxIdType2 == Seq(Nat)
 
 -----------------------------------------------------------------------------
@@ -46,5 +46,5 @@ Flatten(seq) ==
                 
 =============================================================================
 \* Modification History
-\* Last modified Thu Sep 10 03:06:37 UYT 2020 by josedu
+\* Last modified Sat Sep 12 16:05:17 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu

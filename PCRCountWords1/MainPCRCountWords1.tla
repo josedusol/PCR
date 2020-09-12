@@ -18,11 +18,11 @@ PCR1 == INSTANCE PCRCountWords1 WITH
   LowerBnd  <- LAMBDA x : 1,
   UpperBnd  <- LAMBDA x : Len(x[1]),  
   Step      <- LAMBDA x : x+1,  
-  IndexType <- IndexType1,
+  CtxIdType <- CtxIdType1,
+  IndexType <- IndexType1,  
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
-  VarRType  <- VarRType1,
-  CtxIdType <- CtxIdType1,
+  VarRType  <- VarRType1,  
   map       <- map                       
            
 ----------------------------------------------------------------------------
@@ -82,6 +82,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Sep 10 02:49:51 UYT 2020 by josedu
+\* Last modified Sat Sep 12 16:06:35 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

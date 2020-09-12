@@ -17,12 +17,12 @@ PCR1 == INSTANCE PCRCountWords2 WITH
   InType    <- InType1,
   LowerBnd  <- LAMBDA x : 1,
   UpperBnd  <- LAMBDA x : Len(x[1]),  
-  Step      <- LAMBDA x : x+1,    
+  Step      <- LAMBDA x : x+1,  
+  CtxIdType <- CtxIdType1,  
   IndexType <- IndexType1,
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1,
-  CtxIdType <- CtxIdType1,
   map       <- map1,
   map2      <- map2
 
@@ -32,11 +32,11 @@ PCR2 == INSTANCE PCRCountWordsInLine WITH
   LowerBnd  <- LAMBDA x : 1,
   UpperBnd  <- LAMBDA x : Len(x[2]),  
   Step      <- LAMBDA x : x+1,   
+  CtxIdType <- CtxIdType2,
   IndexType <- IndexType2,
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
-  VarRType  <- VarRType2,
-  CtxIdType <- CtxIdType2,
+  VarRType  <- VarRType2,  
   map       <- map2
  
 ----------------------------------------------------------------------------
@@ -132,6 +132,6 @@ PCRCountWords1 == INSTANCE MainPCRCountWords1 WITH map <- subst
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 11 01:51:25 UYT 2020 by josedu
+\* Last modified Sat Sep 12 16:06:52 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed
