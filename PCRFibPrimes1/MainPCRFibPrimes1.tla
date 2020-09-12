@@ -18,8 +18,8 @@ PCR1 == INSTANCE PCRFibPrimes1 WITH
   LowerBnd  <- LAMBDA x : 0,
   UpperBnd  <- LAMBDA x : x,  
   Step      <- LAMBDA x : x + 1,
-  IndexType <- IndexType1,
   CtxIdType <- CtxIdType1,
+  IndexType <- IndexType1,
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1, 
@@ -79,6 +79,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 11 03:02:24 UYT 2020 by josedu
+\* Last modified Sat Sep 12 17:49:03 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

@@ -12,11 +12,11 @@ CONSTANTS InType,       \* Type of PCR input
           LowerBnd(_),
           UpperBnd(_),
           Step(_),
+          CtxIdType,
           IndexType,    \* Type of iteration space
           VarPType,     \* Type of producer variable
           VarCType,     \* Type of consumer variable
-          VarRType,     \* Type of reducer output
-          CtxIdType,
+          VarRType,     \* Type of reducer output         
           NULL          \* What is NULL should be something globally agreed upon,
                         \* so it is defined on Boot module.
 
@@ -83,7 +83,7 @@ ExtR(r, s)    == [k \in DOMAIN r |-> IF k \in DOMAIN s THEN s[k] ELSE r[k]]
                
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 20:28:15 UYT 2020 by josedu
+\* Last modified Sat Sep 12 17:59:42 UYT 2020 by josedu
 \* Last modified Mon Jul 06 15:51:49 UYT 2020 by josed
 \* Last modified Tue Jun 09 12:24:42 GMT-03:00 2020 by JosEdu
 \* Created Mon Jun 08 22:50:44 GMT-03:00 2020 by JosEdu

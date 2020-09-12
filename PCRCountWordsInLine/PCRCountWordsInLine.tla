@@ -6,11 +6,15 @@
    ----------------------------------------------------------
      fun elem, count, joinCounts
     
+     fun lbnd elem = lambda x. 1 
+     fun ubnd elem = lambda x. Len(x)
+     fun step elem = lambda x. x + 1
+    
      PCR CountWordsInLine(L, W):
        par
-         w = produce elem W
-         forall w
-           c = consume count L w
+         p = produce elem W
+         forall p
+           c = consume count L p
          r = reduce joinCounts {} c       
    ----------------------------------------------------------      
 *)
@@ -20,7 +24,7 @@ EXTENDS PCRBase, Bags
 LOCAL INSTANCE TLC
 
 InitCtx(input) == [in  |-> input,
-                   i_p |-> 1,
+                   i_p |-> LowerBnd(input),
                    v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                    v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                    ret |-> EmptyBag,
@@ -49,10 +53,10 @@ joinCounts(old, new) == old (+) new
 (* 
    Producer action
 
-   FXML: forall j \in 1..Len(T)
-           v_p[j] = elem W j             
+   FXML: forall j \in Range(1,Len(W),Step)
+           p[j] = elem W             
    
-   PCR:  v_p = produce elem W                              
+   PCR:  p = produce elem W                              
 *)
 P(i) == 
   \E j \in Iterator(i):
@@ -65,10 +69,10 @@ P(i) ==
 (* 
    Consumer action
    
-   FXML:  forall j \in Dom(v_p)
-            v_c[j] = count L j 
+   FXML:  forall j \in Dom(p)
+            c[j] = count L p[j] 
 
-   PCR:   v_c = consume count L
+   PCR:   c = consume count L
 *) 
 C(i) == 
   \E j \in Iterator(i) :
@@ -84,10 +88,9 @@ C(i) ==
 (* 
    Reducer action
    
-   FXML:  forall i \in Dom(v_p)
-            r[j+1] = r[j] + count W i 
+   FXML:  ... 
 
-   PCR:   r = reduce joinCounts {} v_c
+   PCR:   r = reduce joinCounts {} c
 *)
 R(i) == 
   \E j \in Iterator(i) :
@@ -112,6 +115,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Sep 10 01:48:58 UYT 2020 by josedu
+\* Last modified Sat Sep 12 17:54:46 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

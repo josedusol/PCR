@@ -6,6 +6,10 @@
    ----------------------------------------------------------
      fun fib, sum
    
+     fun lbnd fib = lambda x. 0 
+     fun ubnd fib = lambda x. x
+     fun step fib = lambda x. x + 1
+   
      PCR FibPrimes2(N):
        par
          p = produceSeq fib N
@@ -43,8 +47,8 @@ isPrime == INSTANCE PCRIsPrime WITH
   LowerBnd  <- LAMBDA x : 2,
   UpperBnd  <- LAMBDA x : Sqrt(x),  
   Step      <- LAMBDA x : IF x = 2 THEN 3 ELSE x + 2,  
-  IndexType <- IndexType2,
   CtxIdType <- CtxIdType2,
+  IndexType <- IndexType2,
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
@@ -84,15 +88,15 @@ C_call(i) ==
    Consumer end action
 *)
 C_ret(i) == 
-  /\ \E j \in Iterator(i) :
-       /\ Read(v_p(i), j)       
-       /\ ~ Written(v_c(i), j)
-       /\ isPrime!Finished(i \o <<j>>)   
-       /\ map' = [map EXCEPT 
-            ![i].v_c[j]= [v |-> isPrime!Out(i \o <<j>>), r |-> 0]]  
-\*       /\ PrintT("C_ret" \o ToString(i \o <<j>>) 
-\*                         \o " : in= "  \o ToString(isPrime!in(i \o <<j>>))    
-\*                         \o " : ret= " \o ToString(isPrime!Out(i \o <<j>>)))                
+  \E j \in Iterator(i) :
+     /\ Read(v_p(i), j)       
+     /\ ~ Written(v_c(i), j)
+     /\ isPrime!Finished(i \o <<j>>)   
+     /\ map' = [map EXCEPT 
+          ![i].v_c[j]= [v |-> isPrime!Out(i \o <<j>>), r |-> 0]]  
+\*     /\ PrintT("C_ret" \o ToString(i \o <<j>>) 
+\*                       \o " : in= "  \o ToString(isPrime!in(i \o <<j>>))    
+\*                       \o " : ret= " \o ToString(isPrime!Out(i \o <<j>>)))                
 
 (*
    Consumer action
@@ -103,23 +107,22 @@ C(i) == \/ C_call(i)
 (* 
    Reducer action
    
-   FXML:  forall i \in Dom(v_p)
-            r[j+1] = r[j] + count W i 
+   FXML:  ... 
 
-   PCR:   r = reduce joinCounts {} v_c
+   PCR:   r = reduce sum 0 c
 *)
 R(i) == 
-  /\ \E j \in Iterator(i) :
-       /\ Written(v_c(i), j)  
-       /\ ~ Read(v_c(i), j)
-       /\ map' = [map EXCEPT 
-            ![i].ret      = sum(@, v_c(i)[j].v),
-            ![i].v_c[j].r = @ + 1,
-            ![i].ste      = IF CDone(i, j) THEN END ELSE @]                                                                 
-\*       /\ IF CDone(i, j)
-\*          THEN PrintT("FP: in= " \o ToString(in(i)) 
-\*                                 \o " ret= " \o ToString(Out(i)'))
-\*          ELSE TRUE                
+  \E j \in Iterator(i) :
+     /\ Written(v_c(i), j)  
+     /\ ~ Read(v_c(i), j)
+     /\ map' = [map EXCEPT 
+          ![i].ret      = sum(@, v_c(i)[j].v),
+          ![i].v_c[j].r = @ + 1,
+          ![i].ste      = IF CDone(i, j) THEN END ELSE @]                                                                 
+\*     /\ IF CDone(i, j)
+\*        THEN PrintT("FP2: in= " \o ToString(in(i)) 
+\*                                \o " ret= " \o ToString(Out(i)'))
+\*        ELSE TRUE                
            
 Next(i) == 
   \/ /\ Off(i) 
@@ -133,6 +136,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 11 18:18:21 UYT 2020 by josedu
+\* Last modified Sat Sep 12 17:51:53 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -18,8 +18,8 @@ PCR1 == INSTANCE PCRFibPrimes2 WITH
   LowerBnd  <- LAMBDA x : 0,
   UpperBnd  <- LAMBDA x : x,  
   Step      <- LAMBDA x : x + 1,
-  IndexType <- IndexType1,
   CtxIdType <- CtxIdType1,
+  IndexType <- IndexType1,
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1,  
@@ -32,8 +32,8 @@ PCR2 == INSTANCE PCRIsPrime WITH
   LowerBnd  <- LAMBDA x : 2,
   UpperBnd  <- LAMBDA x : Sqrt(x),  
   Step      <- LAMBDA x : IF x = 2 THEN 3 ELSE x + 2,
-  IndexType <- IndexType2,
   CtxIdType <- CtxIdType2,
+  IndexType <- IndexType2,
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
@@ -128,6 +128,6 @@ PCRFibPrimes1 == INSTANCE MainPCRFibPrimes1 WITH map1 <- subst
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 11 18:16:21 UYT 2020 by josedu
+\* Last modified Sat Sep 12 17:48:56 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

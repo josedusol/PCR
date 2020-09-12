@@ -18,8 +18,8 @@ PCR1 == INSTANCE PCRIsPrime WITH
   LowerBnd  <- LAMBDA x : 2, 
   UpperBnd  <- LAMBDA x : Sqrt(x),
   Step      <- LAMBDA x : IF x = 2 THEN 3 ELSE x + 2,  
-  IndexType <- IndexType1,   
   CtxIdType <- CtxIdType1,
+  IndexType <- IndexType1,   
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1, 
@@ -70,5 +70,5 @@ Termination == <> PCR1!Finished(<<0>>)
   
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 11 16:31:26 UYT 2020 by josedu
+\* Last modified Sat Sep 12 17:49:19 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

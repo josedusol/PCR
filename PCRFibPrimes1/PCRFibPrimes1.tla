@@ -6,6 +6,10 @@
    ----------------------------------------------------------
      fun fib, isPrime, sum
    
+     fun lbnd fib = lambda x. 0 
+     fun ubnd fib = lambda x. x
+     fun step fib = lambda x. x + 1
+   
      PCR FibPrimes1(N):
        par
          p = produceSeq fib N
@@ -60,10 +64,10 @@ P(i) ==
 (* 
    Consumer action
    
-   FXML:  forall j \in Dom(v_p)
-            v_c[j] = count W j 
+   FXML:  forall j \in Dom(p)
+            c[j] = isPrime p[j]
 
-   PCR:   v_c = consume isPrimeFun v_p
+   PCR:   c = consume isPrime p
 *)
 C(i) == 
   \E j \in Iterator(i) :
@@ -79,10 +83,9 @@ C(i) ==
 (* 
    Reducer action
    
-   FXML:  forall i \in Dom(v_p)
-            r[j+1] = r[j] + sum i 
-
-   PCR:   r = reduce sum 0 v_c
+   FXML:  ...
+   
+   PCR:   r = reduce sum 0 c
 *)
 R(i) == 
   \E j \in Iterator(i) :
@@ -108,6 +111,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Sep 10 01:49:08 UYT 2020 by josedu
+\* Last modified Sat Sep 12 17:51:34 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -6,20 +6,20 @@
    ----------------------------------------------------------
      fun divisors, notDivides, and
      
-     fun divisors(F,p,i) = i
-     fun notDivides(F,p,j) = not (F % p[j] == 0)
+     fun divisors(N,p,j) = j
+     fun notDivides(N,p,j) = not (N % p[j] == 0)
      fun and(a,b) = a && b 
      
-     fun lbnd divisors = 2 
+     fun lbnd divisors = lambda x. 2 
      fun ubnd divisors = lambda x. Sqrt(x)
      fun step divisors = lambda x. if x == 2 then 3 else x+2
    
-     PCR IsPrime(F):
+     PCR IsPrime(N):
        par
-         p = produceSeq divisors F
+         p = produceSeq divisors N
          forall p
-           c = consume notDivides p F 
-         r = reduce and (F > 1) c
+           c = consume notDivides N 
+         r = reduce and (N > 1) c
    ----------------------------------------------------------
 *)
 
@@ -28,7 +28,7 @@ EXTENDS PCRBase, Sequences
 LOCAL INSTANCE TLC
 
 InitCtx(input) == [in  |-> input,
-                   i_p |-> 0,
+                   i_p |-> LowerBnd(input),
                    v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                    v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                    ret |-> input > 1,
@@ -40,7 +40,7 @@ InitCtx(input) == [in  |-> input,
    Basic functions                     
 *)
 
-divisors(x, p, i) == i
+divisors(x, p, j) == j
    
 notDivides(x, p, j) == ~ (x % p[j].v = 0)
 
@@ -51,10 +51,10 @@ and(old, new) == old /\ new
 (* 
    Producer action
    
-   FXML:  forall j \in (2,Sqrt(F),step)
-            p[j] = divisors F               
+   FXML:  forall j \in Range(2,Sqrt(N),Step)
+            p[j] = divisors N               
    
-   PCR:   p = produceSeq divisors F
+   PCR:   p = produce divisors N
 *)
 P(i) == 
   \E j \in Iterator(i) :
@@ -66,10 +66,10 @@ P(i) ==
 (* 
    Consumer action
    
-   FXML:  forall j \in Dom(v_p)
-            v_c[j] = count L j 
+   FXML:  forall j \in Dom(p) 
+            c[j] = notDivides N p[j] 
 
-   PCR:   v_c = consume isDiv p F
+   PCR:   c = consume notDivides N
 *) 
 C(i) == 
   \E j \in Iterator(i) :
@@ -85,10 +85,9 @@ C(i) ==
 (* 
    Reducer action
    
-   FXML:  forall i \in Dom(v_p)
-            r[j+1] = r[j] && i 
+   FXML:  ...
 
-   PCR:   r = reduce and true v_c
+   PCR:   r = reduce and (N > 1) c
 *)
 R(i) == 
   \E j \in Iterator(i) :
@@ -114,6 +113,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 11 18:14:31 UYT 2020 by josedu
+\* Last modified Sat Sep 12 17:52:39 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed
