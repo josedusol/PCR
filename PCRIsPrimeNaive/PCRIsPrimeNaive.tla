@@ -1,21 +1,31 @@
---------------------------- MODULE PCRIsPrime2 ----------------------------
+------------------------- MODULE PCRIsPrimeNaive ---------------------------
 
 (*
-   PCR isPrime
+   PCR IsPrimeNaive
    
    ----------------------------------------------------------
-     fun divisors, notDivides, and     
+     fun divisors, notDivides, and
+     
+     fun divisors(N,p,j) = j
+     fun notDivides(N,p,j) = if 2 <= p[j] && p[j] < N
+                             then not (N % p[j] == 0)
+                             else True
+     fun and(a,b) = a && b 
+     
+     fun lbnd divisors = lambda x. 0 
+     fun ubnd divisors = lambda x. x
+     fun step divisors = lambda x. x+1
    
-     PCR isPrime(F):
+     PCR IsPrimeNaive(N):
        par
-         p = produce_seq divisors F
+         p = produce divisors N
          forall p
-           c = consume notDivides p F 
-         r = reduce and (F > 1) c
+           c = consume notDivides N 
+         r = reduce and (N > 1) c
    ----------------------------------------------------------
 *)
 
-EXTENDS typedef3, pcr_base, Sequences
+EXTENDS PCRBase, Sequences
 
 LOCAL INSTANCE TLC
 
@@ -29,12 +39,12 @@ InitCtx(input) == [in  |-> input,
 ----------------------------------------------------------------------------
 
 (* 
-   Basic functions that should be defined in host language                            
+   Basic functions                     
 *)
 
-divisors(x, p, i) == IF i = 0 THEN 2 ELSE 3+2*(i - 1)
+divisors(x, p, j) == j
    
-notDivides(x, p, j) == IF 2 <= p[j].v /\ p[j].v <= Sqrt(x) 
+notDivides(x, p, j) == IF 2 <= p[j].v /\ p[j].v < x
                        THEN ~ (x % p[j].v = 0)
                        ELSE TRUE
 
@@ -45,25 +55,25 @@ and(old, new) == old /\ new
 (* 
    Producer action
    
-   FXML:  for (j=LowerBnd(F); j < UpperBnd(F); Step(j))
-            p[j] = j             
+   FXML:  forall j \in 0..N
+            p[j] = divisors N               
    
-   PCR:   p = produce_seq divisors                             
+   PCR:   p = produce divisors N
 *)
 P(i) == 
-  /\ Bound(i) 
-  /\ map' = [map EXCEPT 
-       ![i].v_p[i_p(i)] = [v |-> divisors(in(i), v_p(i), i_p(i)), r |-> 0],
-       ![i].i_p          = Step(@)]         
-\*  /\ PrintT("P : " \o ToString(v_p(i)'))           
+  \E j \in Iterator(i) :
+    /\ ~ Written(v_p(i), j)
+    /\ map' = [map EXCEPT 
+         ![i].v_p[j] = [v |-> divisors(in(i), v_p(i), j), r |-> 0]]         
+\*  /\ PrintT("P" \o ToString(j) \o " : " \o ToString(v_p(i)[j].v'))  
 
 (* 
    Consumer action
    
-   FXML:  forall j \in Dom(v_p)
-            v_c[j] = count L j 
+   FXML:  forall j \in Dom(p) 
+            c[j] = notDivides N p[j] 
 
-   PCR:   v_c = consume isDiv p F
+   PCR:   c = consume notDivides N
 *) 
 C(i) == 
   \E j \in Iterator(i) :
@@ -79,10 +89,9 @@ C(i) ==
 (* 
    Reducer action
    
-   FXML:  forall i \in Dom(v_p)
-            r[j+1] = r[j] && i 
+   FXML:  ...
 
-   PCR:   r = reduce and true v_c
+   PCR:   r = reduce and (N > 1) c
 *)
 R(i) == 
   \E j \in Iterator(i) :
@@ -98,16 +107,16 @@ R(i) ==
 \*       ELSE TRUE    
      
 Next(i) == 
-  \/ /\ Off(i) 
+  \/ /\ State(i) = OFF
      /\ Start(i)
-  \/ /\ Running(i) 
+  \/ /\ State(i) = RUN
      /\ \/ P(i) 
         \/ C(i) 
         \/ R(i)
-        \/ Quit(i) 
+        \/ Quit(i)      
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 04 18:02:34 UYT 2020 by josedu
+\* Last modified Sat Sep 12 22:54:25 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

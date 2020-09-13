@@ -105,7 +105,7 @@ GTermination == [][ PCR1!Finished(<<0>>) <=> Done ]_vars
 \* The following provides a refinement mapping to prove this fact.
 subst ==                        
   [i \in DOMAIN map1 |-> 
-     IF map1[i] # NULL                               \* For any well-defined PCR context map1[i]
+     IF map1[i] # NULL                               \* For any well-defined PCR1 context map1[i]
      THEN [map1[i] EXCEPT                                 
        !.v_p= [j \in DOMAIN @ |-> 
                  IF @[j].r > 0                       \* For any read producer var v_p[j]
@@ -128,6 +128,6 @@ PCRFibPrimes1 == INSTANCE MainPCRFibPrimes1 WITH map1 <- subst
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 20:40:22 UYT 2020 by josedu
+\* Last modified Sat Sep 12 21:11:16 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

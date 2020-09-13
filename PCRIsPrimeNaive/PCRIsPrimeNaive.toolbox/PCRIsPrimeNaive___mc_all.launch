@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="63"/>
+    <intAttribute key="fpIndex" value="79"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -21,17 +21,15 @@
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
     <intAttribute key="modelBehaviorSpecType" value="1"/>
-    <stringAttribute key="modelBehaviorVars" value="N, map1, map2"/>
+    <stringAttribute key="modelBehaviorVars" value="N, map1"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
     <listAttribute key="modelCorrectnessInvariants">
-        <listEntry value="1TypeInv"/>
+        <listEntry value="0TypeInv"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
-        <listEntry value="0Termination"/>
+        <listEntry value="1Termination"/>
         <listEntry value="0Correctness"/>
-        <listEntry value="0PCRFibPrimes1!Spec"/>
-        <listEntry value="0PCRFibPrimes1!FairSpec"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
@@ -39,22 +37,13 @@
     <listAttribute key="modelParameterConstants"/>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="Nat;;NatMock1;0;0"/>
-        <listEntry value="IndexType1;;IndexMock1;0;0"/>
-        <listEntry value="IndexType2;;IndexMock2;0;0"/>
-        <listEntry value="InType1;;Input;0;0"/>
-        <listEntry value="CtxIdType2;;{&lt;&lt;0,i&gt;&gt; : i \in 0..N };0;0"/>
-        <listEntry value="PCR1!RUN;;PCR1!RUN;1;0"/>
-        <listEntry value="PCR1!isPrime!OFF;;PCR1!isPrime!OFF;1;0"/>
-        <listEntry value="PCR1!END;;PCR1!END;1;0"/>
-        <listEntry value="PCR1!IndexType1;;IndexMock1;0;0"/>
-        <listEntry value="CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
-        <listEntry value="PCR1!CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
         <listEntry value="NULL;;NULL;1;0"/>
-        <listEntry value="PCRFibPrimes1!NULL;;NULL;0;0"/>
+        <listEntry value="Nat;;NatMock1;0;0"/>
+        <listEntry value="CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
+        <listEntry value="IndexType1;;0..N+1;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..5&#13;&#10;IndexMock1 == 0..N+1&#13;&#10;IndexMock2 == 0..Sqrt(N)+2&#13;&#10;Input == 0..4"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..7"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <booleanAttribute key="recover" value="false"/>
@@ -62,8 +51,11 @@
     <intAttribute key="simuAril" value="-1"/>
     <intAttribute key="simuDepth" value="100"/>
     <intAttribute key="simuSeed" value="-1"/>
-    <stringAttribute key="specName" value="PCRFibPrimes2"/>
+    <stringAttribute key="specName" value="PCRIsPrimeNaive"/>
     <stringAttribute key="tlcResourcesProfile" value="local custom"/>
+    <listAttribute key="traceExploreExpressions">
+        <listEntry value="1PCR1!Iterator(&lt;&lt;0&gt;&gt;)"/>
+    </listAttribute>
     <stringAttribute key="view" value=""/>
     <booleanAttribute key="visualizeStateGraph" value="false"/>
 </launchConfiguration>

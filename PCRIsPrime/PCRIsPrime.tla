@@ -16,7 +16,7 @@
    
      PCR IsPrime(N):
        par
-         p = produceSeq divisors N
+         p = produce divisors N
          forall p
            c = consume notDivides N 
          r = reduce and (N > 1) c
@@ -113,6 +113,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 19:29:52 UYT 2020 by josedu
+\* Last modified Sat Sep 12 22:20:07 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed
