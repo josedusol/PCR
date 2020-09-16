@@ -1,7 +1,7 @@
 -------------------------- MODULE MainPCRMergeSort -------------------------
 
 (*
-   Main module for PCR CountWords1.
+   Main module for PCR MergeSort.
 *)
 
 EXTENDS Typedef, FiniteSets, TLC
@@ -70,6 +70,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 13 16:22:22 UYT 2020 by josedu
+\* Last modified Wed Sep 16 17:46:59 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

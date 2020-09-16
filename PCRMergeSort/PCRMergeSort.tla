@@ -3,8 +3,8 @@
 (*
    PCR MergeSort 
    
-   ----------------------------------------------------------
-     fun divide, isBase, base, merge
+   ---------------------------------------------------------------
+     fun divide, isBase, base, conquer, merge
      
      fun divide(L, p, j) = case j == 1 -> L[1..Len(L)/2]
                                 j == 2 -> L[(Len(L)/2)+1..Len(L)]
@@ -25,7 +25,7 @@
          forall p
            c = consume subproblem p
          r = reduce conquer [] c
-   ----------------------------------------------------------  
+   ---------------------------------------------------------------  
 *)
 
 EXTENDS Typedef, PCRBase
@@ -123,8 +123,8 @@ C_ret(i) ==
      /\ map' = [map EXCEPT 
           ![i].v_c[j]= [v |-> Out(i \o <<j>>), r |-> 0]]  
 \*     /\ PrintT("C_ret" \o ToString(i \o <<j>>) 
-\*                       \o " : in= "  \o ToString(isPrime!in(i \o <<j>>))    
-\*                       \o " : ret= " \o ToString(isPrime!Out(i \o <<j>>)))                
+\*                       \o " : in= "  \o ToString(in(i \o <<j>>))    
+\*                       \o " : ret= " \o ToString(Out(i \o <<j>>)))                
 
 (*
    Consumer action
@@ -149,8 +149,8 @@ R(i) ==
          ![i].v_c[j].r = @ + 1,
          ![i].ste      = IF CDone(i, j) THEN END ELSE @]                                                                            
 \*    /\ IF   CDone(i, j)
-\*       THEN PrintT("MS: in L= " \o ToString(in(i))
-\*                                \o " ret= " \o ToString(Out(i)'))
+\*       THEN PrintT("MS: in= " \o ToString(in(i))
+\*                   \o " ret= " \o ToString(Out(i)'))
 \*       ELSE TRUE             
 
 Next(i) == 
@@ -164,6 +164,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 13 16:35:22 UYT 2020 by josedu
+\* Last modified Wed Sep 16 16:28:02 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed
