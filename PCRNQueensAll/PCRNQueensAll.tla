@@ -7,15 +7,14 @@
      fun divide, isBase, base, conquer, complete, canAddQueen, 
          addQueen, abs
      
-     fun divide(B, p, j) = 
-       B WITH j   <- j
-              sol <- if   canAddQueen(B.sol, B.i, j)
-                     then addQueen(B.sol, B.i, j)
-                     else B.sol
+     fun iter_divide(B, j) = divide(B)[j]
      
-     fun lbnd divide = lambda x. 1 
-     fun ubnd divide = lambda x. Len(x.sol)
-     fun step divide = lambda x. x + 1
+     fun divide(B, j) = B WITH j   <- j
+                               sol <- addQueen(B.sol, B.i, j)
+     
+     fun lbnd iter_divide = lambda x. 1 
+     fun ubnd iter_divide = lambda x. Len(x.sol) 
+     fun step iter_divide = lambda x. x + 1
      
      fun subproblem(B, p, j) = if   isBase(B, p, j)
                                then base(B, p, j)
@@ -25,9 +24,9 @@
    
      PCR NQueensAll(B):
        par
-         p = produce divide B
+         p = produce iter_divide B
          forall p
-           c = consume subproblem p
+           c = consume subproblem B p
          r = reduce conquer [] c
    ---------------------------------------------------------------------
 *)
@@ -60,15 +59,15 @@ canAddQueen(sol, i, j) ==
 addQueen(sol, i, j) == [sol EXCEPT ![j] = i]                         
 
 divide(x, p, j) == [x EXCEPT !.j   = j,
-                             !.sol = IF canAddQueen(@, x.i, j)
-                                     THEN addQueen(@, x.i, j)
-                                     ELSE @]
+                             !.sol = addQueen(@, x.i, j)]
+
+iterDivide(x, p, j) == divide(x, p, j)[j]
 
 complete(x) == \A r \in DOMAIN x.sol : x.sol[r] # 0
 
 base(x, p, j) == IF complete(x) THEN { x.sol } ELSE {}
 
-isBase(x, p, j) == complete(x) \/ ~ canAddQueen(x.sol, x.i, x.j) 
+isBase(x, p, j) == complete(x) \/ ~ canAddQueen(x.sol, x.i, j) 
  
 conquer(old, new) == old \union new
 
@@ -83,10 +82,10 @@ conquer(old, new) == old \union new
    PCR:   p = produce divide B                            
 *)
 P(i) == 
-  \E j \in Iterator(i) : 
+  \E j \in Len() : 
     /\ ~ Written(v_p(i), j)         
     /\ map' = [map EXCEPT  
-         ![i].v_p[j] = [v |-> divide(in(i), v_p(i), j), r |-> 0] ]             
+         ![i].v_p[j] = [v |-> iterDivide(in(i), v_p(i), j), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(j) \o " : " \o ToString(v_p(i)[j].v'))                  
 
 (*
@@ -170,6 +169,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 16 17:46:15 UYT 2020 by josedu
+\* Last modified Fri Sep 18 22:45:49 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

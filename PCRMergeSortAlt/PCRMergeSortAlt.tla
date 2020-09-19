@@ -1,4 +1,4 @@
--------------------------- MODULE PCRMergeSort -----------------------------
+-------------------------- MODULE PCRMergeSortAlt -----------------------------
 
 (*
    PCR MergeSort 
@@ -10,10 +10,6 @@
      
      fun divide(L) = [ L[1..Len(L)/2],
                        L[(Len(L)/2)+1..Len(L)] ]
-     
-     fun lbnd divide = lambda x. 1 
-     fun ubnd divide = lambda x. 2
-     fun step divide = lambda x. x + 1
      
      fun subproblem(L, p, j) = if   isBase(L, p, j)
                                then base(L, p, j)
@@ -30,12 +26,12 @@
    ---------------------------------------------------------------  
 *)
 
-EXTENDS Typedef, PCRBase
+EXTENDS Typedef, PCRBase2
 
 LOCAL INSTANCE TLC
 
 InitCtx(input) == [in  |-> input,
-                   i_p |-> LowerBnd(input),
+                   i_p |-> 1,
                    v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                    v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                    ret |-> <<>>,
@@ -69,17 +65,24 @@ merge(seq1,seq2) ==
 conquer(old, new) == merge(old, new)
 
 ----------------------------------------------------------------------------
+
+INSTANCE PCRIterationSpace WITH 
+  LowerBnd  <- LAMBDA x : 1,
+  UpperBnd  <- LAMBDA x : Len(divide(x)),  
+  Step      <- LAMBDA x : x+1 
+
+----------------------------------------------------------------------------
             
 (* 
    Producer action
    
-   FXML:  forall j \in {1,2}
+   FXML:  forall j \in 1..Len(divide(L))
             p[j] = divide L             
    
    PCR:   p = produce divide L                              
 *)
 P(i) == 
-  \E j \in 1..Len(divide(in(i))) : 
+  \E j \in Iterator(i) : 
     /\ ~ Written(v_p(i), j)         
     /\ map' = [map EXCEPT  
          ![i].v_p[j] = [v |-> iterDivide(in(i), v_p(i), j), r |-> 0] ]             
@@ -89,7 +92,7 @@ P(i) ==
    Consumer non-recursive action
 *)
 C_base(i) == 
-  \E j \in DOMAIN v_p(i) :
+  \E j \in Iterator(i) :
     /\ Written(v_p(i), j)
     /\ ~ Read(v_p(i), j)
     /\ ~ Written(v_c(i), j)
@@ -104,7 +107,7 @@ C_base(i) ==
    Consumer recursive call action
 *)
 C_call(i) == 
-  \E j \in DOMAIN v_p(i) :
+  \E j \in Iterator(i) :
     /\ Written(v_p(i), j)
     /\ ~ Read(v_p(i), j)
     /\ ~ isBase(in(i), v_p(i), j)
@@ -118,7 +121,7 @@ C_call(i) ==
    Consumer recursive end action
 *)
 C_ret(i) == 
-  \E j \in DOMAIN v_p(i) :
+  \E j \in Iterator(i) :
      /\ Read(v_p(i), j)       
      /\ ~ Written(v_c(i), j)
      /\ Finished(i \o <<j>>)   
@@ -143,7 +146,7 @@ C(i) == \/ C_base(i)
    PCR:   r = reduce conquer [] c
 *)
 R(i) == 
-  \E j \in DOMAIN v_p(i) :
+  \E j \in Iterator(i) :
     /\ Written(v_c(i), j)
     /\ ~ Read(v_c(i), j)
     /\ map' = [map EXCEPT 
@@ -166,6 +169,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 18 23:53:09 UYT 2020 by josedu
+\* Last modified Sat Sep 19 01:36:11 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

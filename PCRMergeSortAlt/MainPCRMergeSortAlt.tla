@@ -1,47 +1,40 @@
--------------------------- MODULE MainPCRNQueensAll ------------------------
+-------------------------- MODULE MainPCRMergeSortAlt -------------------------
 
 (*
-   Main module for PCR NQueensAll.
+   Main module for PCR MergeSort.
 *)
 
 EXTENDS Typedef, FiniteSets, TLC
 
-VARIABLES B, map   
+VARIABLES L, map   
 
 ----------------------------------------------------------------------------
 
-NULL == CHOOSE x : x \notin (Nat \union BOOLEAN)
+NULL == CHOOSE x : x \notin Elem
          
-\* Instanciate root PCR with appropiate types
-PCR1 == INSTANCE PCRNQueensAll WITH 
+PCR1 == INSTANCE PCRMergeSortAlt WITH
   InType    <- InType1,
-  LowerBnd  <- LAMBDA x : 1,
-  UpperBnd  <- LAMBDA x : Len(x.sol),  
-  Step      <- LAMBDA x : x + 1,  
   CtxIdType <- CtxIdType1,
   IndexType <- IndexType1,  
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1,  
-  map       <- map                       
+  map       <- map            
            
 ----------------------------------------------------------------------------
 
-vars == <<B,map>>
+vars == <<L,map>>
 
-Init == /\ B \in InType1   
-        /\ B.sol = [j \in Size\{0} |-> 0]   
-        /\ B.i   = 1
-        /\ B.j   = 1
+Init == /\ L \in InType1   
         /\ map = [i \in CtxIdType1 |-> 
                      IF   i = <<0>> 
-                     THEN PCR1!InitCtx(B)
+                     THEN PCR1!InitCtx(L)
                      ELSE NULL]                            
 
 (* PCR1 Step *)                                                  
 Next1(i) == /\ map[i] # NULL
             /\ PCR1!Next(i)
-            /\ UNCHANGED B    
+            /\ UNCHANGED L    
 
 Done == /\ \A i \in PCR1!CtxIndex : PCR1!Finished(i)
         /\ UNCHANGED vars                 
@@ -60,14 +53,12 @@ FairSpec == /\ Spec
    Properties 
 *)
 
-Solution(in) == CASE Len(in.sol) < 4 -> { }
-                  [] Len(in.sol) = 4 -> { <<3,1,4,2>>, <<2,4,1,3>> }
-               \* [] Len(in.sol) = 5 -> { ... 10 solutions ... }
+Solution(in) == SortSeq(in, LAMBDA x,y : x < y)
 
-TypeInv == /\ B \in InType1
+TypeInv == /\ L \in InType1
            /\ map \in PCR1!CtxMap
 
-Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(B) )
+Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(L) )
 
 Termination == <> PCR1!Finished(<<0>>)
 
@@ -75,6 +66,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 18 16:14:57 UYT 2020 by josedu
+\* Last modified Sat Sep 19 01:22:18 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed
