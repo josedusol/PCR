@@ -8,13 +8,13 @@ LOCAL INSTANCE Naturals
 
 VARIABLE map
 
-CONSTANTS InType,       \* Type of PCR input
+CONSTANTS InType,
           CtxIdType,
-          IndexType,    \* Type of iteration space
-          VarPType,     \* Type of producer variable
-          VarCType,     \* Type of consumer variable
-          VarRType,     \* Type of reducer output         
-          NULL          \* Nothing
+          IndexType,
+          VarPType,
+          VarCType,
+          VarRType,       
+          NULL
           
 LOCAL INSTANCE PCRBase
 
@@ -42,6 +42,6 @@ Quit(i) == /\ Iterator(i) = {}
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 22:25:10 UYT 2020 by josedu
+\* Last modified Sun Sep 20 22:30:39 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

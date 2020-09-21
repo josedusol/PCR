@@ -44,10 +44,10 @@ abs(n) == IF n < 0 THEN -n ELSE n
 
 \* check if queen can be placed in cell (r,c)
 canAddQueenInCell(x, r, c) == 
-   /\ x[r] = 0                                     \* not in same row
-   /\ \A k \in DOMAIN x : x[k] # c                 \* not in same column
-   /\ \A k \in DOMAIN x :                          \* not in same diagonal
-         x[k] # 0 => abs(x[k] - c) # abs(k - r)
+  /\ x[r] = 0                                     \* not in same row
+  /\ \A k \in DOMAIN x : x[k] # c                 \* not in same column
+  /\ \A k \in DOMAIN x :                          \* not in same diagonal
+        x[k] # 0 => abs(x[k] - c) # abs(k - r)
 
 \* add queen in cell (r,c)                        
 addQueen(x, r, c) == [x EXCEPT ![r] = c]                         
@@ -107,7 +107,7 @@ conquer(old, new) == old \union new
 ----------------------------------------------------------------------------
 
 (* 
-   Producer bounds                 
+   Iteration space                 
 *)
 
 LowerBnd(x) == 1
@@ -225,6 +225,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 21:24:34 UYT 2020 by josedu
+\* Last modified Sun Sep 20 22:39:54 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

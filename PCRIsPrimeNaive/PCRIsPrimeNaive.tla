@@ -25,7 +25,7 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS PCRBase, Sequences
+EXTENDS Typedef, PCRBase, Sequences
 
 LOCAL INSTANCE TLC
 
@@ -46,7 +46,7 @@ and(old, new) == old /\ new
 ----------------------------------------------------------------------------
 
 (* 
-   Producer bounds                 
+   Iteration space                 
 *)
 
 LowerBnd(x) == 0
@@ -133,6 +133,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 21:00:32 UYT 2020 by josedu
+\* Last modified Sun Sep 20 22:38:38 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

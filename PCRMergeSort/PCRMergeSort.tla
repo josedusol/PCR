@@ -60,7 +60,7 @@ conquer(old, new) == merge(old, new)
 ----------------------------------------------------------------------------
 
 (* 
-   Producer bounds                 
+   Iteration space                 
 *)
 
 LowerBnd(x) == 1
@@ -178,6 +178,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 20:58:42 UYT 2020 by josedu
+\* Last modified Sun Sep 20 22:38:55 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed
