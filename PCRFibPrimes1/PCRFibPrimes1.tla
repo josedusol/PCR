@@ -34,9 +34,13 @@ LOCAL INSTANCE TLC
 
 fib(x, p, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
 
-isPrime(x, p, j) == LET div(k,m) == \E d \in 1..m : m = k * d
-                        val      == p[j].v
-                    IN val > 1 /\ ~ \E m \in 2..val-1 : div(m, val)           
+isPrime(x, p, j) ==
+  LET n == p[j].v
+      F[d \in Nat] ==
+        IF d < 2
+        THEN n > 1
+        ELSE ~ (n % d = 0) /\ F[d-1]
+  IN F[Sqrt(n)]
 
 sum(old, new) == old + (IF new THEN 1 ELSE 0)   
 
@@ -130,6 +134,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 22:38:00 UYT 2020 by josedu
+\* Last modified Sun Sep 20 23:02:21 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed
