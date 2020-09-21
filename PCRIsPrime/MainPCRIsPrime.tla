@@ -15,9 +15,6 @@ NULL == CHOOSE x : x \notin (Nat \union BOOLEAN)
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRIsPrime WITH
   InType    <- InType1,
-  LowerBnd  <- LAMBDA x : 2, 
-  UpperBnd  <- LAMBDA x : Sqrt(x),
-  Step      <- LAMBDA x : IF x = 2 THEN 3 ELSE x + 2,  
   CtxIdType <- CtxIdType1,
   IndexType <- IndexType1,   
   VarPType  <- VarPType1,
@@ -70,5 +67,5 @@ Termination == <> PCR1!Finished(<<0>>)
   
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 17:49:19 UYT 2020 by josedu
+\* Last modified Sat Sep 19 14:21:15 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

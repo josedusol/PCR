@@ -10,11 +10,14 @@
      fun ubnd fib = lambda x. x
      fun step fib = lambda x. x + 1
    
+     fun fib(N, p, j) = if j < 2 then 1 else p[j-1] + p[j-2]
+     fun sum(a,b) = a + (if b then 1 else 0)
+   
      PCR FibPrimes1(N):
        par
          p = produceSeq fib N
          forall p
-           c = consume isPrime p
+           c = consume isPrime N p
          r = reduce sum 0 c
    ----------------------------------------------------------  
 *)
@@ -22,13 +25,6 @@
 EXTENDS Typedef, PCRBase
 
 LOCAL INSTANCE TLC
-
-InitCtx(input) == [in  |-> input,
-                   i_p |-> LowerBnd(input),
-                   v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-                   v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-                   ret |-> 0,
-                   ste |-> OFF]
 
 ----------------------------------------------------------------------------
 
@@ -45,6 +41,28 @@ isPrime(x, p, j) == LET div(k,m) == \E d \in 1..m : m = k * d
 sum(old, new) == old + (IF new THEN 1 ELSE 0)   
 
 ----------------------------------------------------------------------------         
+
+(* 
+   Producer bounds                 
+*)
+
+LowerBnd(x) == 0
+UpperBnd(x) == x
+Step(j)     == j + 1  
+
+INSTANCE PCRIterationSpace WITH
+  LowerBnd  <- LowerBnd,
+  UpperBnd  <- UpperBnd,  
+  Step      <- Step
+
+InitCtx(x) == [in  |-> x,
+               i_p |-> LowerBnd(x),
+               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               ret |-> 0,
+               ste |-> "OFF"]
+
+----------------------------------------------------------------------------         
             
 (* 
    Producer action
@@ -59,7 +77,7 @@ P(i) ==
   /\ map' = [map EXCEPT 
        ![i].v_p[i_p(i)] = [v |-> fib(in(i), v_p(i), i_p(i)), r |-> 0],
        ![i].i_p         = Step(@)]         
-\*  /\ PrintT("P" \o ToString(i_p(i)) \o " : " \o ToString(v_p(i)[i_p(i)].v'))                  
+\*  /\ PrintT("P" \o ToString(i \o <<i_p(i)>>) \o " : " \o ToString(v_p(i)[i_p(i)].v'))                  
 
 (* 
    Consumer action
@@ -77,7 +95,7 @@ C(i) ==
     /\ map' = [map EXCEPT 
          ![i].v_p[j].r = 1, 
          ![i].v_c[j]   = [v |-> isPrime(in(i), v_p(i), j), r |-> 0]]                         
-\*    /\ PrintT("C" \o ToString(j) \o " : P" \o ToString(j) 
+\*    /\ PrintT("C" \o ToString(i \o <<j>>) \o " : P" \o ToString(j) 
 \*                  \o " con v=" \o ToString(v_p(i)[j].v))    
  
 (* 
@@ -94,16 +112,17 @@ R(i) ==
     /\ map' = [map EXCEPT 
          ![i].ret      = sum(@, v_c(i)[j].v),
          ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) THEN END ELSE @]                                                                            
-\*    /\ IF CDone(i, j)
-\*       THEN PrintT("FP1: in= " \o ToString(in(i)) 
-\*                               \o " ret= " \o ToString(out(i)'))
-\*       ELSE TRUE              
+         ![i].ste      = IF CDone(i, j) THEN "END" ELSE @]                                                                            
+\*    /\ IF   CDone(i, j)
+\*       THEN PrintT("FP1 R" \o ToString(i \o <<j>>) 
+\*                           \o " : in= "  \o ToString(in(i))    
+\*                           \o " : ret= " \o ToString(Out(i)')) 
+\*       ELSE TRUE           
 
 Next(i) == 
-  \/ /\ State(i) = OFF 
+  \/ /\ State(i) = "OFF" 
      /\ Start(i)
-  \/ /\ State(i) = RUN  
+  \/ /\ State(i) = "RUN"  
      /\ \/ P(i) 
         \/ C(i) 
         \/ R(i)
@@ -111,6 +130,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 19:31:09 UYT 2020 by josedu
+\* Last modified Sun Sep 20 21:00:58 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

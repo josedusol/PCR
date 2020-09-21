@@ -2,7 +2,12 @@
 
 EXTENDS Naturals, Sequences, Bags
 
-Word  == STRING
+(* 
+   Types for PCRCountWordsInLine                          
+*)
+
+CONSTANT Word
+
 LType == Seq(Word)
 WType == Seq(Word)
 BagOf(S) == UNION {[xs -> Nat\{0}] : xs \in SUBSET S} \* The collection of all bags over S
@@ -29,9 +34,8 @@ Flatten(seq) ==
         THEN <<>>
         ELSE Head(s) \o F[Tail(s)]    
   IN  F[seq]
-
        
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 17:36:03 UYT 2020 by josedu
+\* Last modified Sun Sep 20 20:42:55 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu

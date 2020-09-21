@@ -4,20 +4,17 @@
    Main module for PCR CountWordsInLine.
 *)
 
-EXTENDS Typedef, FiniteSets, TLC, TLAPS, Functions
+EXTENDS Typedef, FiniteSets, Functions
 
 VARIABLES L, W, map   
 
 ----------------------------------------------------------------------------
 
-NULL == CHOOSE x : x \notin Nat
+NULL == CHOOSE x : x \notin Word
          
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRCountWordsInLine WITH 
   InType    <- InType1,
-  LowerBnd  <- LAMBDA x : 1,
-  UpperBnd  <- LAMBDA x : Len(x[2]),  
-  Step      <- LAMBDA x : x+1,   
   CtxIdType <- CtxIdType1,
   IndexType <- IndexType1,
   VarPType  <- VarPType1,
@@ -80,6 +77,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 17:46:00 UYT 2020 by josedu
+\* Last modified Sun Sep 20 20:44:24 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

@@ -2,15 +2,17 @@
 
 EXTENDS Naturals, Sequences, Bags
 
-Word  == STRING
+(* 
+   Types for PCRCountWords2                          
+*)
+
+CONSTANT Word
+
 LType == Seq(Word)
 TType == Seq(LType)
 WType == Seq(Word)
 BagOf(S) == UNION {[xs -> Nat\{0}] : xs \in SUBSET S} \* The collection of all bags over S
 
-(* 
-   Types for PCRCountWords2                          
-*)
 InType1    == TType \X WType
 VarPType1  == LType 
 VarCType1  == BagOf(Word) 
@@ -21,6 +23,7 @@ CtxIdType1 == Seq(Nat)
 (* 
    Types for PCRCountWordsInLine                          
 *)
+
 InType2    == LType \X WType
 VarPType2  == Word 
 VarCType2  == BagOf(Word) 
@@ -46,5 +49,5 @@ Flatten(seq) ==
                 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 16:05:17 UYT 2020 by josedu
+\* Last modified Sun Sep 20 20:39:54 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu

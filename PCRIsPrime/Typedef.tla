@@ -5,6 +5,7 @@ EXTENDS Naturals, Sequences
 (* 
    Types for PCRIsPrime                          
 *)
+
 InType1    == Nat
 IndexType1 == Nat
 CtxIdType1 == Seq(Nat)
@@ -19,5 +20,5 @@ Sqrt(n) == Max({ i \in Nat : i*i <= n })
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 09 00:37:58 UYT 2020 by josedu
+\* Last modified Sun Sep 20 20:32:43 UYT 2020 by josedu
 \* Created Sat Aug 08 21:19:28 UYT 2020 by josedu

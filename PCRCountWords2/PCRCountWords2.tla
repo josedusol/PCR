@@ -12,9 +12,9 @@
      
      PCR CountWords2(T, W):
        par
-         l = produce lines T
-         forall l
-           c = consume countWordsInLine l W   \\ call countWordsInLine PCR as a function
+         p = produce lines T
+         forall p
+           c = consume countWordsInLine W p   \\ call countWordsInLine PCR as a function
          r = reduce joinCounts {} c        
    ----------------------------------------------------------   
 *)
@@ -24,13 +24,6 @@ EXTENDS Typedef, PCRBase
 LOCAL INSTANCE TLC
 
 VARIABLES map2
-
-InitCtx(input) == [in  |-> input,
-                   i_p |-> LowerBnd(input),
-                   v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-                   v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-                   ret |-> EmptyBag,
-                   ste |-> OFF] 
 
 ----------------------------------------------------------------------------
 
@@ -44,15 +37,34 @@ joinCounts(old, new) == old (+) new
  
 countWordsInLine == INSTANCE PCRCountWordsInLine WITH
   InType    <- InType2,
-  LowerBnd  <- LAMBDA x : 1,
-  UpperBnd  <- LAMBDA x : Len(x[2]),  
-  Step      <- LAMBDA x : x+1,  
   CtxIdType <- CtxIdType2, 
   IndexType <- IndexType2,
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
   map       <- map2  
+
+----------------------------------------------------------------------------
+
+(* 
+   Producer bounds                 
+*)
+
+LowerBnd(x) == 1
+UpperBnd(x) == Len(x[1])
+Step(j)     == j + 1  
+
+INSTANCE PCRIterationSpace WITH
+  LowerBnd  <- LowerBnd,
+  UpperBnd  <- UpperBnd,  
+  Step      <- Step
+
+InitCtx(x) == [in  |-> x,
+               i_p |-> LowerBnd(x),
+               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               ret |-> EmptyBag,
+               ste |-> "OFF"]
 
 ----------------------------------------------------------------------------
 
@@ -67,9 +79,9 @@ countWordsInLine == INSTANCE PCRCountWordsInLine WITH
 P(i) == 
   \E j \in Iterator(i) :
     /\ ~ Written(v_p(i), j)             
-    /\ map' = [map EXCEPT      \* iterate over lines
+    /\ map' = [map EXCEPT
          ![i].v_p[j] = [v |-> lines(in(i), v_p(i), j), r |-> 0] ]          
-\*    /\ PrintT("P" \o ToString(j) \o " : " \o ToString(v_p(i)[j].v'))   
+\*    /\ PrintT("P" \o ToString(i \o <<j>>) \o " : " \o ToString(v_p(i)[j].v'))   
 
 (* 
   Consumer call action 
@@ -81,8 +93,8 @@ C_call(i) ==
     /\ map'  = [map  EXCEPT ![i].v_p[j].r = 1] 
     /\ map2' = [map2 EXCEPT 
          ![i \o <<j>>]= countWordsInLine!InitCtx(<<v_p(i)[j].v, In2(i)>>)]    
-\*    /\ PrintT("C_call " \o ToString(i \o <<j>>) 
-\*                        \o " : in= " \o ToString(v_p(i)[j].v))                                                                                                                                            
+\*    /\ PrintT("C_call" \o ToString(i \o <<j>>) 
+\*                       \o " : in= " \o ToString(v_p(i)[j].v))                                                                                                                                            
 
 (* 
   Consumer end action 
@@ -95,8 +107,8 @@ C_ret(i) ==
     /\ map' = [map EXCEPT 
          ![i].v_c[j]= [v |-> countWordsInLine!Out(i \o <<j>>), r |-> 0] ]  
 \*    /\ PrintT("C_ret" \o ToString(i \o <<j>>) 
-\*                      \o " : in= "  \o ToString(countInLine!in(i \o <<j>>))    
-\*                      \o " : ret= " \o ToString(countInLine!Out(i \o <<j>>)))                   
+\*                      \o " : in= "  \o ToString(countWordsInLine!in(i \o <<j>>))    
+\*                      \o " : ret= " \o ToString(countWordsInLine!Out(i \o <<j>>)))
 (* 
   Consumer action 
 *)
@@ -117,18 +129,19 @@ R(i) ==
     /\ map' = [map EXCEPT 
          ![i].ret      = joinCounts(@, v_c(i)[j].v),
          ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) THEN END ELSE @]                                                                 
-\*    /\ IF CDone(i, j)
-\*       THEN PrintT("CW2: in T= " \o ToString(In1(i))
-\*                                 \o " W= "   \o ToString(In2(i)) 
-\*                                 \o " ret= " \o ToString(Out(i)'))
-\*       ELSE TRUE                
+         ![i].ste      = IF CDone(i, j) THEN "END" ELSE @]
+\*    /\ IF   CDone(i, j)
+\*       THEN PrintT("CW2 R" \o ToString(i \o <<j>>) 
+\*                           \o " : in1= " \o ToString(In1(i))    
+\*                           \o " : in2= " \o ToString(In2(i))
+\*                           \o " : ret= " \o ToString(Out(i)')) 
+\*       ELSE TRUE 
 
 Next(i) == 
-  \/ /\ State(i) = OFF 
+  \/ /\ State(i) = "OFF" 
      /\ Start(i)   
      /\ UNCHANGED map2
-  \/ /\ State(i) = RUN 
+  \/ /\ State(i) = "RUN" 
      /\ \/ P(i)    /\ UNCHANGED map2
         \/ C(i)  
         \/ R(i)    /\ UNCHANGED map2
@@ -136,6 +149,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 18:11:53 UYT 2020 by josedu
+\* Last modified Sun Sep 20 21:01:14 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

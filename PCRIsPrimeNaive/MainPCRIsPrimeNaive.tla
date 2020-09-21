@@ -4,7 +4,7 @@
    Main module for PCR IsPrimeNaive.
 *)
 
-EXTENDS Typedef, FiniteSets, TLC
+EXTENDS Typedef, FiniteSets
 
 VARIABLES N, map1   
 
@@ -15,9 +15,6 @@ NULL == CHOOSE x : x \notin (Nat \union BOOLEAN)
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRIsPrimeNaive WITH
   InType    <- InType1,
-  LowerBnd  <- LAMBDA x : 0, 
-  UpperBnd  <- LAMBDA x : x,
-  Step      <- LAMBDA x : x + 1,  
   CtxIdType <- CtxIdType1,
   IndexType <- IndexType1,   
   VarPType  <- VarPType1,
@@ -70,5 +67,5 @@ Termination == <> PCR1!Finished(<<0>>)
   
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 22:42:38 UYT 2020 by josedu
+\* Last modified Sat Sep 19 16:21:29 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

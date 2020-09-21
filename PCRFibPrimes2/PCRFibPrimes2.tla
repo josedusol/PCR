@@ -10,6 +10,9 @@
      fun ubnd fib = lambda x. x
      fun step fib = lambda x. x + 1
    
+     fun fib(N, p, j) = if j < 2 then 1 else p[j-1] + p[j-2]
+     fun sum(a,b) = a + (if b then 1 else 0)  
+   
      PCR FibPrimes2(N):
        par
          p = produceSeq fib N
@@ -25,34 +28,46 @@ LOCAL INSTANCE TLC
 
 VARIABLE map2
 
-InitCtx(input) == [in  |-> input,
-                   i_p |-> LowerBnd(input),
-                   v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-                   v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-                   ret |-> 0,
-                   ste |-> OFF]
-
 ----------------------------------------------------------------------------
 
 (* 
    Basic functions                          
 *)
 
-fib(x, p, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
+fib(x, p, j) == IF j < 2 THEN 1 ELSE p[j-1].v + p[j-2].v
 
 sum(old, new) == old + (IF new THEN 1 ELSE 0)  
 
 isPrime == INSTANCE PCRIsPrime WITH
   InType    <- InType2,
-  LowerBnd  <- LAMBDA x : 2,
-  UpperBnd  <- LAMBDA x : Sqrt(x),  
-  Step      <- LAMBDA x : IF x = 2 THEN 3 ELSE x + 2,  
   CtxIdType <- CtxIdType2,
   IndexType <- IndexType2,
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
   map       <- map2
+
+----------------------------------------------------------------------------
+
+(* 
+   Producer bounds                 
+*)
+
+LowerBnd(x) == 0
+UpperBnd(x) == x
+Step(j)     == j + 1  
+
+INSTANCE PCRIterationSpace WITH
+  LowerBnd  <- LowerBnd,
+  UpperBnd  <- UpperBnd,  
+  Step      <- Step
+
+InitCtx(x) == [in  |-> x,
+               i_p |-> LowerBnd(x),
+               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               ret |-> 0,
+               ste |-> "OFF"]
 
 ----------------------------------------------------------------------------
 
@@ -69,7 +84,7 @@ P(i) ==
   /\ map' = [map EXCEPT 
        ![i].v_p[i_p(i)] = [v |-> fib(in(i), v_p(i), i_p(i)), r |-> 0],
        ![i].i_p         = Step(@)]         
-\*  /\ PrintT("P" \o ToString(i_p(i)) \o " : " \o ToString(v_p(i)[i_p(i)].v'))           
+\*  /\ PrintT("P" \o ToString(i \o <<i_p(i)>>) \o " : " \o ToString(v_p(i)[i_p(i)].v'))
 
 (*
    Consumer call action
@@ -81,8 +96,8 @@ C_call(i) ==
     /\ map'  = [map  EXCEPT ![i].v_p[j].r = 1] 
     /\ map2' = [map2 EXCEPT 
          ![i \o <<j>>] = isPrime!InitCtx(v_p(i)[j].v)]    
-\*    /\ PrintT("C_call " \o ToString(i \o <<j>>) 
-\*                        \o " : in= " \o ToString(v_p(i)[j].v))                                                                                                                                            
+\*    /\ PrintT("C_call" \o ToString(i \o <<j>>) 
+\*                       \o " : in= " \o ToString(v_p(i)[j].v))                                                                                                                                            
 
 (*
    Consumer end action
@@ -96,7 +111,7 @@ C_ret(i) ==
           ![i].v_c[j]= [v |-> isPrime!Out(i \o <<j>>), r |-> 0]]  
 \*     /\ PrintT("C_ret" \o ToString(i \o <<j>>) 
 \*                       \o " : in= "  \o ToString(isPrime!in(i \o <<j>>))    
-\*                       \o " : ret= " \o ToString(isPrime!Out(i \o <<j>>)))                
+\*                       \o " : ret= " \o ToString(isPrime!Out(i \o <<j>>)))
 
 (*
    Consumer action
@@ -118,17 +133,19 @@ R(i) ==
      /\ map' = [map EXCEPT 
           ![i].ret      = sum(@, v_c(i)[j].v),
           ![i].v_c[j].r = @ + 1,
-          ![i].ste      = IF CDone(i, j) THEN END ELSE @]                                                                 
-\*     /\ IF CDone(i, j)
-\*        THEN PrintT("FP2: in= " \o ToString(in(i)) 
-\*                                \o " ret= " \o ToString(Out(i)'))
-\*        ELSE TRUE                
-           
+          ![i].ste      = IF CDone(i, j) THEN "END" ELSE @] 
+\*    /\ IF   CDone(i, j)
+\*       THEN PrintT("FP2 R" \o ToString(i \o <<j>>) 
+\*                           \o " : in= "  \o ToString(in(i))    
+\*                           \o " : ret= " \o ToString(Out(i)')) 
+\*       ELSE TRUE 
+
+
 Next(i) == 
-  \/ /\ State(i) = OFF 
+  \/ /\ State(i) = "OFF" 
      /\ Start(i)   
      /\ UNCHANGED map2
-  \/ /\ State(i) = RUN 
+  \/ /\ State(i) = "RUN" 
      /\ \/ P(i)    /\ UNCHANGED map2
         \/ C(i)  
         \/ R(i)    /\ UNCHANGED map2
@@ -136,6 +153,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 19:28:38 UYT 2020 by josedu
+\* Last modified Sun Sep 20 21:00:49 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -4,7 +4,7 @@
    Main module for PCR FibPrimes2.
 *)
 
-EXTENDS Typedef, FiniteSets, TLC
+EXTENDS Typedef, FiniteSets
 
 VARIABLES N, map1, map2 
 
@@ -15,9 +15,6 @@ NULL == CHOOSE x : x \notin (Nat \union BOOLEAN)
 \* Instanciate first PCR with appropiate types
 PCR1 == INSTANCE PCRFibPrimes2 WITH 
   InType    <- InType1,
-  LowerBnd  <- LAMBDA x : 0,
-  UpperBnd  <- LAMBDA x : x,  
-  Step      <- LAMBDA x : x + 1,
   CtxIdType <- CtxIdType1,
   IndexType <- IndexType1,
   VarPType  <- VarPType1,
@@ -29,9 +26,6 @@ PCR1 == INSTANCE PCRFibPrimes2 WITH
 \* Instanciate second PCR with appropiate types  
 PCR2 == INSTANCE PCRIsPrime WITH
   InType    <- InType2,  
-  LowerBnd  <- LAMBDA x : 2,
-  UpperBnd  <- LAMBDA x : Sqrt(x),  
-  Step      <- LAMBDA x : IF x = 2 THEN 3 ELSE x + 2,
   CtxIdType <- CtxIdType2,
   IndexType <- IndexType2,
   VarPType  <- VarPType2,
@@ -101,8 +95,8 @@ Termination == <> PCR1!Finished(<<0>>)
 
 GTermination == [][ PCR1!Finished(<<0>>) <=> Done ]_vars
 
-\* This Spec is a more concrete implementation of PCRFibPrimes1!Spec.
-\* The following provides a refinement mapping to prove this fact.
+\* This Spec is an implementation of PCRFibPrimes1!Spec.
+\* The following def provides a refinement mapping to prove this fact.
 subst ==                        
   [i \in DOMAIN map1 |-> 
      IF map1[i] # NULL                               \* For any well-defined PCR1 context map1[i]
@@ -128,6 +122,6 @@ PCRFibPrimes1 == INSTANCE MainPCRFibPrimes1 WITH map1 <- subst
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 23:05:14 UYT 2020 by josedu
+\* Last modified Sun Sep 20 20:54:38 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

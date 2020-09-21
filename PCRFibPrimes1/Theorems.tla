@@ -4,9 +4,14 @@ EXTENDS MainPCRFibPrimes1, TLAPS
 
 
 ASSUME Fun_Assumptions == 
-  /\ \A x, p, i :  PCR1!fib(x, p, i) \in Nat     
-  /\ \A x, p, i :  PCR1!isPrime(x, p, i) \in BOOLEAN
-  /\ \A old, new : PCR1!sum(old, new) \in Nat   
+  /\ \A x, p, i : PCR1!fib(x, p, i)     \in VarPType1     
+  /\ \A x, p, i : PCR1!isPrime(x, p, i) \in VarCType1
+  /\ \A a, b :    PCR1!sum(a, b)        \in VarRType1   
+
+ASSUME Bnd_Assumptions == 
+  /\ \A x : PCR1!LowerBnd(x) \in IndexType1
+  /\ \A x : PCR1!UpperBnd(x) \in IndexType1
+  /\ \A j : PCR1!Step(j)     \in IndexType1
 
 LEMMA Type_iterator == \A i \in PCR1!CtxIndex : PCR1!Iterator(i) \subseteq IndexType1                    
 
@@ -20,8 +25,8 @@ THEOREM Thm1_TypeInv == Spec => []TypeInv
     BY DEF Init
   <2>2. map1 \in PCR1!CtxMap
     <3>1. PCR1!InitCtx(N) \in (PCR1!CtxType \cup {NULL}) 
-      BY <2>1 DEF PCR1!InitCtx, PCR1!CtxType, PCR1!VarP, PCR1!VarC, 
-                  PCR1!VarR, PCR1!States, VarRType1, IndexType1
+      BY <2>1, Bnd_Assumptions DEF PCR1!InitCtx, PCR1!CtxType, PCR1!VarP, PCR1!VarC,
+                                   PCR1!States, VarRType1, IndexType1
     <3> QED 
       BY <3>1 DEF Init, PCR1!CtxMap
   <2> QED
@@ -39,18 +44,18 @@ THEOREM Thm1_TypeInv == Spec => []TypeInv
     <3>1. map1 \in PCR1!CtxMap      BY <2>0 DEF TypeInv
     <3>2. map1[i] # NULL            BY <3>0 DEF Next1
     <3>3. map1[i] \in PCR1!CtxType  BY <3>1, <3>2 DEF PCR1!CtxMap 
-    <3>A. CASE /\ PCR1!State(i) = PCR1!OFF
+    <3>A. CASE /\ PCR1!State(i) = "OFF"
                /\ PCR1!Start(i)
       <4>1. N' \in InType1 BY <2>0, <3>0 DEF TypeInv, Next1     
       <4>2. map1' \in PCR1!CtxMap                                    
-        <5>1. map1' = [map1 EXCEPT ![i].ste = PCR1!RUN] BY <3>A DEF PCR1!Start
+        <5>1. map1' = [map1 EXCEPT ![i].ste = "RUN"] BY <3>A DEF PCR1!Start
         <5>2. map1[i].ste' \in PCR1!States BY <3>3, <5>1 DEF PCR1!States, PCR1!CtxType      
         <5>3. map1[i]' \in PCR1!CtxType BY <3>2, <3>3, <5>1, <5>2 DEF PCR1!CtxType
         <5> QED 
           BY <3>1, <5>1, <5>3 DEF PCR1!CtxType, PCR1!CtxMap
       <4> QED 
         BY <4>1, <4>2 DEF TypeInv        
-    <3>B. CASE /\ PCR1!State(i) = PCR1!RUN
+    <3>B. CASE /\ PCR1!State(i) = "RUN"
                /\ PCR1!P(i)
       <4>1. N' \in InType1 BY <2>0, <3>0 DEF TypeInv, Next1     
       <4>2. map1' \in PCR1!CtxMap 
@@ -58,7 +63,7 @@ THEOREM Thm1_TypeInv == Spec => []TypeInv
                 ![i].v_p[map1[i].i_p] = [v |-> PCR1!fib(PCR1!in(i), PCR1!v_p(i), map1[i].i_p), 
                                          r |-> 0],
                 ![i].i_p = map1[i].i_p + 1]  
-          BY <3>B DEF PCR1!P, PCR1!i_p
+          BY <3>B DEF PCR1!P, PCR1!Step, PCR1!i_p
         <5>2. map1[i].i_p \in IndexType1 BY <3>3 DEF PCR1!CtxType              
         <5>3. map1[i].i_p' \in IndexType1
           <6>1. map1[i].i_p' = map1[i].i_p + 1 BY <3>1, <5>1 DEF PCR1!CtxMap, PCR1!CtxType
@@ -77,12 +82,12 @@ THEOREM Thm1_TypeInv == Spec => []TypeInv
           <6> QED
             BY <3>3, <6>1, <6>2, <6>4 DEF PCR1!CtxType, PCR1!VarP  
         <5>5. map1[i]' \in PCR1!CtxType 
-          BY <3>1, <3>2, <5>1, <5>3, <5>4 DEF PCR1!CtxMap, PCR1!CtxType, PCR1!VarP
+          BY <3>1, <3>2, <5>1, <5>3, <5>4 DEF PCR1!CtxMap, PCR1!CtxType
         <5> QED 
           BY <3>1, <5>1, <5>5 DEF PCR1!CtxType, PCR1!CtxMap            
       <4> QED 
         BY <4>1, <4>2 DEF TypeInv               
-    <3>C. CASE /\ PCR1!State(i) = PCR1!RUN
+    <3>C. CASE /\ PCR1!State(i) = "RUN"
                /\ PCR1!C(i)
       <4>1. N' \in InType1 BY <2>0, <3>0 DEF TypeInv, Next1     
       <4>2. map1' \in PCR1!CtxMap 
@@ -110,11 +115,11 @@ THEOREM Thm1_TypeInv == Spec => []TypeInv
           <6> QED
              BY <3>3, <5>2, <6>1, <6>3 DEF PCR1!CtxType, PCR1!VarC             
         <5>5. map1[i]' \in PCR1!CtxType 
-          BY <3>1, <3>2, <5>1, <5>3, <5>4 DEF PCR1!CtxMap, PCR1!CtxType, PCR1!VarC, PCR1!VarP         
+          BY <3>1, <3>2, <5>1, <5>3, <5>4 DEF PCR1!CtxMap, PCR1!CtxType       
         <5> QED 
           BY <3>1, <5>1, <5>5 DEF PCR1!CtxType, PCR1!CtxMap         
       <4> QED BY <4>1, <4>2 DEF TypeInv                  
-    <3>D. CASE /\ PCR1!State(i) = PCR1!RUN
+    <3>D. CASE /\ PCR1!State(i) = "RUN"
                /\ PCR1!R(i) 
       <4>1. N' \in InType1 BY <2>0, <3>0 DEF TypeInv, Next1     
       <4>2. map1' \in PCR1!CtxMap 
@@ -122,7 +127,7 @@ THEOREM Thm1_TypeInv == Spec => []TypeInv
                 map1' = [map1 EXCEPT 
                   ![i].ret      = PCR1!sum(map1[i].ret, PCR1!v_c(i)[j].v),
                   ![i].v_c[j].r = map1[i].v_c[j].r + 1,
-                  ![i].ste      = IF PCR1!CDone(i, j) THEN PCR1!END ELSE map1[i].ste]
+                  ![i].ste      = IF PCR1!CDone(i, j) THEN "END" ELSE map1[i].ste]
           BY <3>D DEF PCR1!R
         <5>2. j \in IndexType1  BY <3>2, Type_iterator DEF PCR1!CtxIndex    
         <5>3. map1[i].ret' \in VarRType1
@@ -143,11 +148,11 @@ THEOREM Thm1_TypeInv == Spec => []TypeInv
           <6> QED
             BY <3>3, <5>2, <6>1, <6>4 DEF PCR1!CtxType, PCR1!VarC
         <5>5. map1[i].ste' \in PCR1!States
-          <6>1. map1[i].ste' = IF PCR1!CDone(i, j) THEN PCR1!END ELSE map1[i].ste 
+          <6>1. map1[i].ste' = IF PCR1!CDone(i, j) THEN "END" ELSE map1[i].ste 
             BY <3>1, <5>1 DEF PCR1!CtxMap, PCR1!CtxType
           <6>A. CASE PCR1!CDone(i, j) 
-            <7>1. map1[i].ste' = PCR1!END BY <6>1, <6>A
-            <7>2. PCR1!END \in PCR1!States BY DEF PCR1!States           
+            <7>1. map1[i].ste' = "END" BY <6>1, <6>A
+            <7>2. "END" \in PCR1!States BY DEF PCR1!States           
             <7> QED BY <7>1, <7>2
           <6>B. CASE ~ PCR1!CDone(i, j) 
             <7>1. map1[i].ste' = map1[i].ste BY <6>1, <6>B
@@ -155,15 +160,15 @@ THEOREM Thm1_TypeInv == Spec => []TypeInv
             <7> QED BY <7>1, <7>2          
           <6> QED BY <6>A, <6>B
         <5>6. map1[i]' \in PCR1!CtxType 
-          BY <3>1, <3>2, <5>1, <5>3, <5>4, <5>5 DEF PCR1!CtxMap, PCR1!CtxType, PCR1!VarC 
+          BY <3>1, <3>2, <5>1, <5>3, <5>4, <5>5 DEF PCR1!CtxMap, PCR1!CtxType 
         <5> QED 
           BY <3>1, <5>1, <5>6 DEF PCR1!CtxType, PCR1!CtxMap
       <4> QED BY <4>1, <4>2 DEF TypeInv                      
-    <3>E. CASE /\ PCR1!State(i) = PCR1!RUN
+    <3>E. CASE /\ PCR1!State(i) = "RUN"
                /\ PCR1!Quit(i) 
       <4>1. N' \in InType1 BY <2>0, <3>0 DEF TypeInv, Next1     
       <4>2. map1' \in PCR1!CtxMap                                    
-        <5>1. map1' = [map1 EXCEPT ![i].ste = PCR1!END] BY <3>E DEF PCR1!Quit
+        <5>1. map1' = [map1 EXCEPT ![i].ste = "END"] BY <3>E DEF PCR1!Quit
         <5>2. map1[i].ste' \in PCR1!States BY <3>3, <5>1 DEF PCR1!States, PCR1!CtxType      
         <5>3. map1[i]' \in PCR1!CtxType BY <3>2, <3>3, <5>1, <5>2 DEF PCR1!CtxType
         <5> QED 
@@ -201,5 +206,5 @@ THEOREM Thm3_Termination ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 18:20:39 UYT 2020 by josedu
+\* Last modified Sat Sep 19 15:40:57 UYT 2020 by josedu
 \* Created Tue Sep 08 23:52:38 UYT 2020 by josedu

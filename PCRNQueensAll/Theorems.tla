@@ -3,24 +3,24 @@
 EXTENDS MainPCRNQueensAll, TLAPS
 
 THEOREM Thm1_TypeInv == 
-  \A l \in InType1 : /\ L = l  
+  \A b \in InType1 : /\ B = b  
                      /\ Spec 
                      => []TypeInv
   PROOF OMITTED 
 
 THEOREM Thm2_Correctness == 
-  \A l \in InType1 : /\ L = l 
+  \A b \in InType1 : /\ B = b 
                      /\ Spec 
-                     => [](PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(l))
+                     => [](PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(b))
   PROOF OMITTED 
 
 THEOREM Thm3_Termination == 
-  \A l \in InType1 : /\ L = l 
+  \A b \in InType1 : /\ B = b 
                      /\ FairSpec 
                      => Termination
   PROOF OMITTED 
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 13 16:41:06 UYT 2020 by josedu
+\* Last modified Sun Sep 20 20:00:59 UYT 2020 by josedu
 \* Created Wed Sep 09 16:41:05 UYT 2020 by josedu

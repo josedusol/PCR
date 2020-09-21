@@ -4,7 +4,7 @@
    Main module for PCR NQueensAll.
 *)
 
-EXTENDS Typedef, FiniteSets, TLC
+EXTENDS Typedef
 
 VARIABLES B, map   
 
@@ -15,9 +15,6 @@ NULL == CHOOSE x : x \notin (Nat \union BOOLEAN)
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRNQueensAll WITH 
   InType    <- InType1,
-  LowerBnd  <- LAMBDA x : 1,
-  UpperBnd  <- LAMBDA x : Len(x.sol),  
-  Step      <- LAMBDA x : x + 1,  
   CtxIdType <- CtxIdType1,
   IndexType <- IndexType1,  
   VarPType  <- VarPType1,
@@ -29,10 +26,8 @@ PCR1 == INSTANCE PCRNQueensAll WITH
 
 vars == <<B,map>>
 
-Init == /\ B \in InType1   
-        /\ B.sol = [j \in Size\{0} |-> 0]   
-        /\ B.i   = 1
-        /\ B.j   = 1
+Init == /\ B \in InType1
+        /\ \A r \in DOMAIN B : B[r] = 0
         /\ map = [i \in CtxIdType1 |-> 
                      IF   i = <<0>> 
                      THEN PCR1!InitCtx(B)
@@ -44,7 +39,7 @@ Next1(i) == /\ map[i] # NULL
             /\ UNCHANGED B    
 
 Done == /\ \A i \in PCR1!CtxIndex : PCR1!Finished(i)
-        /\ UNCHANGED vars                 
+        /\ UNCHANGED vars                
 
 Next == \/ \E i \in CtxIdType1 : Next1(i)
         \/ Done
@@ -60,9 +55,10 @@ FairSpec == /\ Spec
    Properties 
 *)
 
-Solution(in) == CASE Len(in.sol) < 4 -> { }
-                  [] Len(in.sol) = 4 -> { <<3,1,4,2>>, <<2,4,1,3>> }
-               \* [] Len(in.sol) = 5 -> { ... 10 solutions ... }
+Solution(in) == CASE Len(in) = 1      -> { <<1>> }
+                  [] Len(in) \in 2..3 -> { }
+                  [] Len(in) = 4      -> { <<3,1,4,2>>, <<2,4,1,3>> }
+               \* [] Len(in) = 5      -> { ... 10 solutions ... }
 
 TypeInv == /\ B \in InType1
            /\ map \in PCR1!CtxMap
@@ -75,6 +71,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 18 16:14:57 UYT 2020 by josedu
+\* Last modified Sun Sep 20 21:14:33 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

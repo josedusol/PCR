@@ -4,27 +4,26 @@
    PCR NQueensAll 
    
    ---------------------------------------------------------------------
-     fun divide, isBase, base, conquer, complete, canAddQueen, 
-         addQueen, abs
+     fun divide, isBase, base, conquer, complete, abs, canAddQueenInRow, 
+         canAddQueenInCell, canAddQueens, addQueenInRow, addQueen
      
-     fun iter_divide(B, j) = divide(B)[j]
+     fun iterDivide(B, j) = divide(B)[j]
      
-     fun divide(B, j) = B WITH j   <- j
-                               sol <- addQueen(B.sol, B.i, j)
-     
-     fun lbnd iter_divide = lambda x. 1 
-     fun ubnd iter_divide = lambda x. Len(x.sol) 
-     fun step iter_divide = lambda x. x + 1
+     fun divide(B, j) = 
+       cs = []
+       for i in 1..Len(B)
+         if canAddQueenInRow(B, i) then cs += [addQueenInRow(B, i)]
+       return cs
      
      fun subproblem(B, p, j) = if   isBase(B, p, j)
                                then base(B, p, j)
-                               else NQueensAll(B WITH i <- i+1, p, j)
+                               else NQueensAll(B, p, j)
    
      fun conquer(a, b) = a union b
    
      PCR NQueensAll(B):
        par
-         p = produce iter_divide B
+         p = produce iterDivide B
          forall p
            c = consume subproblem B p
          r = reduce conquer [] c
@@ -35,58 +34,114 @@ EXTENDS Typedef, PCRBase
 
 LOCAL INSTANCE TLC
 
-InitCtx(input) == [in  |-> input,
-                   i_p |-> LowerBnd(input),
-                   v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-                   v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-                   ret |-> {},
-                   ste |-> OFF] 
-
 ----------------------------------------------------------------------------
 
 (* 
    Basic functions                 
 *)
 
-abs(r) == IF r < 0 THEN -r ELSE r
+abs(n) == IF n < 0 THEN -n ELSE n
 
-canAddQueen(sol, i, j) == 
-   /\ \A r \in DOMAIN sol : sol[r] # i               \* not in same row
-   /\ sol[j] = 0                                     \* not in same column
-   /\ \A r \in DOMAIN sol :                          \* not in same diagonal
-         sol[r] # 0 => abs(sol[r] - i) # abs(r - j)
-                        
-addQueen(sol, i, j) == [sol EXCEPT ![j] = i]                         
+\* check if queen can be placed in cell (r,c)
+canAddQueenInCell(x, r, c) == 
+   /\ x[r] = 0                                     \* not in same row
+   /\ \A k \in DOMAIN x : x[k] # c                 \* not in same column
+   /\ \A k \in DOMAIN x :                          \* not in same diagonal
+         x[k] # 0 => abs(x[k] - c) # abs(k - r)
 
-divide(x, p, j) == [x EXCEPT !.j   = j,
-                             !.sol = addQueen(@, x.i, j)]
+\* add queen in cell (r,c)                        
+addQueen(x, r, c) == [x EXCEPT ![r] = c]                         
 
-iterDivide(x, p, j) == divide(x, p, j)[j]
+\* add queen in the first possible column of row r
+addQueenInRow(x, r) == 
+  LET N == Len(x)
+      F[c \in Nat] ==
+        IF c <= N
+        THEN IF canAddQueenInCell(x, r, c)
+             THEN addQueen(x, r, c)
+             ELSE F[c+1]
+        ELSE x 
+  IN F[1]
 
-complete(x) == \A r \in DOMAIN x.sol : x.sol[r] # 0
+\* check if queen can be placed in a row
+canAddQueenInRow(x, r) == 
+  LET N == Len(x)
+      F[c \in Nat] ==
+        IF c <= N
+        THEN canAddQueenInCell(x, r, c) \/ F[c+1] 
+        ELSE FALSE 
+  IN F[1]      
 
-base(x, p, j) == IF complete(x) THEN { x.sol } ELSE {}
+\* check if is still possible to add queens in the unused rows
+canAddQueens(x) == 
+  LET N == Len(x)
+      F[r \in Nat] ==
+        IF r <= N
+        THEN IF x[r] = 0
+             THEN canAddQueenInRow(x, r) /\ F[r+1] 
+             ELSE F[r+1]
+        ELSE TRUE 
+  IN F[1] 
 
-isBase(x, p, j) == complete(x) \/ ~ canAddQueen(x.sol, x.i, j) 
+\* produce further configurations where is possible to place a new queen
+divide(x) == 
+  LET N == Len(x)
+      F[r \in Nat] ==
+        IF r <= N
+        THEN IF canAddQueenInRow(x, r)
+             THEN <<addQueenInRow(x, r)>> \o F[r+1]
+             ELSE F[r+1]
+        ELSE <<>> 
+  IN F[1]    
+
+iterDivide(x, p, j) == divide(x)[j]
+
+complete(x) == \A r \in DOMAIN x : x[r] # 0
+
+base(x, p, j) == IF complete(p[j].v) THEN { p[j].v } ELSE {}
+
+isBase(x, p, j) == complete(p[j].v) \/ ~ canAddQueens(p[j].v) 
  
 conquer(old, new) == old \union new
+
+----------------------------------------------------------------------------
+
+(* 
+   Producer bounds                 
+*)
+
+LowerBnd(x) == 1
+UpperBnd(x) == Len(divide(x))
+Step(j)     == j + 1  
+
+INSTANCE PCRIterationSpace WITH
+  LowerBnd  <- LowerBnd,
+  UpperBnd  <- UpperBnd,  
+  Step      <- Step
+
+InitCtx(x) == [in  |-> x,
+               i_p |-> LowerBnd(x),
+               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               ret |-> {},
+               ste |-> "OFF"] 
 
 ----------------------------------------------------------------------------
             
 (* 
    Producer action
    
-   FXML:  forall j \in 1..Len(B.sol)
+   FXML:  forall j \in 1..Len(divide(B))
             p[j] = divide B             
    
    PCR:   p = produce divide B                            
 *)
 P(i) == 
-  \E j \in Len() : 
+  \E j \in Iterator(i) : 
     /\ ~ Written(v_p(i), j)         
     /\ map' = [map EXCEPT  
          ![i].v_p[j] = [v |-> iterDivide(in(i), v_p(i), j), r |-> 0] ]             
-\*    /\ PrintT("P" \o ToString(j) \o " : " \o ToString(v_p(i)[j].v'))                  
+\*    /\ PrintT("P" \o ToString(i \o <<j>>) \o " : " \o ToString(v_p(i)[j].v'))                  
 
 (*
    Consumer non-recursive action
@@ -100,8 +155,8 @@ C_base(i) ==
     /\ map' = [map EXCEPT 
          ![i].v_p[j].r = @ + 1,
          ![i].v_c[j]   = [v |-> base(in(i), v_p(i), j), r |-> 0] ]               
-\*    /\ PrintT("C_base " \o ToString(j) \o " : P" \o ToString(j) 
-\*                        \o " con v=" \o ToString(v_p(i)[j].v))
+\*    /\ PrintT("C_base" \o ToString(i \o <<j>>) \o " : P" \o ToString(j) 
+\*                       \o " con v=" \o ToString(base(in(i), v_p(i), j)))
 
 (*
    Consumer recursive call action
@@ -113,12 +168,12 @@ C_call(i) ==
     /\ ~ isBase(in(i), v_p(i), j)
     /\ map' = [map EXCEPT 
          ![i].v_p[j].r  = 1,
-         ![i \o <<j>>]  = InitCtx([v_p(i)[j].v EXCEPT !.i = @ + 1]) ]     
-\*    /\ PrintT("C_call " \o ToString(i \o <<j>>) 
-\*                        \o " : in= " \o ToString(in(i \o <<j>>)'))                                                                                                                                            
+         ![i \o <<j>>]  = InitCtx(v_p(i)[j].v) ]     
+\*    /\ PrintT("C_call" \o ToString(i \o <<j>>) 
+\*                       \o " : in= " \o ToString(in(i \o <<j>>)'))                                                                                                                                            
 
 (*
-   Consumer recursive end action
+   Consumer recursive return action
 *)
 C_ret(i) == 
   \E j \in Iterator(i) :
@@ -152,16 +207,17 @@ R(i) ==
     /\ map' = [map EXCEPT 
          ![i].ret      = conquer(@, v_c(i)[j].v),
          ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) THEN END ELSE @]                                                                            
+         ![i].ste      = IF CDone(i, j) THEN "END" ELSE @]                                                                            
 \*    /\ IF   CDone(i, j)
-\*       THEN PrintT("NQ: in= "  \o ToString(in(i))
-\*                   \o " ret= " \o ToString(Out(i)'))
+\*       THEN PrintT("R" \o ToString(i \o <<j>>) 
+\*                       \o " : in= "  \o ToString(in(i))    
+\*                       \o " : ret= " \o ToString(Out(i)')) 
 \*       ELSE TRUE             
 
 Next(i) == 
-  \/ /\ State(i) = OFF 
+  \/ /\ State(i) = "OFF" 
      /\ Start(i)
-  \/ /\ State(i) = RUN 
+  \/ /\ State(i) = "RUN" 
      /\ \/ P(i) 
         \/ C(i) 
         \/ R(i)
@@ -169,6 +225,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 18 22:45:49 UYT 2020 by josedu
+\* Last modified Sun Sep 20 21:24:34 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -23,13 +23,6 @@ EXTENDS PCRBase, Bags
 
 LOCAL INSTANCE TLC
 
-InitCtx(input) == [in  |-> input,
-                   i_p |-> LowerBnd(input),
-                   v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-                   v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-                   ret |-> EmptyBag,
-                   ste |-> OFF]
-
 ----------------------------------------------------------------------------
 
 (* 
@@ -49,6 +42,28 @@ count(x, p, j) ==
 joinCounts(old, new) == old (+) new 
 
 ----------------------------------------------------------------------------
+   
+(* 
+   Producer bounds                 
+*)   
+                 
+LowerBnd(x) == 1
+UpperBnd(x) == Len(x[2])
+Step(j)     == j + 1  
+
+INSTANCE PCRIterationSpace WITH
+  LowerBnd  <- LowerBnd,
+  UpperBnd  <- UpperBnd,  
+  Step      <- Step
+
+InitCtx(x) == [in  |-> x,
+               i_p |-> LowerBnd(x),
+               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               ret |-> EmptyBag,
+               ste |-> "OFF"]
+
+----------------------------------------------------------------------------                 
                                                     
 (* 
    Producer action
@@ -60,10 +75,10 @@ joinCounts(old, new) == old (+) new
 *)
 P(i) == 
   \E j \in Iterator(i):
-    /\ ~ Written(v_p(i), j)           \* iterate over words
+    /\ ~ Written(v_p(i), j)
     /\ map' = [map EXCEPT 
          ![i].v_p[j] = [v |-> elem(in(i), v_p(i), j), r |-> 0] ]          
-\*    /\ PrintT("P" \o ToString(j) \o " : " \o ToString(v_p(i)[j].v'))   
+\*    /\ PrintT("P" \o ToString(i \o <<j>>) \o " : " \o ToString(v_p(i)[j].v'))   
 
 
 (* 
@@ -82,7 +97,7 @@ C(i) ==
     /\ map' = [map EXCEPT 
          ![i].v_p[j].r = @ + 1,
          ![i].v_c[j]   = [v |-> count(in(i), v_p(i), j), r |-> 0]]               
-\*    /\ PrintT("C" \o ToString(j) \o " : P" \o ToString(j) 
+\*    /\ PrintT("C" \o ToString(i \o <<j>>) \o " : P" \o ToString(j) 
 \*                  \o " con v=" \o ToString(v_p(i)[j].v))       
 
 (* 
@@ -99,15 +114,17 @@ R(i) ==
     /\ map' = [map EXCEPT 
          ![i].ret      = joinCounts(@, v_c(i)[j].v),
          ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) THEN END ELSE @]                                                                     
-\*    /\ IF CDone(i, j)
-\*       THEN PrintT("CL FIN: ret = " \o ToString(Out(i)'))
-\*       ELSE TRUE    
+         ![i].ste      = IF CDone(i, j) THEN "END" ELSE @]
+\*    /\ IF   CDone(i, j)
+\*       THEN PrintT("R" \o ToString(i \o <<j>>) 
+\*                       \o " : in= "  \o ToString(in(i))    
+\*                       \o " : ret= " \o ToString(Out(i)')) 
+\*       ELSE TRUE 
 
 Next(i) == 
-  \/ /\ State(i) = OFF 
+  \/ /\ State(i) = "OFF" 
      /\ Start(i)
-  \/ /\ State(i) = RUN
+  \/ /\ State(i) = "RUN"
      /\ \/ P(i) 
         \/ C(i) 
         \/ R(i)
@@ -115,6 +132,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 18:11:27 UYT 2020 by josedu
+\* Last modified Sun Sep 20 21:01:06 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

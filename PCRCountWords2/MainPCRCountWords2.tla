@@ -10,14 +10,11 @@ VARIABLES T, W, map1, map2
 
 ----------------------------------------------------------------------------
 
-NULL == CHOOSE x : x \notin Nat 
+NULL == CHOOSE x : x \notin Word 
 
 \* Instanciate first PCR with appropiate types
 PCR1 == INSTANCE PCRCountWords2 WITH 
   InType    <- InType1,
-  LowerBnd  <- LAMBDA x : 1,
-  UpperBnd  <- LAMBDA x : Len(x[1]),  
-  Step      <- LAMBDA x : x+1,  
   CtxIdType <- CtxIdType1,  
   IndexType <- IndexType1,
   VarPType  <- VarPType1,
@@ -29,9 +26,6 @@ PCR1 == INSTANCE PCRCountWords2 WITH
 \* Instanciate second PCR with appropiate types  
 PCR2 == INSTANCE PCRCountWordsInLine WITH
   InType    <- InType2,
-  LowerBnd  <- LAMBDA x : 1,
-  UpperBnd  <- LAMBDA x : Len(x[2]),  
-  Step      <- LAMBDA x : x+1,   
   CtxIdType <- CtxIdType2,
   IndexType <- IndexType2,
   VarPType  <- VarPType2,
@@ -104,8 +98,8 @@ Termination == <> PCR1!Finished(<<0>>)
 
 GTermination == [][ PCR1!Finished(<<0>>) <=> Done ]_vars
 
-\* This Spec is a more concrete implementation of PCRCountWords1!Spec.
-\* The following provides a refinement mapping to prove this fact.
+\* This Spec is an implementation of PCRCountWords1!Spec.
+\* The following def provides a refinement mapping to prove this fact.
 subst ==                        
   [i \in DOMAIN map1 |-> 
      IF map1[i] # NULL                               \* For any well-defined PCR1 context map1[i]
@@ -131,6 +125,6 @@ PCRCountWords1 == INSTANCE MainPCRCountWords1 WITH map <- subst
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 12 21:12:04 UYT 2020 by josedu
+\* Last modified Sun Sep 20 20:54:53 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

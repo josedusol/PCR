@@ -4,7 +4,7 @@
     <intAttribute key="collectCoverage" value="0"/>
     <stringAttribute key="configurationName" value="mc_all"/>
     <booleanAttribute key="deferLiveness" value="false"/>
-    <intAttribute key="dfidDepth" value="500"/>
+    <intAttribute key="dfidDepth" value="10000"/>
     <booleanAttribute key="dfidMode" value="false"/>
     <intAttribute key="distributedFPSetCount" value="0"/>
     <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
@@ -12,11 +12,11 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="54"/>
+    <intAttribute key="fpIndex" value="26"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
-    <intAttribute key="maxHeapSize" value="45"/>
+    <intAttribute key="maxHeapSize" value="60"/>
     <intAttribute key="maxSetSize" value="1000000"/>
-    <booleanAttribute key="mcMode" value="false"/>
+    <booleanAttribute key="mcMode" value="true"/>
     <stringAttribute key="modelBehaviorInit" value=""/>
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
@@ -28,31 +28,33 @@
         <listEntry value="0TypeInv"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
-        <listEntry value="0Termination"/>
-        <listEntry value="1Correctness"/>
+        <listEntry value="1Termination"/>
+        <listEntry value="0Correctness"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
     <stringAttribute key="modelParameterActionConstraint" value=""/>
     <listAttribute key="modelParameterConstants"/>
-    <stringAttribute key="modelParameterContraint" value="Len(B.sol) = 4"/>
+    <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
         <listEntry value="NULL;;NULL;1;0"/>
-        <listEntry value="Size;;NatMock1;0;0"/>
         <listEntry value="IndexType1;;NatMock2;0;0"/>
         <listEntry value="CtxIdType1;;UNION {[1..n -&gt; NatMock2] : n \in NatMock2};0;0"/>
+        <listEntry value="Nat;;NatMock2;0;0"/>
+        <listEntry value="Config;;UNION {[1..n -&gt; 0..N] : n \in Size};0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..4&#13;&#10;NatMock2 == 0..5"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 3&#13;&#10;Size == 1..3&#13;&#10;NatMock2 == 0..N+1"/>
     <intAttribute key="modelVersion" value="20191005"/>
-    <intAttribute key="numberOfWorkers" value="2"/>
+    <intAttribute key="numberOfWorkers" value="3"/>
     <booleanAttribute key="recover" value="false"/>
     <stringAttribute key="result.mail.address" value=""/>
     <intAttribute key="simuAril" value="-1"/>
-    <intAttribute key="simuDepth" value="500"/>
+    <intAttribute key="simuDepth" value="10000"/>
     <intAttribute key="simuSeed" value="-1"/>
     <stringAttribute key="specName" value="PCRNQueensAll"/>
     <stringAttribute key="tlcResourcesProfile" value="local custom"/>
+    <listAttribute key="traceExploreExpressions"/>
     <stringAttribute key="view" value=""/>
     <booleanAttribute key="visualizeStateGraph" value="false"/>
 </launchConfiguration>
