@@ -79,7 +79,7 @@ InitCtx(x) == [in  |-> x,
 P(i) == 
   \E j \in Iterator(i) : 
     /\ ~ Written(v_p(i), j)         
-    /\ map' = [map EXCEPT      \* iterate over lines
+    /\ map' = [map EXCEPT
          ![i].v_p[j] = [v |-> lines(in(i), v_p(i), j), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(i \o <<j>>) \o " : " \o ToString(v_p(i)[j].v'))                  
 
@@ -135,6 +135,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 22:38:21 UYT 2020 by josedu
+\* Last modified Sun Sep 20 23:05:47 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed
