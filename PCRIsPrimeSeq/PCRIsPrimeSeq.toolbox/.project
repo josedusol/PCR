@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>PCRIsPrimeSeq</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>toolbox.builder.TLAParserBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>toolbox.natures.TLANature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>MainPCRIsPrimeSeq.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/MainPCRIsPrimeSeq.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRIsPrimeSeq.tla</name>
+			<type>1</type>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRIsPrimeSeq/PCRIsPrimeSeq.tla</location>
+		</link>
+		<link>
+			<name>Theorems.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Theorems.tla</locationURI>
+		</link>
+		<link>
+			<name>Typedef.tla</name>
+			<type>1</type>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRIsPrimeSeq/Typedef.tla</location>
+		</link>
+	</linkedResources>
+</projectDescription>
