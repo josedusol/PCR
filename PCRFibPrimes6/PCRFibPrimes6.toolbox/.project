@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>PCRFibPrimes6</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>toolbox.builder.TLAParserBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>toolbox.natures.TLANature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>MainPCRFibPrimes6.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/MainPCRFibPrimes6.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRFibPrimes6.tla</name>
+			<type>1</type>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRFibPrimes6/PCRFibPrimes6.tla</location>
+		</link>
+		<link>
+			<name>Theorems.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Theorems.tla</locationURI>
+		</link>
+		<link>
+			<name>Typedef.tla</name>
+			<type>1</type>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRFibPrimes6/Typedef.tla</location>
+		</link>
+	</linkedResources>
+</projectDescription>
