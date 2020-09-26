@@ -32,7 +32,10 @@ Init == /\ N \in InType1
                       IF   i = <<0>> 
                       THEN PCR1!InitCtx(N)
                       ELSE NULL]                  
-                          
+
+(* 
+   PCR1 step at index I 
+*)                          
 Next1(i) == /\ map1[i] # NULL
             /\ PCR1!Next(i)
             /\ UNCHANGED N              
@@ -69,14 +72,14 @@ Termination == <> PCR1!Finished(<<0>>)
 \* This Spec is an implementation of PCRIsPrime!Spec.
 \* The following def provides a refinement mapping to prove this fact.
 subst ==                        
-  [i \in DOMAIN map1 |-> 
-     IF map1[i] # NULL       
-     THEN [map1[i] EXCEPT !.i_p = PCR1!LowerBnd(N)]
+  [I \in DOMAIN map1 |-> 
+     IF map1[I] # NULL       
+     THEN [map1[I] EXCEPT !.i_p = PCR1!LowerBnd(N)]
      ELSE NULL]     
               
 PCRIsPrime == INSTANCE MainPCRIsPrime WITH map1 <- subst
   
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 25 00:09:32 UYT 2020 by josedu
+\* Last modified Sat Sep 26 16:14:34 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

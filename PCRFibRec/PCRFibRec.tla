@@ -6,12 +6,12 @@
    ----------------------------------------------------------
      fun idProd, recursion, projectRed
      
-     fun idProd(N,p,j) = N
+     fun idProd(N,p,i) = N
      
-     fun recursion(N,p,j) =      \\ N = p[j]
-       if   p[j] < 2
+     fun recursion(N,p,i) =      \\ N = p[i]
+       if   p[i] < 2
        then 1
-       else FibRec(p[j]-1, p, j) + FibRec(p[j]-2, p, j)
+       else FibRec(p[i]-1, p, i) + FibRec(p[i]-2, p, i)
      
      fun projectRet(r1,r2) = r2 
      
@@ -37,7 +37,7 @@ LOCAL INSTANCE TLC
    Basic functions                     
 *)
 
-idProd(x, p, j) == x
+idProd(x, p, i) == x
 
 projectRed(r1, r2) == r2 
 
@@ -49,12 +49,18 @@ projectRed(r1, r2) == r2
 
 LowerBnd(x) == 0
 UpperBnd(x) == IF x < 2 THEN 0 ELSE 1
-Step(j)     == j + 1
+Step(i)     == i + 1
  
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
   Step      <- Step
+
+----------------------------------------------------------------------------
+
+(* 
+   Initial conditions        
+*)
                       
 InitCtx(x) == [in  |-> x,
                i_p |-> LowerBnd(x),
@@ -70,108 +76,108 @@ Pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  forall j \in Range(0,UpBnd,Step)
-            p[j] = idProd N               
+   FXML:  forall i \in Range(0,UpBnd,Step)
+            p[i] = idProd N               
    
    PCR:   p = produce idProd N
 *)
-P(i) == 
-  \E j \in Iterator(i) :
-    /\ ~ Written(v_p(i), j)
+P(I) == 
+  \E i \in Iterator(I) :
+    /\ ~ Written(v_p(I), i)
     /\ map' = [map EXCEPT 
-         ![i].v_p[j] = [v |-> idProd(in(i), v_p(i), j), r |-> 0]]         
-\*  /\ PrintT("P" \o ToString(i \o <<j>>) \o " : " \o ToString(v_p(i)[j].v'))  
+         ![I].v_p[i] = [v |-> idProd(in(I), v_p(I), i), r |-> 0]]         
+\*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))  
 
 (*
    Consumer non-recursive action
 *)
-C_base(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_p(i), j)
-    /\ ~ Read(v_p(i), j)
-    /\ ~ Written(v_c(i), j)
-    /\ v_p(i)[j].v < 2
+C_base(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_p(I), i)
+    /\ ~ Read(v_p(I), i)
+    /\ ~ Written(v_c(I), i)
+    /\ v_p(I)[i].v < 2
     /\ map' = [map EXCEPT 
-         ![i].v_p[j].r = @ + 1,
-         ![i].v_c[j]   = [v |-> 1, r |-> 0] ]               
-\*    /\ PrintT("C_base" \o ToString(j) \o " : P" \o ToString(j) 
-\*                       \o " con v=" \o ToString(v_p(i)[j].v))
+         ![I].v_p[i].r = @ + 1,
+         ![I].v_c[i]   = [v |-> 1, r |-> 0] ]               
+\*    /\ PrintT("C_base" \o ToString(i) \o " : P" \o ToString(i) 
+\*                       \o " con v=" \o ToString(v_p(I)[i].v))
 
 \*(*
 \*   Consumer recursive call action
 \**)
-\*C_call1(i) == 
-\*  \E j \in Iterator(i) :
-\*    /\ Written(v_p(i), j)
-\*    /\ ~ Read(v_p(i), j)
-\*    /\ ~ (v_p(i)[j].v < 2)
+\*C_call1(I) == 
+\*  \E j \in Iterator(I) :
+\*    /\ Written(v_p(I), j)
+\*    /\ ~ Read(v_p(I), j)
+\*    /\ ~ (v_p(I)[j].v < 2)
 \*\*    /\ j = 0
 \*    /\ map' = [map EXCEPT 
-\*         ![i].v_p[j].r  = 1,
-\*         ![i \o <<j>>]  = InitCtx(v_p(i)[j].v - 1) ]      
-\*\*    /\ PrintT("C_call1" \o ToString(i \o <<j>>) 
-\*\*                        \o " : in= " \o ToString(Out(i \o <<j>>)'))                                                                                                                                            
+\*         ![I].v_p[j].r  = 1,
+\*         ![I \o <<j>>]  = InitCtx(v_p(I)[j].v - 1) ]      
+\*\*    /\ PrintT("C_call1" \o ToString(I \o <<j>>) 
+\*\*                        \o " : in= " \o ToString(Out(I \o <<j>>)'))                                                                                                                                            
 \*
 \*(*
 \*   Consumer recursive call action
 \**)
-\*C_call2(i) == 
-\*  \E j \in Iterator(i) :
-\*    /\ Written(v_p(i), j)
-\*    /\ ~ Read(v_p(i), j)
-\*    /\ ~ (v_p(i)[j].v < 2)
+\*C_call2(I) == 
+\*  \E j \in Iterator(I) :
+\*    /\ Written(v_p(I), j)
+\*    /\ ~ Read(v_p(I), j)
+\*    /\ ~ (v_p(I)[j].v < 2)
 \*\*    /\ j = 1
 \*    /\ map' = [map EXCEPT 
-\*         ![i].v_p[j].r  = 1,
-\*         ![i \o <<j>>]  = InitCtx(v_p(i)[j].v - 2) ]      
-\*\*    /\ PrintT("C_call2" \o ToString(i \o <<j>>) 
-\*\*                        \o " : in= " \o ToString(Out(i \o <<j>>)'))
+\*         ![I].v_p[j].r  = 1,
+\*         ![I \o <<j>>]  = InitCtx(v_p(I)[j].v - 2) ]      
+\*\*    /\ PrintT("C_call2" \o ToString(I \o <<j>>) 
+\*\*                        \o " : in= " \o ToString(Out(I \o <<j>>)'))
 
 (*
    Consumer recursive call action
 *)
-C_call(i) == 
-  \E j1, j2 \in Iterator(i) :
-    /\ j1 # j2
-    /\ Written(v_p(i), j1)
-    /\ Written(v_p(i), j2)
-    /\ ~ Read(v_p(i), j1)
-    /\ ~ Read(v_p(i), j2)
-    /\ ~ (v_p(i)[j1].v < 2)
-    /\ ~ (v_p(i)[j2].v < 2)
+C_call(I) == 
+  \E i, j \in Iterator(I) :
+    /\ i # j
+    /\ Written(v_p(I), i)
+    /\ Written(v_p(I), j)
+    /\ ~ Read(v_p(I), i)
+    /\ ~ Read(v_p(I), j)
+    /\ ~ (v_p(I)[i].v < 2)
+    /\ ~ (v_p(I)[j].v < 2)
     /\ map' = [map EXCEPT 
-         ![i].v_p[j1].r  = 1,
-         ![i].v_p[j2].r  = 1,
-         ![i \o <<j1>>]  = InitCtx(v_p(i)[j1].v - 1),
-         ![i \o <<j2>>]  = InitCtx(v_p(i)[j2].v - 2)  ]      
-\*    /\ PrintT("C_call" \o ToString(i \o <<j1>>) 
-\*                       \o " : in= " \o ToString(Out(i \o <<j1>>)'))
+         ![I].v_p[i].r  = 1,
+         ![I].v_p[j].r  = 1,
+         ![I \o <<i>>]  = InitCtx(v_p(I)[i].v - 1),
+         ![I \o <<j>>]  = InitCtx(v_p(I)[j].v - 2)  ]      
+\*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
+\*                       \o " : in= " \o ToString(Out(I \o <<i>>)'))
 
 (*
    Consumer recursive end action
 *)
-C_ret(i) == 
-  \E j1, j2 \in Iterator(i) :
-     /\ j1 # j2 
-     /\ Read(v_p(i), j1)      
-     /\ Read(v_p(i), j2) 
-     /\ ~ Written(v_c(i), j1)
-     /\ ~ Written(v_c(i), j2)
-     /\ Finished(i \o <<j1>>)   
-     /\ Finished(i \o <<j2>>) 
+C_ret(I) == 
+  \E i, j \in Iterator(I) :
+     /\ i # j 
+     /\ Read(v_p(I), i)      
+     /\ Read(v_p(I), j) 
+     /\ ~ Written(v_c(I), i)
+     /\ ~ Written(v_c(I), j)
+     /\ Finished(I \o <<i>>)   
+     /\ Finished(I \o <<j>>) 
      /\ map' = [map EXCEPT 
-          ![i].v_c[j1]= [v |-> Out(i \o <<j1>>) + Out(i \o <<j2>>), r |-> 0],
-          ![i].v_c[j2]= [v |-> Out(i \o <<j1>>) + Out(i \o <<j2>>), r |-> 0]   ]  
-\*     /\ PrintT("C_ret" \o ToString(i \o <<j>>) 
-\*                       \o " : in= "  \o ToString(in(i \o <<j>>))    
-\*                       \o " : ret= " \o ToString(Out(i \o <<j>>)))                
+          ![I].v_c[i]= [v |-> Out(I \o <<i>>) + Out(I \o <<j>>), r |-> 0],
+          ![I].v_c[j]= [v |-> Out(I \o <<i>>) + Out(I \o <<j>>), r |-> 0]   ]  
+\*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
+\*                       \o " : in= "  \o ToString(in(I \o <<i>>))    
+\*                       \o " : ret= " \o ToString(Out(I \o <<i>>)))                
 
 (*
    Consumer action
 *)
-C(i) == \/ C_base(i)
-        \/ C_call(i) 
-        \/ C_ret(i)  
+C(I) == \/ C_base(I)
+        \/ C_call(I) 
+        \/ C_ret(I)  
 
 (* 
    Reducer action
@@ -180,31 +186,34 @@ C(i) == \/ C_base(i)
 
    PCR:   r = reduce projectRed 0 c
 *)
-R(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_c(i), j)    
-    /\ ~ Read(v_c(i), j)
+R(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_c(I), i)    
+    /\ ~ Read(v_c(I), i)
     /\ map' = [map EXCEPT 
-         ![i].ret      = projectRed(@, v_c(i)[j].v),
-         ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) THEN "END" ELSE @]
-\*    /\ IF   CDone(i, j)
-\*       THEN PrintT("R" \o ToString(i \o <<j>>) 
-\*                       \o " : in= "  \o ToString(in(i))    
-\*                       \o " : ret= " \o ToString(Out(i)')) 
+         ![I].ret      = projectRed(@, v_c(I)[i].v),
+         ![I].v_c[i].r = @ + 1,
+         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]
+\*    /\ IF   CDone(I, i)
+\*       THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                       \o " : in= "  \o ToString(in(I))    
+\*                       \o " : ret= " \o ToString(Out(I)')) 
 \*       ELSE TRUE    
-     
-Next(i) == 
-  \/ /\ State(i) = "OFF"
-     /\ Start(i)
-  \/ /\ State(i) = "RUN"
-     /\ \/ P(i) 
-        \/ C(i) 
-        \/ R(i)
-        \/ Quit(i)      
+
+(* 
+   PCR FibRec step at index I 
+*)     
+Next(I) == 
+  \/ /\ State(I) = "OFF"
+     /\ Start(I)
+  \/ /\ State(I) = "RUN"
+     /\ \/ P(I) 
+        \/ C(I) 
+        \/ R(I)
+        \/ Quit(I)      
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Sep 24 13:50:23 UYT 2020 by josedu
+\* Last modified Sat Sep 26 16:05:30 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

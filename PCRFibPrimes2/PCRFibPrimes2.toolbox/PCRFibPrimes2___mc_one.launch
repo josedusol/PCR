@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="107"/>
+    <intAttribute key="fpIndex" value="59"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -29,8 +29,8 @@
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="1Correctness"/>
-        <listEntry value="0PCRFibPrimes1!Spec"/>
+        <listEntry value="0Correctness"/>
+        <listEntry value="1PCRFibPrimes1!Spec"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
@@ -43,9 +43,7 @@
         <listEntry value="IndexType2;;IndexMock2;0;0"/>
         <listEntry value="InType1;;Input;0;0"/>
         <listEntry value="CtxIdType2;;{&lt;&lt;0,i&gt;&gt; : i \in 0..N };0;0"/>
-        <listEntry value="PCR1!IndexType1;;IndexMock1;0;0"/>
         <listEntry value="CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
-        <listEntry value="PCR1!CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
         <listEntry value="NULL;;NULL;1;0"/>
         <listEntry value="PCRFibPrimes1!NULL;;NULL;0;0"/>
     </listAttribute>

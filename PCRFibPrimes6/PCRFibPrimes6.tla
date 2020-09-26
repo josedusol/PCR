@@ -61,12 +61,18 @@ isPrime == INSTANCE PCRIsPrime WITH
 
 LowerBnd(x) == 0
 UpperBnd(x) == x
-Step(j)     == j + 1  
+Step(i)     == i + 1  
 
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
   Step      <- Step
+
+----------------------------------------------------------------------------
+
+(* 
+   Initial conditions        
+*)
 
 InitCtx(x) == [in  |-> x,
                i_p |-> LowerBnd(x),
@@ -82,65 +88,65 @@ Pre(x) == TRUE
 (*
    Producer call action
 *)
-P_call(i) == 
-  /\ Bound(i) 
-  /\ ~ fib!WellDef(i \o <<i_p(i)>>)
-  /\ map2' = [map2 EXCEPT ![i \o <<i_p(i)>>] = fib!InitCtx(i_p(i))]              
-\*  /\ PrintT("P_call" \o ToString(i \o <<i_p(i)>>) 
-\*                     \o " : in= " \o ToString(i_p(i)))
+P_call(I) == 
+  /\ Bound(I) 
+  /\ ~ fib!WellDef(I \o <<i_p(I)>>)
+  /\ map2' = [map2 EXCEPT ![I \o <<i_p(I)>>] = fib!InitCtx(i_p(I))]              
+\*  /\ PrintT("P_call" \o ToString(I \o <<i_p(I)>>) 
+\*                     \o " : in= " \o ToString(i_p(I)))
 
 (*
    Producer ret action
 *)
-P_ret(i) == 
-  /\ ~ Written(v_p(i), i_p(i))
-  /\ fib!WellDef(i \o <<i_p(i)>>)
-  /\ fib!Finished(i \o <<i_p(i)>>)
+P_ret(I) == 
+  /\ ~ Written(v_p(I), i_p(I))
+  /\ fib!WellDef(I \o <<i_p(I)>>)
+  /\ fib!Finished(I \o <<i_p(I)>>)
   /\ map' = [map EXCEPT 
-       ![i].i_p         = Step(@),
-       ![i].v_p[i_p(i)] = [v |-> fib!Out(i \o <<i_p(i)>>), r |-> 0]]
-\*  /\ PrintT("P_ret" \o ToString(i \o <<i_p(i)>>) 
-\*                    \o " : in= "  \o ToString(fib!in(i \o <<i_p(i)>>))    
-\*                    \o " : ret= " \o ToString(fib!Out(i \o <<i_p(i)>>)))
+       ![I].i_p         = Step(@),
+       ![I].v_p[i_p(I)] = [v |-> fib!Out(I \o <<i_p(I)>>), r |-> 0]]
+\*  /\ PrintT("P_ret" \o ToString(I \o <<i_p(I)>>) 
+\*                    \o " : in= "  \o ToString(fib!in(I \o <<i_p(I)>>))    
+\*                    \o " : ret= " \o ToString(fib!Out(I \o <<i_p(I)>>)))
 
 (*
    Producer action
 *)
-P(i) == \/ P_call(i) /\ UNCHANGED <<map,map3>>
-        \/ P_ret(i)  /\ UNCHANGED <<map2,map3>> 
+P(I) == \/ P_call(I) /\ UNCHANGED <<map,map3>>
+        \/ P_ret(I)  /\ UNCHANGED <<map2,map3>> 
 
 (*
    Consumer call action
 *)
-C_call(i) == 
-  \E j \in Iterator(i):
-    /\ Written(v_p(i), j)
-    /\ ~ Read(v_p(i), j)
-    /\ map'  = [map  EXCEPT ![i].v_p[j].r = 1] 
+C_call(I) == 
+  \E i \in Iterator(I):
+    /\ Written(v_p(I), i)
+    /\ ~ Read(v_p(I), i)
+    /\ map'  = [map  EXCEPT ![I].v_p[i].r = 1] 
     /\ map3' = [map3 EXCEPT 
-         ![i \o <<j>>] = isPrime!InitCtx(v_p(i)[j].v)]    
-\*    /\ PrintT("C_call" \o ToString(i \o <<j>>) 
-\*                       \o " : in= " \o ToString(v_p(i)[j].v))                                                                                                                                            
+         ![I \o <<i>>] = isPrime!InitCtx(v_p(I)[i].v)]    
+\*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
+\*                       \o " : in= " \o ToString(v_p(I)[i].v))                                                                                                                                            
 
 (*
    Consumer end action
 *)
-C_ret(i) == 
-  \E j \in Iterator(i) :
-     /\ Read(v_p(i), j)       
-     /\ ~ Written(v_c(i), j)
-     /\ isPrime!Finished(i \o <<j>>)   
+C_ret(I) == 
+  \E i \in Iterator(I) :
+     /\ Read(v_p(I), i)       
+     /\ ~ Written(v_c(I), i)
+     /\ isPrime!Finished(I \o <<i>>)   
      /\ map' = [map EXCEPT 
-          ![i].v_c[j]= [v |-> isPrime!Out(i \o <<j>>), r |-> 0]]  
-\*     /\ PrintT("C_ret" \o ToString(i \o <<j>>) 
-\*                       \o " : in= "  \o ToString(isPrime!in(i \o <<j>>))    
-\*                       \o " : ret= " \o ToString(isPrime!Out(i \o <<j>>)))
+          ![I].v_c[i]= [v |-> isPrime!Out(I \o <<i>>), r |-> 0]]  
+\*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
+\*                       \o " : in= "  \o ToString(isPrime!in(I \o <<i>>))    
+\*                       \o " : ret= " \o ToString(isPrime!Out(I \o <<i>>)))
 
 (*
    Consumer action
 *)
-C(i) == \/ C_call(i) /\ UNCHANGED map2
-        \/ C_ret(i)  /\ UNCHANGED <<map2,map3>>   
+C(I) == \/ C_call(I) /\ UNCHANGED map2
+        \/ C_ret(I)  /\ UNCHANGED <<map2,map3>>   
 
 (* 
    Reducer action
@@ -149,33 +155,35 @@ C(i) == \/ C_call(i) /\ UNCHANGED map2
 
    PCR:   r = reduce sum 0 c
 *)
-R(i) == 
-  \E j \in Iterator(i) :
-     /\ Written(v_c(i), j)  
-     /\ ~ Read(v_c(i), j)
+R(I) == 
+  \E i \in Iterator(I) :
+     /\ Written(v_c(I), i)  
+     /\ ~ Read(v_c(I), i)
      /\ map' = [map EXCEPT 
-          ![i].ret      = sum(@, v_c(i)[j].v),
-          ![i].v_c[j].r = @ + 1,
-          ![i].ste      = IF CDone(i, j) THEN "END" ELSE @] 
+          ![I].ret      = sum(@, v_c(I)[i].v),
+          ![I].v_c[i].r = @ + 1,
+          ![I].ste      = IF CDone(I, i) THEN "END" ELSE @] 
 \*    /\ IF   CDone(i, j)
-\*       THEN PrintT("FP6 R" \o ToString(i \o <<j>>) 
-\*                           \o " : in= "  \o ToString(in(i))    
-\*                           \o " : ret= " \o ToString(Out(i)')) 
+\*       THEN PrintT("FP6 R" \o ToString(I \o <<j>>) 
+\*                           \o " : in= "  \o ToString(in(I))    
+\*                           \o " : ret= " \o ToString(Out(I)')) 
 \*       ELSE TRUE 
 
-
-Next(i) == 
-  \/ /\ State(i) = "OFF" 
-     /\ Start(i)   
+(* 
+   PCR FibPrimes6 step at index I 
+*)
+Next(I) == 
+  \/ /\ State(I) = "OFF" 
+     /\ Start(I)   
      /\ UNCHANGED <<map2,map3>>
-  \/ /\ State(i) = "RUN" 
-     /\ \/ P(i)
-        \/ C(i)
-        \/ R(i)    /\ UNCHANGED <<map2,map3>>
-        \/ Quit(i) /\ UNCHANGED <<map2,map3>>           
+  \/ /\ State(I) = "RUN" 
+     /\ \/ P(I)
+        \/ C(I)
+        \/ R(I)    /\ UNCHANGED <<map2,map3>>
+        \/ Quit(I) /\ UNCHANGED <<map2,map3>>           
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 25 14:32:50 UYT 2020 by josedu
+\* Last modified Sat Sep 26 16:05:17 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

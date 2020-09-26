@@ -10,7 +10,7 @@
      ubnd fib = lambda x. x
      step fib = lambda x. x + 1
    
-     fun fib(N, p, j) = if j < 2 then 1 else p[j-1] + p[j-2]
+     fun fib(N,p,i) = if i < 2 then 1 else p[i-1] + p[i-2]
      fun sum(r1,r2) = r1 + (if r2 then 1 else 0)
    
      PCR FibPrimes1(N):
@@ -34,8 +34,8 @@ LOCAL INSTANCE TLC
 
 fib(x, p, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
 
-isPrime(x, p, j) ==
-  LET n == p[j].v
+isPrime(x, p, i) ==
+  LET n == p[i].v
       F[d \in Nat] ==
         IF d < 2
         THEN n > 1
@@ -52,12 +52,18 @@ sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)
 
 LowerBnd(x) == 0
 UpperBnd(x) == x
-Step(j)     == j + 1  
+Step(i)     == i + 1  
 
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
   Step      <- Step
+
+----------------------------------------------------------------------------
+
+(* 
+   Initial conditions        
+*)
 
 InitCtx(x) == [in  |-> x,
                i_p |-> LowerBnd(x),
@@ -73,36 +79,36 @@ Pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  for (j=LowerBnd(N); j < UpperBnd(N); Step(j))
-            p[j] = fib N            
+   FXML:  for (i=LowerBnd(N); i < UpperBnd(N); Step(i))
+            p[i] = fib N            
    
    PCR:   p = produceSeq fib N                              
 *)
-P(i) == 
-  /\ Bound(i) 
+P(I) == 
+  /\ Bound(I) 
   /\ map' = [map EXCEPT 
-       ![i].v_p[i_p(i)] = [v |-> fib(in(i), v_p(i), i_p(i)), r |-> 0],
-       ![i].i_p         = Step(@)]         
-\*  /\ PrintT("P" \o ToString(i \o <<i_p(i)>>) \o " : " \o ToString(v_p(i)[i_p(i)].v'))                  
+       ![I].v_p[i_p(I)] = [v |-> fib(in(I), v_p(I), i_p(I)), r |-> 0],
+       ![I].i_p         = Step(@)]         
+\*  /\ PrintT("P" \o ToString(I \o <<i_p(I)>>) \o " : " \o ToString(v_p(I)[i_p(I)].v'))                  
 
 (* 
    Consumer action
    
-   FXML:  forall j \in Dom(p)
-            c[j] = isPrime N p[j]
+   FXML:  forall i \in Dom(p)
+            c[i] = isPrime N p[i]
 
    PCR:   c = consume isPrime N p
 *)
-C(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_p(i), j)
-    /\ ~ Read(v_p(i), j)
-    /\ ~ Written(v_c(i), j)
+C(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_p(I), i)
+    /\ ~ Read(v_p(I), i)
+    /\ ~ Written(v_c(I), i)
     /\ map' = [map EXCEPT 
-         ![i].v_p[j].r = 1, 
-         ![i].v_c[j]   = [v |-> isPrime(in(i), v_p(i), j), r |-> 0]]                         
-\*    /\ PrintT("C" \o ToString(i \o <<j>>) \o " : P" \o ToString(j) 
-\*                  \o " con v=" \o ToString(v_p(i)[j].v))    
+         ![I].v_p[i].r = 1, 
+         ![I].v_c[i]   = [v |-> isPrime(in(I), v_p(I), i), r |-> 0]]                         
+\*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
+\*                  \o " con v=" \o ToString(v_p(I)[i].v))    
  
 (* 
    Reducer action
@@ -111,31 +117,34 @@ C(i) ==
    
    PCR:   r = reduce sum 0 c
 *)
-R(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_c(i), j)
-    /\ ~ Read(v_c(i), j)
+R(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_c(I), i)
+    /\ ~ Read(v_c(I), i)
     /\ map' = [map EXCEPT 
-         ![i].ret      = sum(@, v_c(i)[j].v),
-         ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) THEN "END" ELSE @]                                                                            
-\*    /\ IF   CDone(i, j)
-\*       THEN PrintT("FP1 R" \o ToString(i \o <<j>>) 
-\*                           \o " : in= "  \o ToString(in(i))    
-\*                           \o " : ret= " \o ToString(Out(i)')) 
+         ![I].ret      = sum(@, v_c(I)[i].v),
+         ![I].v_c[i].r = @ + 1,
+         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]                                                                            
+\*    /\ IF   CDone(I, i)
+\*       THEN PrintT("FP1 R" \o ToString(I \o <<i>>) 
+\*                           \o " : in= "  \o ToString(in(I))    
+\*                           \o " : ret= " \o ToString(Out(I)')) 
 \*       ELSE TRUE           
 
-Next(i) == 
-  \/ /\ State(i) = "OFF" 
-     /\ Start(i)
-  \/ /\ State(i) = "RUN"  
-     /\ \/ P(i) 
-        \/ C(i) 
-        \/ R(i)
-        \/ Quit(i)
+(* 
+   PCR FibPrimes1 step at index I 
+*)
+Next(I) == 
+  \/ /\ State(I) = "OFF" 
+     /\ Start(I)
+  \/ /\ State(I) = "RUN"  
+     /\ \/ P(I) 
+        \/ C(I) 
+        \/ R(I)
+        \/ Quit(I)
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 23 23:51:35 UYT 2020 by josedu
+\* Last modified Sat Sep 26 16:03:23 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

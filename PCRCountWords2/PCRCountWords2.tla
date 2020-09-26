@@ -31,9 +31,9 @@ VARIABLES map2
    Basic functions                         
 *)
 
-lines(x, p, j) == x[1][j]
+lines(x, p, i) == x[1][i]
 
-joinCounts(old, new) == old (+) new  
+joinCounts(r1, r2) == r1 (+) r2  
  
 countWordsInLine == INSTANCE PCRCountWordsInLine WITH
   InType    <- InType2,
@@ -52,12 +52,18 @@ countWordsInLine == INSTANCE PCRCountWordsInLine WITH
 
 LowerBnd(x) == 1
 UpperBnd(x) == Len(x[1])
-Step(j)     == j + 1  
+Step(i)     == i + 1  
 
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
   Step      <- Step
+
+----------------------------------------------------------------------------
+
+(* 
+   Initial conditions        
+*)
 
 InitCtx(x) == [in  |-> x,
                i_p |-> LowerBnd(x),
@@ -78,44 +84,44 @@ Pre(x) == TRUE
    
    PCR:   p = produce lines T                              
 *)
-P(i) == 
-  \E j \in Iterator(i) :
-    /\ ~ Written(v_p(i), j)             
+P(I) == 
+  \E i \in Iterator(I) :
+    /\ ~ Written(v_p(I), i)             
     /\ map' = [map EXCEPT
-         ![i].v_p[j] = [v |-> lines(in(i), v_p(i), j), r |-> 0] ]          
-\*    /\ PrintT("P" \o ToString(i \o <<j>>) \o " : " \o ToString(v_p(i)[j].v'))   
+         ![I].v_p[i] = [v |-> lines(in(I), v_p(I), i), r |-> 0] ]          
+\*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))   
 
 (* 
   Consumer call action 
 *)
-C_call(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_p(i), j)
-    /\ ~ Read(v_p(i), j)
-    /\ map'  = [map  EXCEPT ![i].v_p[j].r = 1] 
+C_call(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_p(I), i)
+    /\ ~ Read(v_p(I), i)
+    /\ map'  = [map  EXCEPT ![I].v_p[i].r = 1] 
     /\ map2' = [map2 EXCEPT 
-         ![i \o <<j>>]= countWordsInLine!InitCtx(<<v_p(i)[j].v, In2(i)>>)]    
-\*    /\ PrintT("C_call" \o ToString(i \o <<j>>) 
-\*                       \o " : in= " \o ToString(v_p(i)[j].v))                                                                                                                                            
+         ![I \o <<i>>]= countWordsInLine!InitCtx(<<v_p(I)[i].v, In2(I)>>)]    
+\*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
+\*                       \o " : in= " \o ToString(v_p(I)[i].v))                                                                                                                                            
 
 (* 
   Consumer end action 
 *)
-C_ret(i) == 
-  \E j \in Iterator(i) :
-    /\ Read(v_p(i), j)       
-    /\ ~ Written(v_c(i), j)
-    /\ countWordsInLine!Finished(i \o <<j>>)   
+C_ret(I) == 
+  \E i \in Iterator(I) :
+    /\ Read(v_p(I), i)       
+    /\ ~ Written(v_c(I), i)
+    /\ countWordsInLine!Finished(I \o <<i>>)   
     /\ map' = [map EXCEPT 
-         ![i].v_c[j]= [v |-> countWordsInLine!Out(i \o <<j>>), r |-> 0] ]  
-\*    /\ PrintT("C_ret" \o ToString(i \o <<j>>) 
-\*                      \o " : in= "  \o ToString(countWordsInLine!in(i \o <<j>>))    
-\*                      \o " : ret= " \o ToString(countWordsInLine!Out(i \o <<j>>)))
+         ![I].v_c[i]= [v |-> countWordsInLine!Out(I \o <<i>>), r |-> 0] ]  
+\*    /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
+\*                      \o " : in= "  \o ToString(countWordsInLine!in(I \o <<i>>))    
+\*                      \o " : ret= " \o ToString(countWordsInLine!Out(I \o <<i>>)))
 (* 
   Consumer action 
 *)
-C(i) == \/ C_call(i) 
-        \/ C_ret(i) /\ UNCHANGED map2    
+C(I) == \/ C_call(I) 
+        \/ C_ret(I) /\ UNCHANGED map2    
 
 (* 
    Reducer action
@@ -124,33 +130,36 @@ C(i) == \/ C_call(i)
 
    PCR:   r = reduce joinCounts {} c
 *)
-R(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_c(i), j)  
-    /\ ~ Read(v_c(i), j)
+R(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_c(I), i)  
+    /\ ~ Read(v_c(I), i)
     /\ map' = [map EXCEPT 
-         ![i].ret      = joinCounts(@, v_c(i)[j].v),
-         ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) THEN "END" ELSE @]
-\*    /\ IF   CDone(i, j)
-\*       THEN PrintT("CW2 R" \o ToString(i \o <<j>>) 
-\*                           \o " : in1= " \o ToString(In1(i))    
-\*                           \o " : in2= " \o ToString(In2(i))
-\*                           \o " : ret= " \o ToString(Out(i)')) 
+         ![I].ret      = joinCounts(@, v_c(I)[i].v),
+         ![I].v_c[i].r = @ + 1,
+         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]
+\*    /\ IF   CDone(I, i)
+\*       THEN PrintT("CW2 R" \o ToString(I \o <<i>>) 
+\*                           \o " : in1= " \o ToString(In1(I))    
+\*                           \o " : in2= " \o ToString(In2(I))
+\*                           \o " : ret= " \o ToString(Out(I)')) 
 \*       ELSE TRUE 
 
-Next(i) == 
-  \/ /\ State(i) = "OFF" 
-     /\ Start(i)   
+(* 
+   PCR CountWords2 step at index I 
+*)
+Next(I) == 
+  \/ /\ State(I) = "OFF" 
+     /\ Start(I)   
      /\ UNCHANGED map2
-  \/ /\ State(i) = "RUN" 
-     /\ \/ P(i)    /\ UNCHANGED map2
-        \/ C(i)  
-        \/ R(i)    /\ UNCHANGED map2
-        \/ Quit(i) /\ UNCHANGED map2  
+  \/ /\ State(I) = "RUN" 
+     /\ \/ P(I)    /\ UNCHANGED map2
+        \/ C(I)  
+        \/ R(I)    /\ UNCHANGED map2
+        \/ Quit(I) /\ UNCHANGED map2  
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 23 19:07:53 UYT 2020 by josedu
+\* Last modified Sat Sep 26 16:02:50 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

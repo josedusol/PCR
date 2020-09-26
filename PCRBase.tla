@@ -30,31 +30,33 @@ CtxType == [in  : InType   ,   \* input
             ret : VarRType,    \* reducer result
             ste : States]      \* discrete state     
 
-\* PCR context map. Root context is <<0>>. 
+\* PCR context map. Root context is indexed at <<0>>. 
 CtxMap   == [CtxIdType -> CtxType \union {NULL}] 
-CtxIndex == {i \in CtxIdType : map[i] # NULL}
+CtxIndex == {I \in CtxIdType : map[I] # NULL}
 
 \* Convenient names for context elements            
-in(i)  == map[i].in
-i_p(i) == map[i].i_p
-v_p(i) == map[i].v_p
-v_c(i) == map[i].v_c
-In1(i) == in(i)[1]
-In2(i) == in(i)[2] 
-In3(i) == in(i)[3]
+in(I)    == map[I].in
+i_p(I)   == map[I].i_p
+v_p(I)   == map[I].v_p
+v_c(I)   == map[I].v_c
+Out(I)   == map[I].ret 
+State(I) == map[I].ste
+In1(I)   == in(I)[1]
+In2(I)   == in(I)[2] 
+In3(I)   == in(I)[3]
                       
-\* Useful predicates 
-Written(var, j) == var[j].v # NULL
-Read(var, j)    == var[j].r > 0         
-WellDef(i)      == map[i] # NULL
-Off(i)          == map[i].ste = "OFF"
-Running(i)      == map[i].ste = "RUN"
-Finished(i)     == map[i].ste = "END"
-State(i)        == map[i].ste
-Out(i)          == map[i].ret    
+\* Useful predicates on indexes   
+WellDef(I)  == map[I] # NULL
+Off(I)      == map[I].ste = "OFF"
+Running(I)  == map[I].ste = "RUN"
+Finished(I) == map[I].ste = "END"
+   
+\* Useful predicates on vars
+Written(var, i) == var[i].v # NULL
+Read(var, i)    == var[i].r > 0       
    
 \* Start action         
-Start(i) == map' = [map EXCEPT ![i].ste = "RUN"]      
+Start(I) == map' = [map EXCEPT ![I].ste = "RUN"]      
              
 \* Auxiliary operators over functions/records
 Updf(f, x, v) == [f EXCEPT ![x] = v]
@@ -63,7 +65,7 @@ ExtR(r, s)    == [k \in DOMAIN r |-> IF k \in DOMAIN s THEN s[k] ELSE r[k]]
                
 =============================================================================
 \* Modification History
-\* Last modified Thu Sep 24 01:50:09 UYT 2020 by josedu
+\* Last modified Sat Sep 26 00:49:09 UYT 2020 by josedu
 \* Last modified Mon Jul 06 15:51:49 UYT 2020 by josed
 \* Last modified Tue Jun 09 12:24:42 GMT-03:00 2020 by JosEdu
 \* Created Mon Jun 08 22:50:44 GMT-03:00 2020 by JosEdu

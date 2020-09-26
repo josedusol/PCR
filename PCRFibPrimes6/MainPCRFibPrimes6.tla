@@ -51,44 +51,44 @@ vars == <<N,map1,map2,map3>>
 
 Init == /\ N \in InType1
         /\ PCR1!Pre(N)
-        /\ map1 = [i \in CtxIdType1 |-> 
-                     IF   i = <<0>> 
+        /\ map1 = [I \in CtxIdType1 |-> 
+                     IF   I = <<0>> 
                      THEN PCR1!InitCtx(N)
                      ELSE NULL]
-        /\ map2 = [i \in CtxIdType2 |-> NULL]
-        /\ map3 = [i \in CtxIdType3 |-> NULL]
+        /\ map2 = [I \in CtxIdType2 |-> NULL]
+        /\ map3 = [I \in CtxIdType3 |-> NULL]
 
-(* PCR1 Step *)                  
-Next1(i) == /\ map1[i] # NULL
-            /\ PCR1!Next(i)
+(* PCR1 step at index I *)              
+Next1(I) == /\ map1[I] # NULL
+            /\ PCR1!Next(I)
             /\ UNCHANGED N             
 
-(* PCR2 Step *)   
-Next2(i) == /\ map2[i] # NULL
-            /\ PCR2!Next(i)
+(* PCR2 step at index I *) 
+Next2(I) == /\ map2[I] # NULL
+            /\ PCR2!Next(I)
             /\ UNCHANGED <<N,map1,map3>> 
             
-(* PCR3 Step *)   
-Next3(i) == /\ map3[i] # NULL
-            /\ PCR3!Next(i)
+(* PCR3 step at index I *)
+Next3(I) == /\ map3[I] # NULL
+            /\ PCR3!Next(I)
             /\ UNCHANGED <<N,map1,map2>>             
 
-Done == /\ \A i \in PCR1!CtxIndex : PCR1!Finished(i)
-        /\ \A i \in PCR2!CtxIndex : PCR2!Finished(i)
-        /\ \A i \in PCR3!CtxIndex : PCR3!Finished(i)
+Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
+        /\ \A I \in PCR2!CtxIndex : PCR2!Finished(I)
+        /\ \A I \in PCR3!CtxIndex : PCR3!Finished(I)
         /\ UNCHANGED vars
 
-Next == \/ \E i \in CtxIdType1 : Next1(i)
-        \/ \E i \in CtxIdType2 : Next2(i)
-        \/ \E i \in CtxIdType3 : Next3(i)
+Next == \/ \E I \in CtxIdType1 : Next1(I)
+        \/ \E I \in CtxIdType2 : Next2(I)
+        \/ \E I \in CtxIdType3 : Next3(I)
         \/ Done
               
 Spec == Init /\ [][Next]_vars
 
 FairSpec == /\ Spec        
-            /\ \A i \in CtxIdType1 : WF_vars(Next1(i))
-            /\ \A i \in CtxIdType2 : WF_vars(Next2(i))       
-            /\ \A i \in CtxIdType3 : WF_vars(Next3(i))             
+            /\ \A I \in CtxIdType1 : WF_vars(Next1(I))
+            /\ \A I \in CtxIdType2 : WF_vars(Next2(I))       
+            /\ \A I \in CtxIdType3 : WF_vars(Next3(I))             
 
 ----------------------------------------------------------------------------
 
@@ -121,26 +121,26 @@ GTermination == [][ PCR1!Finished(<<0>>) <=> Done ]_vars
 \* This Spec is an implementation of PCRFibPrimes1!Spec.
 \* The following def provides a refinement mapping to prove this fact.
 subst ==                        
-  [i \in DOMAIN map1 |-> 
-     IF map1[i] # NULL                                   \* For any well-defined PCR1 context with index i
-     THEN [map1[i] EXCEPT                                 
-       !.v_p= [j \in DOMAIN @ |->                        \* For any producer var v_p[j]
-                 IF @[j].r > 0                           \* If has been read
-                 THEN IF PCR3!Finished(i \o <<j>>)       \*   and C_ret(i \o <j>) holds (PCR2 finished at i\o<j>)
-                      THEN [v |-> @[j].v, r |-> 1]       \*   then producer var is marked as read
-                      ELSE [v |-> @[j].v, r |-> 0]       \*   else we pretend is still unread.
-                 ELSE IF /\ @[j].v # NULL                \* else if is non-null
-                         /\ PCR2!Finished(i \o <<j>>)    \*   is non-null and P_ret(i \o <<j>>) holds (PCR2 finished at i\o<j>)
-                      THEN [v |-> PCR2!Out(i \o <<j>>),  \*   then producer var gets result computed by PCR2
+  [I \in DOMAIN map1 |-> 
+     IF map1[I] # NULL                                   \* For any well-defined PCR1 context with index I
+     THEN [map1[I] EXCEPT                                 
+       !.v_p= [i \in DOMAIN @ |->                        \* For any producer var v_p[i]
+                 IF @[i].r > 0                           \* If has been read
+                 THEN IF PCR3!Finished(I \o <<i>>)       \*   and C_ret(I \o <i>) holds (PCR2 finished at I\o<i>)
+                      THEN [v |-> @[i].v, r |-> 1]       \*   then producer var is marked as read
+                      ELSE [v |-> @[i].v, r |-> 0]       \*   else we pretend is still unread.
+                 ELSE IF /\ @[i].v # NULL                \* else if is non-null
+                         /\ PCR2!Finished(I \o <<i>>)    \*   is non-null and P_ret(I \o <i>) holds (PCR2 finished at I \o <i>)
+                      THEN [v |-> PCR2!Out(I \o <<i>>),  \*   then producer var gets result computed by PCR2
                             r |-> 0]                        
-                      ELSE @[j]                          \* otherwise leave it as is.    
+                      ELSE @[i]                          \* otherwise leave it as is.    
               ],
-       !.v_c= [j \in DOMAIN @ |->                        \* For any consumer var v_c[j]
-                 IF /\ PCR1!Read(map1[i].v_p, j)         \* for which corresponding v_p[j] has been read
-                    /\ PCR3!Finished(i \o <<j>>)         \* and C_ret(i \o <<j>>) holds (PCR2 finished at i\o<j>)
-                 THEN [v |-> PCR3!Out(i \o <<j>>),       \* then consumer var gets result computed by PCR2
-                       r |-> @[j].r]                 
-                 ELSE @[j]                               \* else leave it as is.
+       !.v_c= [i \in DOMAIN @ |->                        \* For any consumer var v_c[i]
+                 IF /\ PCR1!Read(map1[I].v_p, i)         \* for which corresponding v_p[i] has been read
+                    /\ PCR3!Finished(I \o <<i>>)         \* and C_ret(I \o <i>) holds (PCR2 finished at I \o <i>)
+                 THEN [v |-> PCR3!Out(I \o <<i>>),       \* then consumer var gets result computed by PCR2
+                       r |-> @[i].r]                 
+                 ELSE @[i]                               \* else leave it as is.
               ]              
           ]
      ELSE NULL]     
@@ -149,6 +149,6 @@ PCRFibPrimes1 == INSTANCE MainPCRFibPrimes1 WITH map1 <- subst
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 25 23:34:43 UYT 2020 by josedu
+\* Last modified Sat Sep 26 15:32:47 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

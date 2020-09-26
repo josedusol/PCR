@@ -28,26 +28,26 @@ vars == <<L,map>>
 
 Init == /\ L \in InType1  
         /\ PCR1!Pre(L)
-        /\ map = [i \in CtxIdType1 |-> 
-                     IF   i = <<0>> 
+        /\ map = [I \in CtxIdType1 |-> 
+                     IF   I = <<0>> 
                      THEN PCR1!InitCtx(L)
                      ELSE NULL]                            
 
-(* PCR1 Step *)                                                  
-Next1(i) == /\ map[i] # NULL
-            /\ PCR1!Next(i)
+(* PCR1 step at index I *)                                                  
+Next1(I) == /\ map[I] # NULL
+            /\ PCR1!Next(I)
             /\ UNCHANGED L    
 
-Done == /\ \A i \in PCR1!CtxIndex : PCR1!Finished(i)
+Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
         /\ UNCHANGED vars                 
 
-Next == \/ \E i \in CtxIdType1 : Next1(i)
+Next == \/ \E I \in CtxIdType1 : Next1(I)
         \/ Done
               
 Spec == Init /\ [][Next]_vars
 
 FairSpec == /\ Spec            
-            /\ \A s \in CtxIdType1 : WF_vars(Next1(s))
+            /\ \A I \in CtxIdType1 : WF_vars(Next1(I))
             
 ----------------------------------------------------------------------------
 
@@ -68,6 +68,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 23 19:03:40 UYT 2020 by josedu
+\* Last modified Sat Sep 26 16:16:40 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

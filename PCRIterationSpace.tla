@@ -30,18 +30,18 @@ range(start, end, step(_)) ==
   IN  F[start]  
 
 \* Any PCR have an iteration space: a set of indexes  
-Iterator(i) == range(LowerBnd(in(i)), UpperBnd(in(i)), Step)
+Iterator(I) == range(LowerBnd(in(I)), UpperBnd(in(I)), Step)
 
-Bound(i) == i_p(i) \in Iterator(i)    
+Bound(I) == i_p(I) \in Iterator(I)    
 
-CDone(i, j) == \A k \in Iterator(i)\{j} : Read(v_c(i), k)
+CDone(I, i) == \A j \in Iterator(I)\{i} : Read(v_c(I), j)
 
 \* Quit action: if iteration space is empty PCR should terminate        
-Quit(i) == /\ Iterator(i) = {} 
-           /\ map' = [map EXCEPT ![i].ste = "END"]     
+Quit(I) == /\ Iterator(I) = {} 
+           /\ map' = [map EXCEPT ![I].ste = "END"]     
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Sep 22 19:34:08 UYT 2020 by josedu
+\* Last modified Sat Sep 26 00:21:35 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

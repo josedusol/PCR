@@ -10,8 +10,8 @@
      ubnd fib = lambda x. x
      step fib = lambda x. x + 1
    
-     fun fib(N, p, j) = if j < 2 then 1 else p[j-1] + p[j-2]
-     fun sum(a,b) = a + (if b then 1 else 0)  
+     fun fib(N,p,i) = if i < 2 then 1 else p[i-1] + p[i-2]
+     fun sum(r1,r2) = r1 + (if r2 then 1 else 0)  
    
      PCR FibPrimes2(N):
        par
@@ -34,9 +34,9 @@ VARIABLE map2
    Basic functions                          
 *)
 
-fib(x, p, j) == IF j < 2 THEN 1 ELSE p[j-1].v + p[j-2].v
+fib(x, p, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
 
-sum(old, new) == old + (IF new THEN 1 ELSE 0)  
+sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)  
 
 isPrime == INSTANCE PCRIsPrime WITH
   InType    <- InType2,
@@ -55,12 +55,18 @@ isPrime == INSTANCE PCRIsPrime WITH
 
 LowerBnd(x) == 0
 UpperBnd(x) == x
-Step(j)     == j + 1  
+Step(i)     == i + 1  
 
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
   Step      <- Step
+  
+----------------------------------------------------------------------------
+
+(* 
+   Initial conditions        
+*)
 
 InitCtx(x) == [in  |-> x,
                i_p |-> LowerBnd(x),
@@ -76,50 +82,50 @@ Pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  for (j=LowerBnd(N); j < UpperBnd(N); Step(j))
-            p[j] = fib N            
+   FXML:  for (i=LowerBnd(N); i < UpperBnd(N); Step(i))
+            p[i] = fib N            
    
    PCR:   p = produceSeq fib N                              
 *)
-P(i) == 
-  /\ Bound(i) 
+P(I) == 
+  /\ Bound(I) 
   /\ map' = [map EXCEPT 
-       ![i].v_p[i_p(i)] = [v |-> fib(in(i), v_p(i), i_p(i)), r |-> 0],
-       ![i].i_p         = Step(@)]         
-\*  /\ PrintT("P" \o ToString(i \o <<i_p(i)>>) \o " : " \o ToString(v_p(i)[i_p(i)].v'))
+       ![I].v_p[i_p(I)] = [v |-> fib(in(I), v_p(I), i_p(I)), r |-> 0],
+       ![I].i_p         = Step(@)]         
+\*  /\ PrintT("P" \o ToString(I \o <<i_p(I)>>) \o " : " \o ToString(v_p(I)[i_p(I)].v'))
 
 (*
    Consumer call action
 *)
-C_call(i) == 
-  \E j \in Iterator(i):
-    /\ Written(v_p(i), j)
-    /\ ~ Read(v_p(i), j)
-    /\ map'  = [map  EXCEPT ![i].v_p[j].r = 1] 
+C_call(I) == 
+  \E i \in Iterator(I):
+    /\ Written(v_p(I), i)
+    /\ ~ Read(v_p(I), i)
+    /\ map'  = [map  EXCEPT ![I].v_p[i].r = 1] 
     /\ map2' = [map2 EXCEPT 
-         ![i \o <<j>>] = isPrime!InitCtx(v_p(i)[j].v)]    
-\*    /\ PrintT("C_call" \o ToString(i \o <<j>>) 
-\*                       \o " : in= " \o ToString(v_p(i)[j].v))                                                                                                                                            
+         ![I \o <<i>>] = isPrime!InitCtx(v_p(I)[i].v)]    
+\*    /\ PrintT("C_call" \o ToString(I \o <<j>>) 
+\*                       \o " : in= " \o ToString(v_p(I)[j].v))                                                                                                                                            
 
 (*
    Consumer end action
 *)
-C_ret(i) == 
-  \E j \in Iterator(i) :
-     /\ Read(v_p(i), j)       
-     /\ ~ Written(v_c(i), j)
-     /\ isPrime!Finished(i \o <<j>>)   
+C_ret(I) == 
+  \E i \in Iterator(I) :
+     /\ Read(v_p(I), i)       
+     /\ ~ Written(v_c(I), i)
+     /\ isPrime!Finished(I \o <<i>>)   
      /\ map' = [map EXCEPT 
-          ![i].v_c[j]= [v |-> isPrime!Out(i \o <<j>>), r |-> 0]]  
-\*     /\ PrintT("C_ret" \o ToString(i \o <<j>>) 
-\*                       \o " : in= "  \o ToString(isPrime!in(i \o <<j>>))    
-\*                       \o " : ret= " \o ToString(isPrime!Out(i \o <<j>>)))
+          ![I].v_c[i]= [v |-> isPrime!Out(I \o <<i>>), r |-> 0]]  
+\*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
+\*                       \o " : in= "  \o ToString(isPrime!in(I \o <<i>>))    
+\*                       \o " : ret= " \o ToString(isPrime!Out(I \o <<i>>)))
 
 (*
    Consumer action
 *)
-C(i) == \/ C_call(i) 
-        \/ C_ret(i) /\ UNCHANGED map2   
+C(I) == \/ C_call(I) 
+        \/ C_ret(I) /\ UNCHANGED map2   
 
 (* 
    Reducer action
@@ -128,33 +134,35 @@ C(i) == \/ C_call(i)
 
    PCR:   r = reduce sum 0 c
 *)
-R(i) == 
-  \E j \in Iterator(i) :
-     /\ Written(v_c(i), j)  
-     /\ ~ Read(v_c(i), j)
+R(I) == 
+  \E i \in Iterator(I) :
+     /\ Written(v_c(I), i)  
+     /\ ~ Read(v_c(I), i)
      /\ map' = [map EXCEPT 
-          ![i].ret      = sum(@, v_c(i)[j].v),
-          ![i].v_c[j].r = @ + 1,
-          ![i].ste      = IF CDone(i, j) THEN "END" ELSE @] 
-\*    /\ IF   CDone(i, j)
-\*       THEN PrintT("FP2 R" \o ToString(i \o <<j>>) 
-\*                           \o " : in= "  \o ToString(in(i))    
-\*                           \o " : ret= " \o ToString(Out(i)')) 
+          ![I].ret      = sum(@, v_c(I)[i].v),
+          ![I].v_c[i].r = @ + 1,
+          ![I].ste      = IF CDone(I, i) THEN "END" ELSE @] 
+\*    /\ IF   CDone(I, i)
+\*       THEN PrintT("FP2 R" \o ToString(I \o <<i>>) 
+\*                           \o " : in= "  \o ToString(in(I))    
+\*                           \o " : ret= " \o ToString(Out(I)')) 
 \*       ELSE TRUE 
 
-
-Next(i) == 
-  \/ /\ State(i) = "OFF" 
-     /\ Start(i)   
+(* 
+   PCR FibPrimes2 step at index I 
+*)
+Next(I) == 
+  \/ /\ State(I) = "OFF" 
+     /\ Start(I)   
      /\ UNCHANGED map2
-  \/ /\ State(i) = "RUN" 
-     /\ \/ P(i)    /\ UNCHANGED map2
-        \/ C(i)  
-        \/ R(i)    /\ UNCHANGED map2
-        \/ Quit(i) /\ UNCHANGED map2           
+  \/ /\ State(I) = "RUN" 
+     /\ \/ P(I)    /\ UNCHANGED map2
+        \/ C(I)  
+        \/ R(I)    /\ UNCHANGED map2
+        \/ Quit(I) /\ UNCHANGED map2           
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 23 19:06:13 UYT 2020 by josedu
+\* Last modified Sat Sep 26 16:03:35 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

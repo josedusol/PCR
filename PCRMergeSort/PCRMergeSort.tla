@@ -6,16 +6,16 @@
    ---------------------------------------------------------------
      fun iterDivide, divide, isBase, base, conquer, merge
      
-     fun iterDivide(L, j) = divide(L)[j]
+     fun iterDivide(L,i) = divide(L)[i]
      
      fun divide(L) = [ L[1..Len(L)/2],
                        L[(Len(L)/2)+1..Len(L)] ]
      
-     fun subproblem(L, p, j) = if   isBase(L, p, j)
-                               then base(L, p, j)
-                               else MergeSort(L, p, j)
+     fun subproblem(L,p,i) = if   isBase(L, p, i)
+                             then base(L, p, i)
+                             else MergeSort(L, p, i)
    
-     fun conquer(a, b) = merge(a,b)
+     fun conquer(r1,r2) = merge(r1,r2)
    
      PCR MergeSort(L):
        par
@@ -39,13 +39,13 @@ LOCAL INSTANCE TLC
 divide(x) == LET mid == Len(x) \div 2
              IN  << SubSeq(x, 1, mid),  SubSeq(x, mid+1, Len(x)) >>
 
-iterDivide(x, p, j) == divide(x)[j]
+iterDivide(x, p, i) == divide(x)[i]
 
-base(x, p, j) == p[j].v
+base(x, p, i) == p[i].v
 
-isBase(x, p, j) == Len(p[j].v) <= 1
+isBase(x, p, i) == Len(p[i].v) <= 1
 
-merge(seq1,seq2) ==
+merge(seq1, seq2) ==
   LET F[s1, s2 \in Seq(Elem)] ==
         IF s1 = << >> 
         THEN s2 
@@ -55,7 +55,7 @@ merge(seq1,seq2) ==
                     [] Head(s1) > Head(s2)  -> <<Head(s2)>> \o F[s1, Tail(s2)]
   IN F[seq1, seq2] 
  
-conquer(old, new) == merge(old, new)
+conquer(r1, r2) == merge(r1, r2)
 
 ----------------------------------------------------------------------------
 
@@ -65,12 +65,18 @@ conquer(old, new) == merge(old, new)
 
 LowerBnd(x) == 1
 UpperBnd(x) == Len(divide(x))
-Step(j)     == j + 1  
+Step(i)     == i + 1  
 
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
   Step      <- Step
+
+----------------------------------------------------------------------------
+
+(* 
+   Initial conditions        
+*)
 
 InitCtx(x) == [in  |-> x,
                i_p |-> LowerBnd(x),
@@ -81,74 +87,74 @@ InitCtx(x) == [in  |-> x,
 
 Pre(x) == TRUE
 
-Eureka(i) == FALSE
+Eureka(I) == FALSE
 
 ----------------------------------------------------------------------------
             
 (* 
    Producer action
    
-   FXML:  forall j \in 1..Len(divide(B))
+   FXML:  forall i \in 1..Len(divide(B))
             p[j] = divide L             
    
    PCR:   p = produce divide L                              
 *)
-P(i) == 
-  \E j \in Iterator(i) : 
-    /\ ~ Written(v_p(i), j)         
+P(I) == 
+  \E i \in Iterator(I) : 
+    /\ ~ Written(v_p(I), i)         
     /\ map' = [map EXCEPT  
-         ![i].v_p[j] = [v |-> iterDivide(in(i), v_p(i), j), r |-> 0] ]             
-\*    /\ PrintT("P" \o ToString(i \o <<j>>) \o " : " \o ToString(v_p(i)[j].v'))                  
+         ![I].v_p[i] = [v |-> iterDivide(in(I), v_p(I), i), r |-> 0] ]             
+\*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
    Consumer non-recursive action
 *)
-C_base(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_p(i), j)
-    /\ ~ Read(v_p(i), j)
-    /\ ~ Written(v_c(i), j)
-    /\ isBase(in(i), v_p(i), j)
+C_base(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_p(I), i)
+    /\ ~ Read(v_p(I), i)
+    /\ ~ Written(v_c(I), i)
+    /\ isBase(in(I), v_p(I), i)
     /\ map' = [map EXCEPT 
-         ![i].v_p[j].r = @ + 1,
-         ![i].v_c[j]   = [v |-> base(in(i), v_p(i), j), r |-> 0] ]               
-\*    /\ PrintT("C_base" \o ToString(j) \o " : P" \o ToString(j) 
-\*                       \o " con v=" \o ToString(v_p(i)[j].v))
+         ![I].v_p[i].r = @ + 1,
+         ![I].v_c[i]   = [v |-> base(in(I), v_p(I), i), r |-> 0] ]               
+\*    /\ PrintT("C_base" \o ToString(i) \o " : P" \o ToString(i) 
+\*                       \o " con v=" \o ToString(v_p(I)[i].v))
 
 (*
    Consumer recursive call action
 *)
-C_call(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_p(i), j)
-    /\ ~ Read(v_p(i), j)
-    /\ ~ isBase(in(i), v_p(i), j)
+C_call(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_p(I), i)
+    /\ ~ Read(v_p(I), i)
+    /\ ~ isBase(in(I), v_p(I), i)
     /\ map' = [map EXCEPT 
-         ![i].v_p[j].r  = 1,
-         ![i \o <<j>>]  = InitCtx(v_p(i)[j].v) ]      
-\*    /\ PrintT("C_call" \o ToString(i \o <<j>>) 
-\*                       \o " : in= " \o ToString(v_p(i)[j].v))                                                                                                                                            
+         ![I].v_p[i].r  = 1,
+         ![I \o <<i>>]  = InitCtx(v_p(I)[i].v) ]      
+\*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
+\*                       \o " : in= " \o ToString(v_p(I)[i].v))                                                                                                                                            
 
 (*
    Consumer recursive end action
 *)
-C_ret(i) == 
-  \E j \in Iterator(i) :
-     /\ Read(v_p(i), j)       
-     /\ ~ Written(v_c(i), j)
-     /\ Finished(i \o <<j>>)   
+C_ret(I) == 
+  \E i \in Iterator(I) :
+     /\ Read(v_p(I), i)       
+     /\ ~ Written(v_c(I), i)
+     /\ Finished(I \o <<i>>)   
      /\ map' = [map EXCEPT 
-          ![i].v_c[j]= [v |-> Out(i \o <<j>>), r |-> 0]]  
-\*     /\ PrintT("C_ret" \o ToString(i \o <<j>>) 
-\*                       \o " : in= "  \o ToString(in(i \o <<j>>))    
-\*                       \o " : ret= " \o ToString(Out(i \o <<j>>)))                
+          ![I].v_c[i]= [v |-> Out(I \o <<i>>), r |-> 0]]  
+\*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
+\*                       \o " : in= "  \o ToString(in(I \o <<i>>))    
+\*                       \o " : ret= " \o ToString(Out(I \o <<i>>)))                
 
 (*
    Consumer action
 *)
-C(i) == \/ C_base(i)
-        \/ C_call(i) 
-        \/ C_ret(i) 
+C(I) == \/ C_base(I)
+        \/ C_call(I) 
+        \/ C_ret(I) 
   
 (* 
    Reducer action
@@ -157,31 +163,34 @@ C(i) == \/ C_base(i)
 
    PCR:   r = reduce conquer [] c
 *)
-R(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_c(i), j)
-    /\ ~ Read(v_c(i), j)
+R(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_c(I), i)
+    /\ ~ Read(v_c(I), i)
     /\ map' = [map EXCEPT 
-         ![i].ret      = conquer(@, v_c(i)[j].v),
-         ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) \/ Eureka(i) THEN "END" ELSE @]                                                                            
-\*    /\ IF State(i)' = "END"
-\*       THEN PrintT("R" \o ToString(i \o <<j>>) 
-\*                       \o " : in= "  \o ToString(in(i))    
-\*                       \o " : ret= " \o ToString(Out(i)')) 
+         ![I].ret      = conquer(@, v_c(I)[i].v),
+         ![I].v_c[i].r = @ + 1,
+         ![I].ste      = IF CDone(I, i) \/ Eureka(I) THEN "END" ELSE @]                                                                            
+\*    /\ IF State(I)' = "END"
+\*       THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                       \o " : in= "  \o ToString(in(I))    
+\*                       \o " : ret= " \o ToString(Out(I)')) 
 \*       ELSE TRUE              
 
-Next(i) == 
-  \/ /\ State(i) = "OFF" 
-     /\ Start(i)
-  \/ /\ State(i) = "RUN" 
-     /\ \/ P(i) 
-        \/ C(i) 
-        \/ R(i)
-        \/ Quit(i)
+(* 
+   PCR MergeSort step at index I 
+*)
+Next(I) == 
+  \/ /\ State(I) = "OFF" 
+     /\ Start(I)
+  \/ /\ State(I) = "RUN" 
+     /\ \/ P(I) 
+        \/ C(I) 
+        \/ R(I)
+        \/ Quit(I)
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 23 19:03:24 UYT 2020 by josedu
+\* Last modified Sat Sep 26 17:44:31 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

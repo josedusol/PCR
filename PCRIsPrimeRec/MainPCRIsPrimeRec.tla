@@ -29,25 +29,28 @@ vars == <<N,M,map1>>
 Init == /\ N \in In1Type1
         /\ M \in In2Type1
         /\ PCR1!Pre(<<N,M>>) 
-        /\ map1 = [i \in CtxIdType1 |-> 
-                      IF   i = <<0>> 
+        /\ map1 = [I \in CtxIdType1 |-> 
+                      IF   I = <<0>> 
                       THEN PCR1!InitCtx(<<N,M>>)
                       ELSE NULL]                  
-                          
-Next1(i) == /\ map1[i] # NULL
-            /\ PCR1!Next(i)
+
+(* 
+   PCR1 step at index I 
+*)                           
+Next1(I) == /\ map1[I] # NULL
+            /\ PCR1!Next(I)
             /\ UNCHANGED <<N,M>>              
 
-Done == /\ \A i \in PCR1!CtxIndex : PCR1!Finished(i)
+Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
         /\ UNCHANGED vars
 
-Next == \/ \E i \in CtxIdType1 : Next1(i)
+Next == \/ \E I \in CtxIdType1 : Next1(I)
         \/ Done
               
 Spec == Init /\ [][Next]_vars
 
 FairSpec == /\ Spec            
-            /\ \A i \in CtxIdType1 : WF_vars(Next1(i))
+            /\ \A I \in CtxIdType1 : WF_vars(Next1(I))
 
 ----------------------------------------------------------------------------
 
@@ -70,5 +73,5 @@ Termination == <> PCR1!Finished(<<0>>)
   
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 23 18:52:52 UYT 2020 by josedu
+\* Last modified Sat Sep 26 16:01:36 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

@@ -6,9 +6,9 @@
    ----------------------------------------------------------
      fun divisors, notDivides, and
      
-     fun divisors(N,p,j) = j
-     fun notDivides(N,p,j) = if 2 <= p[j] && p[j] < N
-                             then not (N % p[j] == 0)
+     fun divisors(N,p,i) = j
+     fun notDivides(N,p,i) = if 2 <= p[i] && p[i] < N
+                             then not (N % p[i] == 0)
                              else True
      fun and(a,b) = a && b 
      
@@ -35,10 +35,10 @@ LOCAL INSTANCE TLC
    Basic functions                     
 *)
 
-divisors(x, p, j) == j
+divisors(x, p, i) == i
    
-notDivides(x, p, j) == IF 2 <= p[j].v /\ p[j].v < x
-                       THEN ~ (x % p[j].v = 0)
+notDivides(x, p, i) == IF 2 <= p[i].v /\ p[i].v < x
+                       THEN ~ (x % p[i].v = 0)
                        ELSE TRUE
 
 and(old, new) == old /\ new 
@@ -51,12 +51,18 @@ and(old, new) == old /\ new
 
 LowerBnd(x) == 0
 UpperBnd(x) == x
-Step(j)     == j + 1          
+Step(i)     == i + 1          
  
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
   Step      <- Step
+
+----------------------------------------------------------------------------
+
+(* 
+   Initial conditions        
+*)
                       
 InitCtx(x) == [in  |-> x,
                i_p |-> LowerBnd(x),
@@ -72,36 +78,36 @@ Pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  forall j \in 0..N
-            p[j] = divisors N               
+   FXML:  forall i \in 0..N
+            p[i] = divisors N               
    
    PCR:   p = produce divisors N
 *)
-P(i) == 
-  \E j \in Iterator(i) :
-    /\ ~ Written(v_p(i), j)
+P(I) == 
+  \E i \in Iterator(I) :
+    /\ ~ Written(v_p(I), i)
     /\ map' = [map EXCEPT 
-         ![i].v_p[j] = [v |-> divisors(in(i), v_p(i), j), r |-> 0]]         
-\*  /\ PrintT("P" \o ToString(i \o <<j>>) \o " : " \o ToString(v_p(i)[j].v'))  
+         ![I].v_p[i] = [v |-> divisors(in(I), v_p(I), i), r |-> 0]]         
+\*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))  
 
 (* 
    Consumer action
    
-   FXML:  forall j \in Dom(p) 
-            c[j] = notDivides N p[j] 
+   FXML:  forall i \in Dom(p) 
+            c[i] = notDivides N p[i] 
 
    PCR:   c = consume notDivides N
 *) 
-C(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_p(i), j)
-    /\ ~ Read(v_p(i), j)
-    /\ ~ Written(v_c(i), j)
+C(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_p(I), i)
+    /\ ~ Read(v_p(I), i)
+    /\ ~ Written(v_c(I), i)
     /\ map' = [map EXCEPT 
-         ![i].v_p[j].r = @ + 1,
-         ![i].v_c[j]   = [v |-> notDivides(in(i), v_p(i), j), r |-> 0] ]               
-\*    /\ PrintT("C" \o ToString(i \o <<j>>) \o " : P" \o ToString(j) 
-\*                  \o " con v=" \o ToString(v_p(i)[j].v))       
+         ![I].v_p[i].r = @ + 1,
+         ![I].v_c[i]   = [v |-> notDivides(in(I), v_p(I), i), r |-> 0] ]               
+\*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
+\*                  \o " con v=" \o ToString(v_p(I)[i].v))       
 
 (* 
    Reducer action
@@ -110,31 +116,34 @@ C(i) ==
 
    PCR:   r = reduce and (N > 1) c
 *)
-R(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_c(i), j)    
-    /\ ~ Read(v_c(i), j)
+R(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_c(I), i)    
+    /\ ~ Read(v_c(I), i)
     /\ map' = [map EXCEPT 
-         ![i].ret      = and(@, v_c(i)[j].v),
-         ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) THEN "END" ELSE @]
-\*    /\ IF   CDone(i, j)
-\*       THEN PrintT("R" \o ToString(i \o <<j>>) 
-\*                       \o " : in= "  \o ToString(in(i))    
-\*                       \o " : ret= " \o ToString(Out(i)')) 
+         ![I].ret      = and(@, v_c(I)[i].v),
+         ![I].v_c[i].r = @ + 1,
+         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]
+\*    /\ IF   CDone(I, i)
+\*       THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                       \o " : in= "  \o ToString(in(I))    
+\*                       \o " : ret= " \o ToString(Out(I)')) 
 \*       ELSE TRUE    
-     
-Next(i) == 
-  \/ /\ State(i) = "OFF"
-     /\ Start(i)
-  \/ /\ State(i) = "RUN"
-     /\ \/ P(i) 
-        \/ C(i) 
-        \/ R(i)
-        \/ Quit(i)      
+
+(* 
+   PCR IsPrimeNaive step at index I 
+*)     
+Next(I) == 
+  \/ /\ State(I) = "OFF"
+     /\ Start(I)
+  \/ /\ State(I) = "RUN"
+     /\ \/ P(I) 
+        \/ C(I) 
+        \/ R(I)
+        \/ Quit(I)      
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 23 19:04:19 UYT 2020 by josedu
+\* Last modified Sat Sep 26 16:06:04 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

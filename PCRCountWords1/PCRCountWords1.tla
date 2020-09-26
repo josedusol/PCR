@@ -29,11 +29,11 @@ LOCAL INSTANCE TLC
    Basic functions                 
 *)
 
-lines(x, p, j) == x[1][j]
+lines(x, p, i) == x[1][i]
 
-countWordsInLine(x, p, j) == 
+countWordsInLine(x, p, i) == 
   LET words == x[2]
-      line  == p[j].v
+      line  == p[i].v
   IN Fold([w \in DOMAIN words |-> 
              IF words[w] \in Range(line) 
              THEN [w2 \in {words[w]} |-> 
@@ -52,12 +52,18 @@ joinCounts(old, new) == old (+) new
 
 LowerBnd(x) == 1
 UpperBnd(x) == Len(x[1])
-Step(j)     == j + 1  
+Step(i)     == i + 1  
 
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
   Step      <- Step
+
+----------------------------------------------------------------------------
+
+(* 
+   Initial conditions        
+*)
 
 InitCtx(x) == [in  |-> x,
                i_p |-> LowerBnd(x),
@@ -73,36 +79,36 @@ Pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  forall j \in Range(1,Len(T),Step)
-            p[j] = lines T             
+   FXML:  forall i \in Range(1,Len(T),Step)
+            p[i] = lines T             
    
    PCR:   p = produce lines T                              
 *)
-P(i) == 
-  \E j \in Iterator(i) : 
-    /\ ~ Written(v_p(i), j)         
+P(I) == 
+  \E i \in Iterator(I) : 
+    /\ ~ Written(v_p(I), i)         
     /\ map' = [map EXCEPT
-         ![i].v_p[j] = [v |-> lines(in(i), v_p(i), j), r |-> 0] ]             
-\*    /\ PrintT("P" \o ToString(i \o <<j>>) \o " : " \o ToString(v_p(i)[j].v'))                  
+         ![I].v_p[i] = [v |-> lines(in(I), v_p(I), i), r |-> 0] ]             
+\*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (* 
    Consumer action
    
-   FXML:  forall j \in Dom(p)
-            c[j] = countWordsInLine W p[j] 
+   FXML:  forall i \in Dom(p)
+            c[i] = countWordsInLine W p[i] 
 
    PCR:   c = consume countWordsInLine W
 *)
-C(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_p(i), j)
-    /\ ~ Read(v_p(i), j)
-    /\ ~ Written(v_c(i), j)
+C(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_p(I), i)
+    /\ ~ Read(v_p(I), i)
+    /\ ~ Written(v_c(I), i)
     /\ map' = [map EXCEPT 
-         ![i].v_p[j].r = 1, 
-         ![i].v_c[j]   = [v |-> countWordsInLine(in(i), v_p(i), j), r |-> 0] ]                  
-\*    /\ PrintT("C" \o ToString(i \o <<j>>) \o " : P" \o ToString(j) 
-\*                  \o " con v=" \o ToString(v_p(i)[j].v))    
+         ![I].v_p[i].r = 1, 
+         ![I].v_c[i]   = [v |-> countWordsInLine(in(I), v_p(I), i), r |-> 0] ]                  
+\*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
+\*                  \o " con v=" \o ToString(v_p(I)[i].v))    
   
 (* 
    Reducer action
@@ -111,32 +117,35 @@ C(i) ==
 
    PCR:   r = reduce joinCounts {} c
 *)
-R(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_c(i), j)
-    /\ ~ Read(v_c(i), j)
+R(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_c(I), i)
+    /\ ~ Read(v_c(I), i)
     /\ map' = [map EXCEPT 
-         ![i].ret      = joinCounts(@, v_c(i)[j].v),
-         ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) THEN "END" ELSE @]
-\*    /\ IF   CDone(i, j)
-\*       THEN PrintT("CW1 R" \o ToString(i \o <<j>>) 
-\*                           \o " : in1= " \o ToString(In1(i))    
-\*                           \o " : in2= " \o ToString(In2(i))
-\*                           \o " : ret= " \o ToString(Out(i)')) 
+         ![I].ret      = joinCounts(@, v_c(I)[i].v),
+         ![I].v_c[i].r = @ + 1,
+         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]
+\*    /\ IF   CDone(I, i)
+\*       THEN PrintT("CW1 R" \o ToString(I \o <<i>>) 
+\*                           \o " : in1= " \o ToString(In1(I))    
+\*                           \o " : in2= " \o ToString(In2(I))
+\*                           \o " : ret= " \o ToString(Out(I)')) 
 \*       ELSE TRUE
 
-Next(i) == 
-  \/ /\ State(i) = "OFF" 
-     /\ Start(i)
-  \/ /\ State(i) = "RUN" 
-     /\ \/ P(i) 
-        \/ C(i) 
-        \/ R(i)
-        \/ Quit(i)
+(* 
+   PCR CountWords1 step at index I 
+*)
+Next(I) == 
+  \/ /\ State(I) = "OFF" 
+     /\ Start(I)
+  \/ /\ State(I) = "RUN" 
+     /\ \/ P(I) 
+        \/ C(I) 
+        \/ R(I)
+        \/ Quit(I)
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 23 19:08:15 UYT 2020 by josedu
+\* Last modified Sat Sep 26 16:02:34 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

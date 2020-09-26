@@ -28,28 +28,29 @@ vars == <<N,map1>>
 
 Init == /\ N \in InType1
         /\ PCR1!Pre(N) 
-        /\ map1 = [i \in CtxIdType1 |-> 
-                      IF   i = <<0>> 
+        /\ map1 = [I \in CtxIdType1 |-> 
+                      IF   I = <<0>> 
                       THEN PCR1!InitCtx(N)
-                      ELSE NULL]                  
-                          
-Next1(i) == /\ map1[i] # NULL
-            /\ PCR1!Next(i)
+                      ELSE NULL]       
+                                 
+(* PCR1 step at index I *)                           
+Next1(I) == /\ map1[I] # NULL
+            /\ PCR1!Next(I)
             /\ UNCHANGED N              
 
 LOCAL INSTANCE TLC
 
-Done == /\ \A i \in PCR1!CtxIndex : PCR1!Finished(i)
+Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
         /\ UNCHANGED vars
 \*        /\ PrintT("ret " \o ToString(PCR1!in(<<0>>)) \o " : " \o ToString(PCR1!Out(<<0>>)))
 
-Next == \/ \E i \in CtxIdType1 : Next1(i)
+Next == \/ \E I \in CtxIdType1 : Next1(I)
         \/ Done
               
 Spec == Init /\ [][Next]_vars
 
 FairSpec == /\ Spec            
-            /\ \A i \in CtxIdType1 : WF_vars(Next1(i))
+            /\ \A I \in CtxIdType1 : WF_vars(Next1(I))
 
 ----------------------------------------------------------------------------
 
@@ -73,5 +74,5 @@ Termination == <> PCR1!Finished(<<0>>)
   
 =============================================================================
 \* Modification History
-\* Last modified Thu Sep 24 00:56:47 UYT 2020 by josedu
+\* Last modified Sat Sep 26 15:40:58 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

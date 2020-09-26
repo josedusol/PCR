@@ -6,12 +6,12 @@
    ----------------------------------------------------------
      fun projectProd, recursion, projectRed
      
-     fun projectProd(N,M,p,j) = M
+     fun projectProd(N,M,p,i) = M
      
-     fun recursion(N,M,p,j) =      \\ M = p[j]
-       if   p[j] < 2
+     fun recursion(N,M,p,i) =      \\ M = p[i]
+       if   p[i] < 2
        then N > 1
-       else not (N % p[j] == 0) && IsPrimeRec(N, p[j]-1, p, j)
+       else not (N % p[i] == 0) && IsPrimeRec(N, p[i]-1, p, i)
      
      fun projectRet(r1,r2) = r2 
      
@@ -39,7 +39,7 @@ LOCAL INSTANCE TLC
    Basic functions                     
 *)
 
-projectProd(x, p, j) == x[2]
+projectProd(x, p, i) == x[2]
 
 projectRed(r1, r2) == r2
 
@@ -51,12 +51,18 @@ projectRed(r1, r2) == r2
 
 LowerBnd(x) == 0
 UpperBnd(x) == 0
-Step(j)     == j + 1
+Step(i)     == i + 1
  
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
   Step      <- Step
+
+----------------------------------------------------------------------------
+
+(* 
+   Initial conditions        
+*)
                       
 InitCtx(x) == [in  |-> x,
                i_p |-> LowerBnd(x),
@@ -77,63 +83,63 @@ Pre(x) == x[2] = Sqrt(x[1])
    
    PCR:   p = produce divisors N
 *)
-P(i) == 
-  \E j \in Iterator(i) :
-    /\ ~ Written(v_p(i), j)
+P(I) == 
+  \E i \in Iterator(I) :
+    /\ ~ Written(v_p(I), i)
     /\ map' = [map EXCEPT 
-         ![i].v_p[j] = [v |-> projectProd(in(i), v_p(i), j), r |-> 0]]         
-\*  /\ PrintT("P" \o ToString(i \o <<j>>) \o " : " \o ToString(v_p(i)[j].v'))  
+         ![I].v_p[i] = [v |-> projectProd(in(I), v_p(I), i), r |-> 0]]         
+\*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))  
 
 (*
    Consumer non-recursive action
 *)
-C_base(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_p(i), j)
-    /\ ~ Read(v_p(i), j)
-    /\ ~ Written(v_c(i), j)
-    /\ v_p(i)[j].v < 2
+C_base(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_p(I), i)
+    /\ ~ Read(v_p(I), i)
+    /\ ~ Written(v_c(I), i)
+    /\ v_p(I)[i].v < 2
     /\ map' = [map EXCEPT 
-         ![i].v_p[j].r = @ + 1,
-         ![i].v_c[j]   = [v |-> In1(i) > 1, r |-> 0] ]               
-\*    /\ PrintT("C_base" \o ToString(j) \o " : P" \o ToString(j) 
-\*                       \o " con v=" \o ToString(v_p(i)[j].v))
+         ![I].v_p[i].r = @ + 1,
+         ![I].v_c[i]   = [v |-> In1(I) > 1, r |-> 0] ]               
+\*    /\ PrintT("C_base" \o ToString(i) \o " : P" \o ToString(i) 
+\*                       \o " con v=" \o ToString(v_p(I)[i].v))
 
 (*
    Consumer recursive call action
 *)
-C_call(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_p(i), j)
-    /\ ~ Read(v_p(i), j)
-    /\ ~ (v_p(i)[j].v < 2)
+C_call(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_p(I), i)
+    /\ ~ Read(v_p(I), i)
+    /\ ~ (v_p(I)[i].v < 2)
     /\ map' = [map EXCEPT 
-         ![i].v_p[j].r  = 1,
-         ![i \o <<j>>]  = InitCtx(<<In1(i), v_p(i)[j].v - 1>>) ]      
-\*    /\ PrintT("C_call" \o ToString(i \o <<j>>) 
-\*                       \o " : in= " \o ToString(v_p(i)[j].v))                                                                                                                                            
+         ![I].v_p[i].r  = 1,
+         ![I \o <<i>>]  = InitCtx(<<In1(I), v_p(I)[i].v - 1>>) ]      
+\*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
+\*                       \o " : in= " \o ToString(v_p(I)[i].v))                                                                                                                                            
 
 (*
    Consumer recursive ret action
 *)
-C_ret(i) == 
-  \E j \in Iterator(i) :
-     /\ Read(v_p(i), j)       
-     /\ ~ Written(v_c(i), j)
-     /\ Finished(i \o <<j>>)   
+C_ret(I) == 
+  \E i \in Iterator(I) :
+     /\ Read(v_p(I), i)       
+     /\ ~ Written(v_c(I), i)
+     /\ Finished(I \o <<i>>)   
      /\ map' = [map EXCEPT 
-          ![i].v_c[j]= [v |-> ~ (In1(i) % v_p(i)[j].v = 0) /\ Out(i \o <<j>>), 
+          ![I].v_c[i]= [v |-> ~ (In1(I) % v_p(I)[i].v = 0) /\ Out(I \o <<i>>), 
                         r |-> 0]]  
-\*     /\ PrintT("C_ret" \o ToString(i \o <<j>>) 
-\*                       \o " : in= "  \o ToString(in(i \o <<j>>))    
-\*                       \o " : ret= " \o ToString(Out(i \o <<j>>)))                
+\*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
+\*                       \o " : in= "  \o ToString(in(I \o <<i>>))    
+\*                       \o " : ret= " \o ToString(Out(I \o <<i>>)))                
 
 (*
    Consumer action
 *)
-C(i) == \/ C_base(i)
-        \/ C_call(i) 
-        \/ C_ret(i)   
+C(I) == \/ C_base(I)
+        \/ C_call(I) 
+        \/ C_ret(I)   
 
 (* 
    Reducer action
@@ -142,31 +148,34 @@ C(i) == \/ C_base(i)
 
    PCR:   r = reduce and True c
 *)
-R(i) == 
-  \E j \in Iterator(i) :
-    /\ Written(v_c(i), j)    
-    /\ ~ Read(v_c(i), j)
+R(I) == 
+  \E i \in Iterator(I) :
+    /\ Written(v_c(I), i)    
+    /\ ~ Read(v_c(I), i)
     /\ map' = [map EXCEPT 
-         ![i].ret      = projectRed(@, v_c(i)[j].v),
-         ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) THEN "END" ELSE @]
-\*    /\ IF   CDone(i, j)
-\*       THEN PrintT("R" \o ToString(i \o <<j>>) 
-\*                       \o " : in= "  \o ToString(in(i))    
-\*                       \o " : ret= " \o ToString(Out(i)')) 
+         ![I].ret      = projectRed(@, v_c(I)[I].v),
+         ![I].v_c[I].r = @ + 1,
+         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]
+\*    /\ IF   CDone(I, i)
+\*       THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                       \o " : in= "  \o ToString(in(I))    
+\*                       \o " : ret= " \o ToString(Out(I)')) 
 \*       ELSE TRUE    
-     
-Next(i) == 
-  \/ /\ State(i) = "OFF"
-     /\ Start(i)
-  \/ /\ State(i) = "RUN"
-     /\ \/ P(i) 
-        \/ C(i) 
-        \/ R(i)
-        \/ Quit(i)      
+
+(* 
+   PCR IsPrimeRec step at index I 
+*)         
+Next(I) == 
+  \/ /\ State(I) = "OFF"
+     /\ Start(I)
+  \/ /\ State(I) = "RUN"
+     /\ \/ P(I) 
+        \/ C(I) 
+        \/ R(I)
+        \/ Quit(I)      
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Sep 24 13:33:27 UYT 2020 by josedu
+\* Last modified Sat Sep 26 16:00:17 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed
