@@ -10,7 +10,7 @@ VARIABLES L, map
 
 ----------------------------------------------------------------------------
 
-NULL == CHOOSE x : x \notin Elem
+NULL == CHOOSE x : x \notin (VarPType1 \union VarCType1)
          
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRMergeSort WITH 
@@ -26,7 +26,8 @@ PCR1 == INSTANCE PCRMergeSort WITH
 
 vars == <<L,map>>
 
-Init == /\ L \in InType1   
+Init == /\ L \in InType1  
+        /\ PCR1!Pre(L)
         /\ map = [i \in CtxIdType1 |-> 
                      IF   i = <<0>> 
                      THEN PCR1!InitCtx(L)
@@ -67,6 +68,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 19 16:25:44 UYT 2020 by josedu
+\* Last modified Wed Sep 23 19:03:40 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

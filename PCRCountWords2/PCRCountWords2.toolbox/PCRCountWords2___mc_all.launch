@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="104"/>
+    <intAttribute key="fpIndex" value="101"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="42"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -29,9 +29,9 @@
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="1Correctness"/>
+        <listEntry value="0Correctness"/>
         <listEntry value="0PCRCountWords1!FairSpec"/>
-        <listEntry value="0PCRCountWords1!Spec"/>
+        <listEntry value="1PCRCountWords1!Spec"/>
         <listEntry value="0GTermination"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
@@ -50,7 +50,6 @@
         <listEntry value="TType;;UNION {[1..n -&gt; LType] : n \in NatMock1};0;0"/>
         <listEntry value="WType;;LType;0;0"/>
         <listEntry value="Seq;S:;UNION {[1..n -&gt; S] : n \in NatMock3};0;0"/>
-        <listEntry value="PCR1!CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
         <listEntry value="NULL;;NULL;1;0"/>
         <listEntry value="PCRCountWords1!NULL;;NULL;0;0"/>
     </listAttribute>

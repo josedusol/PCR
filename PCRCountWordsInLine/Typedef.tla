@@ -3,7 +3,7 @@
 EXTENDS Naturals, Sequences, Bags
 
 (* 
-   Types for PCRCountWordsInLine                          
+   Types for PCR CountWordsInLine                          
 *)
 
 CONSTANT Word
@@ -37,5 +37,5 @@ Flatten(seq) ==
        
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 20:42:55 UYT 2020 by josedu
+\* Last modified Tue Sep 22 23:45:27 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu

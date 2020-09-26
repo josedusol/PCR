@@ -12,11 +12,11 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="26"/>
+    <intAttribute key="fpIndex" value="108"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="60"/>
     <intAttribute key="maxSetSize" value="1000000"/>
-    <booleanAttribute key="mcMode" value="true"/>
+    <booleanAttribute key="mcMode" value="false"/>
     <stringAttribute key="modelBehaviorInit" value=""/>
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
@@ -44,7 +44,7 @@
         <listEntry value="Config;;UNION {[1..n -&gt; 0..N] : n \in Size};0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="N == 3&#13;&#10;Size == 1..3&#13;&#10;NatMock2 == 0..N+1"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 4&#13;&#10;Size == 4..N&#13;&#10;NatMock2 == 0..N+1"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="3"/>
     <booleanAttribute key="recover" value="false"/>

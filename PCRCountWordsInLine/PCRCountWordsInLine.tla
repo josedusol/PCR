@@ -6,9 +6,9 @@
    ----------------------------------------------------------
      fun elem, count, joinCounts
     
-     fun lbnd elem = lambda x. 1 
-     fun ubnd elem = lambda x. Len(x)
-     fun step elem = lambda x. x + 1
+     lbnd elem = lambda x. 1 
+     ubnd elem = lambda x. Len(x)
+     step elem = lambda x. x + 1
     
      PCR CountWordsInLine(L, W):
        par
@@ -19,7 +19,7 @@
    ----------------------------------------------------------      
 *)
 
-EXTENDS PCRBase, Bags
+EXTENDS Typedef, PCRBase
 
 LOCAL INSTANCE TLC
 
@@ -62,6 +62,8 @@ InitCtx(x) == [in  |-> x,
                v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                ret |-> EmptyBag,
                ste |-> "OFF"]
+
+Pre(x) == TRUE
 
 ----------------------------------------------------------------------------                 
                                                     
@@ -132,6 +134,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 22:38:08 UYT 2020 by josedu
+\* Last modified Wed Sep 23 19:07:24 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

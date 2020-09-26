@@ -10,7 +10,7 @@ VARIABLES L, W, map
 
 ----------------------------------------------------------------------------
 
-NULL == CHOOSE x : x \notin Word
+NULL == CHOOSE x : x \notin (VarPType1 \union VarCType1)
          
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRCountWordsInLine WITH 
@@ -28,6 +28,7 @@ vars == <<L,W,map>>
 
 Init == /\ L \in LType
         /\ W \in WType       
+        /\ PCR1!Pre(<<L, W>>)
         /\ map = [i \in CtxIdType1 |-> 
                      IF   i = <<0>> 
                      THEN PCR1!InitCtx(<<L, W>>)
@@ -77,6 +78,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 20:44:24 UYT 2020 by josedu
+\* Last modified Wed Sep 23 19:07:07 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

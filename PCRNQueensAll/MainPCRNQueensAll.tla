@@ -6,11 +6,13 @@
 
 EXTENDS Typedef
 
+LOCAL INSTANCE TLC
+
 VARIABLES B, map   
 
 ----------------------------------------------------------------------------
 
-NULL == CHOOSE x : x \notin (Nat \union BOOLEAN)
+NULL == CHOOSE x : x \notin (VarPType1 \union VarCType1)
          
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRNQueensAll WITH 
@@ -27,7 +29,7 @@ PCR1 == INSTANCE PCRNQueensAll WITH
 vars == <<B,map>>
 
 Init == /\ B \in InType1
-        /\ \A r \in DOMAIN B : B[r] = 0
+        /\ PCR1!Pre(B)
         /\ map = [i \in CtxIdType1 |-> 
                      IF   i = <<0>> 
                      THEN PCR1!InitCtx(B)
@@ -39,7 +41,8 @@ Next1(i) == /\ map[i] # NULL
             /\ UNCHANGED B    
 
 Done == /\ \A i \in PCR1!CtxIndex : PCR1!Finished(i)
-        /\ UNCHANGED vars                
+        /\ UNCHANGED vars    
+        /\ PrintT("done " \o " : " \o ToString(map))            
 
 Next == \/ \E i \in CtxIdType1 : Next1(i)
         \/ Done
@@ -55,7 +58,8 @@ FairSpec == /\ Spec
    Properties 
 *)
 
-Solution(in) == CASE Len(in) = 1      -> { <<1>> }
+Solution(in) == CASE Len(in) = 0      -> { }
+                  [] Len(in) = 1      -> { <<1>> }
                   [] Len(in) \in 2..3 -> { }
                   [] Len(in) = 4      -> { <<3,1,4,2>>, <<2,4,1,3>> }
                \* [] Len(in) = 5      -> { ... 10 solutions ... }
@@ -71,6 +75,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 21:14:33 UYT 2020 by josedu
+\* Last modified Wed Sep 23 19:00:15 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

@@ -3,15 +3,15 @@
 EXTENDS Naturals, Sequences
 
 (* 
-   Types for PCRIsPrime                          
+   Types for PCR IsPrime                          
 *)
 
 InType1    == Nat
-IndexType1 == Nat
-CtxIdType1 == Seq(Nat)
 VarPType1  == Nat 
 VarCType1  == BOOLEAN 
 VarRType1  == BOOLEAN 
+IndexType1 == Nat
+CtxIdType1 == Seq(Nat)
 
 -----------------------------------------------------------------------------
 
@@ -20,5 +20,5 @@ Sqrt(n) == Max({ i \in Nat : i*i <= n })
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 20:32:43 UYT 2020 by josedu
+\* Last modified Tue Sep 22 23:44:59 UYT 2020 by josedu
 \* Created Sat Aug 08 21:19:28 UYT 2020 by josedu

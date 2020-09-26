@@ -3,7 +3,7 @@
 EXTENDS Integers, Sequences
 
 (* 
-   Types for PCRNQueensAll                          
+   Types for PCR NQueensAll                          
 *)
 
 Config == Seq(Nat)    
@@ -18,5 +18,5 @@ CtxIdType1 == Seq(Nat)
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 20:31:49 UYT 2020 by josedu
+\* Last modified Tue Sep 22 23:44:19 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu

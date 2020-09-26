@@ -4,13 +4,13 @@
    Main module for PCR FibPrimes1.
 *)
 
-EXTENDS Typedef, FiniteSets, TLC
+EXTENDS Typedef, FiniteSets
 
 VARIABLES N, map1   
 
 ----------------------------------------------------------------------------
 
-NULL == CHOOSE x : x \notin (Nat \union BOOLEAN)
+NULL == CHOOSE x : x \notin (VarPType1 \union VarCType1)
          
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRFibPrimes1 WITH 
@@ -27,6 +27,7 @@ PCR1 == INSTANCE PCRFibPrimes1 WITH
 vars == <<N,map1>>
 
 Init == /\ N \in InType1
+        /\ PCR1!Pre(N)
         /\ map1 = [i \in CtxIdType1 |-> 
                      IF   i = <<0>> 
                      THEN PCR1!InitCtx(N)
@@ -76,6 +77,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 19 02:27:48 UYT 2020 by josedu
+\* Last modified Wed Sep 23 19:06:41 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

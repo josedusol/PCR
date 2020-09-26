@@ -7,19 +7,21 @@
      fun divide, isBase, base, conquer, complete, abs, canAddQueenInRow, 
          canAddQueenInCell, canAddQueens, addQueenInRow, addQueen
      
-     fun iterDivide(B, j) = divide(B)[j]
+     fun iterDivide(B,j) = divide(B)[j]
      
-     fun divide(B, j) = 
+     fun divide(B,j) = 
        cs = []
        for i in 1..Len(B)
          if canAddQueenInRow(B, i) then cs += [addQueenInRow(B, i)]
        return cs
      
-     fun subproblem(B, p, j) = if   isBase(B, p, j)
+     fun subproblem(B,p,j) = if   isBase(B, p, j)
                                then base(B, p, j)
                                else NQueensAll(B, p, j)
    
-     fun conquer(a, b) = a union b
+     fun conquer(r1,r2) = r1 union r2
+   
+     pre NQueensAll = \forall r \in 1..Len(B) : B[r] == 0
    
      PCR NQueensAll(B):
        par
@@ -102,7 +104,7 @@ base(x, p, j) == IF complete(p[j].v) THEN { p[j].v } ELSE {}
 
 isBase(x, p, j) == complete(p[j].v) \/ ~ canAddQueens(p[j].v) 
  
-conquer(old, new) == old \union new
+conquer(r1, r2) == r1 \union r2
 
 ----------------------------------------------------------------------------
 
@@ -125,6 +127,10 @@ InitCtx(x) == [in  |-> x,
                v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                ret |-> {},
                ste |-> "OFF"] 
+
+Pre(x) == \A r \in DOMAIN x : x[r] = 0
+
+Eureka(i) == FALSE
 
 ----------------------------------------------------------------------------
             
@@ -204,11 +210,13 @@ R(i) ==
   \E j \in Iterator(i) :
     /\ Written(v_c(i), j)
     /\ ~ Read(v_c(i), j)
-    /\ map' = [map EXCEPT 
-         ![i].ret      = conquer(@, v_c(i)[j].v),
-         ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) THEN "END" ELSE @]                                                                            
-\*    /\ IF   CDone(i, j)
+    /\ LET ret == conquer(Out(i), v_c(i)[j].v)
+           ste == CDone(i, j) \/ Eureka(ret)
+       IN map' = [map EXCEPT 
+           ![i].ret      = ret,
+           ![i].v_c[j].r = @ + 1,
+           ![i].ste      = IF ste THEN "END" ELSE @]                                                                            
+\*    /\ IF State(i)' = "END"
 \*       THEN PrintT("R" \o ToString(i \o <<j>>) 
 \*                       \o " : in= "  \o ToString(in(i))    
 \*                       \o " : ret= " \o ToString(Out(i)')) 
@@ -225,6 +233,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 22:39:54 UYT 2020 by josedu
+\* Last modified Wed Sep 23 19:00:04 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -45,7 +45,8 @@ In3(i) == in(i)[3]
                       
 \* Useful predicates 
 Written(var, j) == var[j].v # NULL
-Read(var, j)    == var[j].r > 0          
+Read(var, j)    == var[j].r > 0         
+WellDef(i)      == map[i] # NULL
 Off(i)          == map[i].ste = "OFF"
 Running(i)      == map[i].ste = "RUN"
 Finished(i)     == map[i].ste = "END"
@@ -62,7 +63,7 @@ ExtR(r, s)    == [k \in DOMAIN r |-> IF k \in DOMAIN s THEN s[k] ELSE r[k]]
                
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 21:11:45 UYT 2020 by josedu
+\* Last modified Thu Sep 24 01:50:09 UYT 2020 by josedu
 \* Last modified Mon Jul 06 15:51:49 UYT 2020 by josed
 \* Last modified Tue Jun 09 12:24:42 GMT-03:00 2020 by JosEdu
 \* Created Mon Jun 08 22:50:44 GMT-03:00 2020 by JosEdu

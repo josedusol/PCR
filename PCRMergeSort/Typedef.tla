@@ -3,7 +3,7 @@
 EXTENDS Naturals, Sequences
 
 (* 
-   Types for PCRCountWords1                          
+   Types for PCR CountWords1                          
 *)
 
 CONSTANT Elem
@@ -17,5 +17,5 @@ CtxIdType1 == Seq(Nat)
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 20:32:15 UYT 2020 by josedu
+\* Last modified Tue Sep 22 23:44:35 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu

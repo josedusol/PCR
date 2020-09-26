@@ -3,17 +3,17 @@
 EXTENDS Naturals, Sequences
 
 (* 
-   Types for PCRIsPrimeNaive                          
+   Types for PCR IsPrimeNaive                          
 *)
 
 InType1    == Nat
-IndexType1 == Nat
-CtxIdType1 == Seq(Nat)
 VarPType1  == Nat 
 VarCType1  == BOOLEAN 
 VarRType1  == BOOLEAN 
+IndexType1 == Nat
+CtxIdType1 == Seq(Nat)
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 20:32:33 UYT 2020 by josedu
+\* Last modified Tue Sep 22 23:44:54 UYT 2020 by josedu
 \* Created Sat Aug 08 21:19:28 UYT 2020 by josedu

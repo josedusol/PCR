@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="0"/>
+    <intAttribute key="fpIndex" value="5"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -42,12 +42,9 @@
         <listEntry value="Nat;;NatMock1;0;0"/>
         <listEntry value="InType1;;Input;0;0"/>
         <listEntry value="CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
-        <listEntry value="PCR1!OFF;;PCR1!OFF;1;0"/>
-        <listEntry value="PCR1!RUN;;PCR1!RUN;1;0"/>
-        <listEntry value="PCR1!END;;PCR1!END;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..8&#13;&#10;Input == 0..5"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 5&#13;&#10;MaxFN == 8&#13;&#10;Input == 0..MaxN&#13;&#10;NatMock1 == 0..MaxFN"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="3"/>
     <booleanAttribute key="recover" value="false"/>

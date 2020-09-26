@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="20"/>
+    <intAttribute key="fpIndex" value="28"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -29,9 +29,9 @@
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="1Correctness"/>
+        <listEntry value="0Correctness"/>
         <listEntry value="0PCRFibPrimes1!Spec"/>
-        <listEntry value="0PCRFibPrimes1!FairSpec"/>
+        <listEntry value="1PCRFibPrimes1!FairSpec"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
@@ -44,14 +44,12 @@
         <listEntry value="IndexType2;;IndexMock2;0;0"/>
         <listEntry value="InType1;;Input;0;0"/>
         <listEntry value="CtxIdType2;;{&lt;&lt;0,i&gt;&gt; : i \in 0..N };0;0"/>
-        <listEntry value="PCR1!IndexType1;;IndexMock1;0;0"/>
         <listEntry value="CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
-        <listEntry value="PCR1!CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
         <listEntry value="NULL;;NULL;1;0"/>
         <listEntry value="PCRFibPrimes1!NULL;;NULL;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..5&#13;&#10;IndexMock1 == 0..N+1&#13;&#10;IndexMock2 == 0..Sqrt(N)+2&#13;&#10;Input == 0..4"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 4&#13;&#10;MaxFN == 5&#13;&#10;Input == 0..MaxN&#13;&#10;NatMock1 == 0..MaxFN&#13;&#10;IndexMock1 == 0..N+1&#13;&#10;IndexMock2 == 0..Sqrt(N)+2"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <booleanAttribute key="recover" value="false"/>

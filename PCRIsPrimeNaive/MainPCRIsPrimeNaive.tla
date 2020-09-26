@@ -10,7 +10,7 @@ VARIABLES N, map1
 
 ----------------------------------------------------------------------------
 
-NULL == CHOOSE x : x \notin (Nat \union BOOLEAN)
+NULL == CHOOSE x : x \notin (VarPType1 \union VarCType1)
          
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRIsPrimeNaive WITH
@@ -27,6 +27,7 @@ PCR1 == INSTANCE PCRIsPrimeNaive WITH
 vars == <<N,map1>>
 
 Init == /\ N \in InType1
+        /\ PCR1!Pre(N)
         /\ map1 = [i \in CtxIdType1 |-> 
                       IF   i = <<0>> 
                       THEN PCR1!InitCtx(N)
@@ -67,5 +68,5 @@ Termination == <> PCR1!Finished(<<0>>)
   
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 19 16:21:29 UYT 2020 by josedu
+\* Last modified Wed Sep 23 19:04:10 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

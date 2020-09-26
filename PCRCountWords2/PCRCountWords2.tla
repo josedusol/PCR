@@ -6,9 +6,9 @@
    ----------------------------------------------------------
      fun lines, joinCounts
      
-     fun lbnd lines = lambda x. 1 
-     fun ubnd lines = lambda x. Len(x)
-     fun step lines = lambda x. x + 1
+     lbnd lines = lambda x. 1 
+     ubnd lines = lambda x. Len(x)
+     step lines = lambda x. x + 1
      
      PCR CountWords2(T, W):
        par
@@ -65,6 +65,8 @@ InitCtx(x) == [in  |-> x,
                v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                ret |-> EmptyBag,
                ste |-> "OFF"]
+
+Pre(x) == TRUE
 
 ----------------------------------------------------------------------------
 
@@ -149,6 +151,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 22:38:15 UYT 2020 by josedu
+\* Last modified Wed Sep 23 19:07:53 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

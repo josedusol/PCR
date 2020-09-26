@@ -6,12 +6,12 @@
    ----------------------------------------------------------
      fun fib, isPrime, sum
    
-     fun lbnd fib = lambda x. 0 
-     fun ubnd fib = lambda x. x
-     fun step fib = lambda x. x + 1
+     lbnd fib = lambda x. 0 
+     ubnd fib = lambda x. x
+     step fib = lambda x. x + 1
    
      fun fib(N, p, j) = if j < 2 then 1 else p[j-1] + p[j-2]
-     fun sum(a,b) = a + (if b then 1 else 0)
+     fun sum(r1,r2) = r1 + (if r2 then 1 else 0)
    
      PCR FibPrimes1(N):
        par
@@ -42,7 +42,7 @@ isPrime(x, p, j) ==
         ELSE ~ (n % d = 0) /\ F[d-1]
   IN F[Sqrt(n)]
 
-sum(old, new) == old + (IF new THEN 1 ELSE 0)   
+sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)   
 
 ----------------------------------------------------------------------------         
 
@@ -66,6 +66,8 @@ InitCtx(x) == [in  |-> x,
                ret |-> 0,
                ste |-> "OFF"]
 
+Pre(x) == TRUE 
+
 ----------------------------------------------------------------------------         
             
 (* 
@@ -87,9 +89,9 @@ P(i) ==
    Consumer action
    
    FXML:  forall j \in Dom(p)
-            c[j] = isPrime p[j]
+            c[j] = isPrime N p[j]
 
-   PCR:   c = consume isPrime p
+   PCR:   c = consume isPrime N p
 *)
 C(i) == 
   \E j \in Iterator(i) :
@@ -134,6 +136,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 23:02:21 UYT 2020 by josedu
+\* Last modified Wed Sep 23 23:51:35 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -12,9 +12,9 @@
                              else True
      fun and(a,b) = a && b 
      
-     fun lbnd divisors = lambda x. 0 
-     fun ubnd divisors = lambda x. x
-     fun step divisors = lambda x. x+1
+     lbnd divisors = lambda x. 0 
+     ubnd divisors = lambda x. x
+     step divisors = lambda x. x+1
    
      PCR IsPrimeNaive(N):
        par
@@ -25,7 +25,7 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase, Sequences
+EXTENDS Typedef, PCRBase
 
 LOCAL INSTANCE TLC
 
@@ -64,6 +64,8 @@ InitCtx(x) == [in  |-> x,
                v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                ret |-> x > 1,
                ste |-> "OFF"]  
+
+Pre(x) == TRUE
 
 ----------------------------------------------------------------------------
                                           
@@ -133,6 +135,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 22:38:38 UYT 2020 by josedu
+\* Last modified Wed Sep 23 19:04:19 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

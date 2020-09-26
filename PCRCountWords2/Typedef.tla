@@ -3,7 +3,7 @@
 EXTENDS Naturals, Sequences, Bags
 
 (* 
-   Types for PCRCountWords2                          
+   Types for PCR CountWords2                          
 *)
 
 CONSTANT Word
@@ -21,7 +21,7 @@ IndexType1 == Nat
 CtxIdType1 == Seq(Nat)
 
 (* 
-   Types for PCRCountWordsInLine                          
+   Types for PCR CountWordsInLine                          
 *)
 
 InType2    == LType \X WType
@@ -49,5 +49,5 @@ Flatten(seq) ==
                 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 20:39:54 UYT 2020 by josedu
+\* Last modified Tue Sep 22 23:45:33 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu

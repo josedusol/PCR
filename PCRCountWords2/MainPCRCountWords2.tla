@@ -10,7 +10,8 @@ VARIABLES T, W, map1, map2
 
 ----------------------------------------------------------------------------
 
-NULL == CHOOSE x : x \notin Word 
+NULL == CHOOSE x : /\ x \notin (VarPType1 \union VarCType1)
+                   /\ x \notin (VarPType2 \union VarCType2)
 
 \* Instanciate first PCR with appropiate types
 PCR1 == INSTANCE PCRCountWords2 WITH 
@@ -39,6 +40,7 @@ vars == <<T,W,map1,map2>>
 
 Init == /\ T \in TType
         /\ W \in WType
+        /\ PCR1!Pre(<<T, W>>)
         /\ map1 = [i \in CtxIdType1 |-> 
                       IF   i = <<0>> 
                       THEN PCR1!InitCtx(<<T, W>>)
@@ -102,21 +104,21 @@ GTermination == [][ PCR1!Finished(<<0>>) <=> Done ]_vars
 \* The following def provides a refinement mapping to prove this fact.
 subst ==                        
   [i \in DOMAIN map1 |-> 
-     IF map1[i] # NULL                               \* For any well-defined PCR1 context map1[i]
+     IF map1[i] # NULL                               \* For any well-defined PCR1 context with index i
      THEN [map1[i] EXCEPT                                 
        !.v_p= [j \in DOMAIN @ |-> 
                  IF @[j].r > 0                       \* For any read producer var v_p[j]
-                 THEN IF PCR2!Finished(i \o <<j>>)   \* If C_ret(i \o <j>) occurs (PCR2 finished at i\o<j>)
+                 THEN IF PCR2!Finished(i \o <<j>>)   \* If C_ret(i \o <j>) holds (PCR2 finished at i\o<j>)
                       THEN [v |-> @[j].v, r |-> 1]   \* then producer var is marked as read
                       ELSE [v |-> @[j].v, r |-> 0]   \* else we pretend is still unread.
                  ELSE @[j]
               ],
        !.v_c= [j \in DOMAIN @ |->                    \* For any consumer var v_c[j]
                  IF /\ PCR1!Read(map1[i].v_p, j)     \* for which corresponding v_p[j] has been read
-                    /\ PCR2!Finished(i \o <<j>>)     \* and C_ret(i \o <<j>>) has occurred (PCR2 finished at i\o<j>)
+                    /\ PCR2!Finished(i \o <<j>>)     \* and C_ret(i \o <<j>>) holds (PCR2 finished at i\o<j>)
                  THEN [v |-> PCR2!Out(i \o <<j>>),   \* then consumer var gets result computed by PCR2
                        r |-> @[j].r]                 
-                 ELSE @[j]                           \* else we leave it as is.
+                 ELSE @[j]                           \* else leave it as is.
               ]              
           ]
      ELSE NULL]
@@ -125,6 +127,6 @@ PCRCountWords1 == INSTANCE MainPCRCountWords1 WITH map <- subst
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 20:54:53 UYT 2020 by josedu
+\* Last modified Fri Sep 25 22:07:12 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

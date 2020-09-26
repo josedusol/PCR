@@ -6,9 +6,9 @@
    ----------------------------------------------------------
      fun fib, sum
    
-     fun lbnd fib = lambda x. 0 
-     fun ubnd fib = lambda x. x
-     fun step fib = lambda x. x + 1
+     lbnd fib = lambda x. 0 
+     ubnd fib = lambda x. x
+     step fib = lambda x. x + 1
    
      fun fib(N, p, j) = if j < 2 then 1 else p[j-1] + p[j-2]
      fun sum(a,b) = a + (if b then 1 else 0)  
@@ -68,6 +68,8 @@ InitCtx(x) == [in  |-> x,
                v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                ret |-> 0,
                ste |-> "OFF"]
+
+Pre(x) == TRUE
 
 ----------------------------------------------------------------------------
 
@@ -153,6 +155,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 22:37:52 UYT 2020 by josedu
+\* Last modified Wed Sep 23 19:06:13 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

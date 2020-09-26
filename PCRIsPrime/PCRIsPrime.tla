@@ -6,24 +6,24 @@
    ----------------------------------------------------------
      fun divisors, notDivides, and
      
-     fun lbnd divisors = lambda x. 2 
-     fun ubnd divisors = lambda x. Sqrt(x)
-     fun step divisors = lambda x. if x == 2 then 3 else x+2
+     lbnd divisors = lambda x. 2 
+     ubnd divisors = lambda x. Sqrt(x)
+     step divisors = lambda x. if x == 2 then 3 else x+2
      
      fun divisors(N,p,j) = j
      fun notDivides(N,p,j) = not (N % p[j] == 0)
-     fun and(a,b) = a && b 
+     fun and(r1,r2) = r1 && r2 
         
      PCR IsPrime(N):
        par
          p = produce divisors N
          forall p
-           c = consume notDivides N 
+           c = consume notDivides N p
          r = reduce and (N > 1) c
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase, Sequences
+EXTENDS Typedef, PCRBase
 
 LOCAL INSTANCE TLC
 
@@ -60,7 +60,9 @@ InitCtx(x) == [in  |-> x,
                v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                ret |-> x > 1,
                ste |-> "OFF"]                      
-               
+     
+Pre(x) == TRUE     
+                
 ----------------------------------------------------------------------------                      
                                                   
 (* 
@@ -129,6 +131,6 @@ Next(i) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 22:38:29 UYT 2020 by josedu
+\* Last modified Fri Sep 25 00:12:16 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

@@ -47,12 +47,12 @@ isBase(x, p, j) == Len(p[j].v) <= 1
 
 merge(seq1,seq2) ==
   LET F[s1, s2 \in Seq(Elem)] ==
-       IF s1 = << >> 
-       THEN s2 
-       ELSE IF s2 = << >> 
-            THEN s1 
-            ELSE CASE Head(s1) <= Head(s2) -> <<Head(s1)>> \o F[Tail(s1), s2]
-                   [] Head(s1) > Head(s2)  -> <<Head(s2)>> \o F[s1, Tail(s2)]
+        IF s1 = << >> 
+        THEN s2 
+        ELSE IF s2 = << >> 
+             THEN s1 
+             ELSE CASE Head(s1) <= Head(s2) -> <<Head(s1)>> \o F[Tail(s1), s2]
+                    [] Head(s1) > Head(s2)  -> <<Head(s2)>> \o F[s1, Tail(s2)]
   IN F[seq1, seq2] 
  
 conquer(old, new) == merge(old, new)
@@ -78,6 +78,10 @@ InitCtx(x) == [in  |-> x,
                v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                ret |-> <<>>,
                ste |-> "OFF"] 
+
+Pre(x) == TRUE
+
+Eureka(i) == FALSE
 
 ----------------------------------------------------------------------------
             
@@ -160,8 +164,8 @@ R(i) ==
     /\ map' = [map EXCEPT 
          ![i].ret      = conquer(@, v_c(i)[j].v),
          ![i].v_c[j].r = @ + 1,
-         ![i].ste      = IF CDone(i, j) THEN "END" ELSE @]                                                                            
-\*    /\ IF   CDone(i, j)
+         ![i].ste      = IF CDone(i, j) \/ Eureka(i) THEN "END" ELSE @]                                                                            
+\*    /\ IF State(i)' = "END"
 \*       THEN PrintT("R" \o ToString(i \o <<j>>) 
 \*                       \o " : in= "  \o ToString(in(i))    
 \*                       \o " : ret= " \o ToString(Out(i)')) 
@@ -178,6 +182,6 @@ Next(i) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 20 22:38:55 UYT 2020 by josedu
+\* Last modified Wed Sep 23 19:03:24 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed
