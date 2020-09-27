@@ -4,7 +4,7 @@
    Main module for PCR NQueensFirst.
 *)
 
-EXTENDS Typedef
+EXTENDS Typedef, Functions, FiniteSets
 
 LOCAL INSTANCE TLC
 
@@ -42,7 +42,8 @@ Next1(I) == /\ map[I] # NULL
 
 Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
         /\ UNCHANGED vars         
-\*        /\ PrintT("done " \o " : " \o ToString(map))          
+\*        /\ PrintT("done " \o " : " \o ToString(Cardinality(DOMAIN [I \in PCR1!CtxIndex |-> map[I]] )))    
+\*        /\ PrintT("done " \o " : " \o ToString(PCR1!Out(<<0>>)))       
 
 Next == \/ \E I \in CtxIdType1 : Next1(I)
         \/ Done
@@ -58,17 +59,16 @@ FairSpec == /\ Spec
    Properties 
 *)
 
-Solution(in) == CASE Len(in) = 0      -> << >>
-                  [] Len(in) = 1      -> <<1>>
-                  [] Len(in) \in 2..3 -> << >>
-                  [] Len(in) = 4      -> <<3,1,4,2>>
-                  [] Len(in) = 4      -> <<2,4,1,3>>
-               \* [] Len(in) = 5      -> ... 10 solutions ... 
+Solution(in) == CASE Len(in) = 0      -> { << >> }
+                  [] Len(in) = 1      -> { <<1>> }
+                  [] Len(in) \in 2..3 -> { << >> }
+                  [] Len(in) = 4      -> { <<3,1,4,2>>, <<2,4,1,3>> }
+               \* [] Len(in) = 5      -> { ... 10 solutions ... } 
 
 TypeInv == /\ B \in InType1
            /\ map \in PCR1!CtxMap
 
-Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(B) )
+Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) \in Solution(B) )
 
 Termination == <> PCR1!Finished(<<0>>)
 
@@ -76,6 +76,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 17:58:00 UYT 2020 by josedu
+\* Last modified Sun Sep 27 17:14:06 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

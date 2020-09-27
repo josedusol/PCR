@@ -17,7 +17,7 @@
        par
          p = produceSeq fib N
          forall p
-           c = consume id N p
+           c = consume checkLast N p
          r = reduce projectRed 0 c
    ----------------------------------------------------------
 *)
@@ -47,11 +47,13 @@ projectRed(r1, r2) == r1 + r2
 LowerBnd(x) == 0
 UpperBnd(x) == x
 Step(i)     == i + 1
+ECnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
-  Step      <- Step
+  Step      <- Step,
+  ECnd      <- ECnd
 
 ----------------------------------------------------------------------------
 
@@ -135,10 +137,11 @@ Next(I) ==
      /\ \/ P(I) 
         \/ C(I) 
         \/ R(I)
+        \/ Eureka(I)
         \/ Quit(I)      
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 16:03:15 UYT 2020 by josedu
+\* Last modified Sun Sep 27 16:08:48 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

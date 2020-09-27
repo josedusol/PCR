@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="79"/>
+    <intAttribute key="fpIndex" value="66"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -28,8 +28,8 @@
         <listEntry value="0TypeInv"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
-        <listEntry value="1Termination"/>
-        <listEntry value="0Correctness"/>
+        <listEntry value="0Termination"/>
+        <listEntry value="1Correctness"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
@@ -43,7 +43,7 @@
         <listEntry value="IndexType1;;0..N+1;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..7"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..5"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <booleanAttribute key="recover" value="false"/>

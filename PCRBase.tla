@@ -53,10 +53,7 @@ Finished(I) == map[I].ste = "END"
    
 \* Useful predicates on vars
 Written(var, i) == var[i].v # NULL
-Read(var, i)    == var[i].r > 0       
-   
-\* Start action         
-Start(I) == map' = [map EXCEPT ![I].ste = "RUN"]      
+Read(var, i)    == var[i].r > 0            
              
 \* Auxiliary operators over functions/records
 Updf(f, x, v) == [f EXCEPT ![x] = v]
@@ -65,7 +62,7 @@ ExtR(r, s)    == [k \in DOMAIN r |-> IF k \in DOMAIN s THEN s[k] ELSE r[k]]
                
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 00:49:09 UYT 2020 by josedu
+\* Last modified Sat Sep 26 21:13:58 UYT 2020 by josedu
 \* Last modified Mon Jul 06 15:51:49 UYT 2020 by josed
 \* Last modified Tue Jun 09 12:24:42 GMT-03:00 2020 by JosEdu
 \* Created Mon Jun 08 22:50:44 GMT-03:00 2020 by JosEdu

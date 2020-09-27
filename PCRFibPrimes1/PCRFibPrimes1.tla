@@ -53,11 +53,13 @@ sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)
 LowerBnd(x) == 0
 UpperBnd(x) == x
 Step(i)     == i + 1  
-
+ECnd(r)     == FALSE
+ 
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
-  Step      <- Step
+  Step      <- Step,
+  ECnd      <- ECnd
 
 ----------------------------------------------------------------------------
 
@@ -141,10 +143,11 @@ Next(I) ==
      /\ \/ P(I) 
         \/ C(I) 
         \/ R(I)
+        \/ Eureka(I)
         \/ Quit(I)
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 16:03:23 UYT 2020 by josedu
+\* Last modified Sun Sep 27 16:08:36 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

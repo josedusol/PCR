@@ -19,9 +19,9 @@
                              then base(B, p, i)
                              else NQueensFirst(B, p, i)
    
-     fun conquer(r1,r2) = r1 ++ r2
+     fun conquer(r1,r2) = if r1 = [] then r2 else r1
      
-     cnd terminate(r) = complete(r)
+     cnd terminate(r) = complete(r) && not (r = [])
      
      pre NQueensAll = \forall r \in 1..Len(B) : B[r] == 0
    
@@ -87,7 +87,7 @@ canAddQueens(x) ==
         ELSE TRUE 
   IN F[1] 
 
-\* produce further configurations where is possible to place a new queen
+\* produce further configurations each with a legally placed new queen
 divide(x) == 
   LET N == Len(x)
       F[r \in Nat] ==
@@ -106,7 +106,7 @@ base(x, p, i) == IF complete(p[i].v) THEN p[i].v ELSE << >>
 
 isBase(x, p, i) == complete(p[i].v) \/ ~ canAddQueens(p[i].v) 
  
-conquer(r1, r2) == r1 \o r2
+conquer(r1, r2) == IF r1 = << >> THEN r2 ELSE r1
 
 ----------------------------------------------------------------------------
 
@@ -117,11 +117,14 @@ conquer(r1, r2) == r1 \o r2
 LowerBnd(x) == 1
 UpperBnd(x) == Len(divide(x))
 Step(i)     == i + 1  
-
+ECnd(r)     == complete(r) /\ r # << >>
+\*ECnd(r)     == FALSE
+ 
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
-  Step      <- Step
+  Step      <- Step,
+  ECnd      <- ECnd
 
 ----------------------------------------------------------------------------
 
@@ -137,9 +140,6 @@ InitCtx(x) == [in  |-> x,
                ste |-> "OFF"] 
 
 Pre(x) == \A r \in DOMAIN x : x[r] = 0
-
-Eureka(r) == /\ complete(r)
-\*             /\ IF complete(r) THEN PrintT("eureka! " \o ToString(r)) ELSE complete(r)  
 
 ----------------------------------------------------------------------------
             
@@ -219,13 +219,12 @@ R(I) ==
   \E i \in Iterator(I) :
     /\ Written(v_c(I), i)
     /\ ~ Read(v_c(I), i)
-    /\ LET ret == conquer(Out(I), v_c(I)[i].v)
-           ste == CDone(I, i) \/ Eureka(ret)
-       IN map' = [map EXCEPT 
-            ![I].ret      = ret,
-            ![I].v_c[i].r = @ + 1,
-            ![I].ste      = IF ste THEN "END" ELSE @]
-\*    /\ IF State(I)' = "END"
+    /\ map' = [map EXCEPT 
+         ![I].ret      = conquer(Out(I), v_c(I)[i].v),
+         ![I].v_c[i].r = @ + 1,
+         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]
+\*  /\ PrintT("ret " \o ToString(conquer(Out(I), v_c(I)[i].v)))      
+\*    /\ IF CDone(I, i)
 \*       THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(in(I))    
 \*                       \o " : ret= " \o ToString(Out(I)')) 
@@ -241,10 +240,11 @@ Next(I) ==
      /\ \/ P(I) 
         \/ C(I) 
         \/ R(I)
+        \/ Eureka(I)
         \/ Quit(I)
  
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 17:59:47 UYT 2020 by josedu
+\* Last modified Sun Sep 27 15:56:22 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

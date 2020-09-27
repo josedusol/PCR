@@ -1,4 +1,4 @@
-------------------------- MODULE PCRIsPrimeNaive ---------------------------
+ ------------------------- MODULE PCRIsPrimeNaive ---------------------------
 
 (*
    PCR IsPrimeNaive
@@ -6,11 +6,11 @@
    ----------------------------------------------------------
      fun divisors, notDivides, and
      
-     fun divisors(N,p,i) = j
+     fun divisors(N,p,i) = i
      fun notDivides(N,p,i) = if 2 <= p[i] && p[i] < N
                              then not (N % p[i] == 0)
                              else True
-     fun and(a,b) = a && b 
+     fun and(r1,r2) = r1 && r2 
      
      lbnd divisors = lambda x. 0 
      ubnd divisors = lambda x. x
@@ -41,7 +41,7 @@ notDivides(x, p, i) == IF 2 <= p[i].v /\ p[i].v < x
                        THEN ~ (x % p[i].v = 0)
                        ELSE TRUE
 
-and(old, new) == old /\ new 
+and(r1, r2) == r1 /\ r2 
 
 ----------------------------------------------------------------------------
 
@@ -51,12 +51,14 @@ and(old, new) == old /\ new
 
 LowerBnd(x) == 0
 UpperBnd(x) == x
-Step(i)     == i + 1          
+Step(i)     == i + 1        
+ECnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
-  Step      <- Step
+  Step      <- Step,
+  ECnd      <- ECnd
 
 ----------------------------------------------------------------------------
 
@@ -71,7 +73,7 @@ InitCtx(x) == [in  |-> x,
                ret |-> x > 1,
                ste |-> "OFF"]  
 
-Pre(x) == TRUE
+Pre(x) == TRUE  
 
 ----------------------------------------------------------------------------
                                           
@@ -121,10 +123,10 @@ R(I) ==
     /\ Written(v_c(I), i)    
     /\ ~ Read(v_c(I), i)
     /\ map' = [map EXCEPT 
-         ![I].ret      = and(@, v_c(I)[i].v),
+         ![I].ret      = and(Out(I), v_c(I)[i].v),
          ![I].v_c[i].r = @ + 1,
-         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]
-\*    /\ IF   CDone(I, i)
+         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]         
+\*    /\ IF CDone(I, i)
 \*       THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(in(I))    
 \*                       \o " : ret= " \o ToString(Out(I)')) 
@@ -140,10 +142,11 @@ Next(I) ==
      /\ \/ P(I) 
         \/ C(I) 
         \/ R(I)
+        \/ Eureka(I)
         \/ Quit(I)      
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 16:06:04 UYT 2020 by josedu
+\* Last modified Sun Sep 27 16:06:33 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

@@ -68,8 +68,11 @@ TypeInv == /\ N \in InType1
 Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(N) )
   
 Termination == <> PCR1!Finished(<<0>>) 
+
+\*EurekaCnd == 
+\*    []( PCR1!ECnd(PCR1!Out(<<0>>)) => <> )
   
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 15:52:03 UYT 2020 by josedu
+\* Last modified Sat Sep 26 20:58:46 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

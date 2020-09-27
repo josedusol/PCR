@@ -53,11 +53,13 @@ countWordsInLine == INSTANCE PCRCountWordsInLine WITH
 LowerBnd(x) == 1
 UpperBnd(x) == Len(x[1])
 Step(i)     == i + 1  
-
+ECnd(r)     == FALSE
+ 
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
-  Step      <- Step
+  Step      <- Step,
+  ECnd      <- ECnd
 
 ----------------------------------------------------------------------------
 
@@ -153,13 +155,14 @@ Next(I) ==
      /\ Start(I)   
      /\ UNCHANGED map2
   \/ /\ State(I) = "RUN" 
-     /\ \/ P(I)    /\ UNCHANGED map2
+     /\ \/ P(I)      /\ UNCHANGED map2
         \/ C(I)  
-        \/ R(I)    /\ UNCHANGED map2
-        \/ Quit(I) /\ UNCHANGED map2  
+        \/ R(I)      /\ UNCHANGED map2
+        \/ Eureka(I) /\ UNCHANGED map2
+        \/ Quit(I)   /\ UNCHANGED map2  
  
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 16:02:50 UYT 2020 by josedu
+\* Last modified Sun Sep 27 16:09:08 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

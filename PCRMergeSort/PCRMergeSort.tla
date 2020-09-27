@@ -66,11 +66,13 @@ conquer(r1, r2) == merge(r1, r2)
 LowerBnd(x) == 1
 UpperBnd(x) == Len(divide(x))
 Step(i)     == i + 1  
-
+ECnd(r)     == FALSE
+ 
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
-  Step      <- Step
+  Step      <- Step,
+  ECnd      <- ECnd
 
 ----------------------------------------------------------------------------
 
@@ -187,10 +189,11 @@ Next(I) ==
      /\ \/ P(I) 
         \/ C(I) 
         \/ R(I)
+        \/ Eureka(I)        
         \/ Quit(I)
  
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 17:44:31 UYT 2020 by josedu
+\* Last modified Sun Sep 27 16:06:07 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

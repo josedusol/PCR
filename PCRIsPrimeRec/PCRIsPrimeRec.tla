@@ -52,11 +52,13 @@ projectRed(r1, r2) == r2
 LowerBnd(x) == 0
 UpperBnd(x) == 0
 Step(i)     == i + 1
+ECnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
-  Step      <- Step
+  Step      <- Step,
+  ECnd      <- ECnd
 
 ----------------------------------------------------------------------------
 
@@ -172,10 +174,11 @@ Next(I) ==
      /\ \/ P(I) 
         \/ C(I) 
         \/ R(I)
-        \/ Quit(I)      
+        \/ Eureka(I)        
+        \/ Quit(I) 
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 16:00:17 UYT 2020 by josedu
+\* Last modified Sun Sep 27 16:06:25 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

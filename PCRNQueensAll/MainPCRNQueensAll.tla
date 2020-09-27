@@ -42,7 +42,7 @@ Next1(I) == /\ map[I] # NULL
 
 Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
         /\ UNCHANGED vars    
-        /\ PrintT("done " \o " : " \o ToString(map))            
+\*        /\ PrintT("done " \o " : " \o ToString(map))            
 
 Next == \/ \E I \in CtxIdType1 : Next1(I)
         \/ Done
@@ -75,6 +75,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 17:46:07 UYT 2020 by josedu
+\* Last modified Sat Sep 26 21:21:27 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

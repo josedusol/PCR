@@ -48,11 +48,13 @@ and(r1, r2) == r1 /\ r2
 LowerBnd(x) == 2
 UpperBnd(x) == Sqrt(x)
 Step(i)     == IF i = 2 THEN 3 ELSE i + 2          
+ECnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
-  Step      <- Step
+  Step      <- Step,
+  ECnd      <- ECnd
 
 ----------------------------------------------------------------------------
 
@@ -67,7 +69,7 @@ InitCtx(x) == [in  |-> x,
                ret |-> x > 1,
                ste |-> "OFF"]                      
      
-Pre(x) == TRUE     
+Pre(x) == TRUE
                 
 ----------------------------------------------------------------------------                      
                                                   
@@ -84,7 +86,7 @@ P(I) ==
     /\ ~ Written(v_p(I), i)
     /\ map' = [map EXCEPT 
          ![I].v_p[i] = [v |-> divisors(in(I), v_p(I), i), r |-> 0]]         
-\*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[j].v'))  
+\*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))  
 
 (* 
    Consumer action
@@ -115,12 +117,12 @@ C(I) ==
 R(I) == 
   \E i \in Iterator(I) :
     /\ Written(v_c(I), i)    
-    /\ ~ Read(v_c(I), i)
+    /\ ~ Read(v_c(I), i)   
     /\ map' = [map EXCEPT 
          ![I].ret      = and(@, v_c(I)[i].v),
          ![I].v_c[i].r = @ + 1,
-         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]                                                                     
-\*    /\ IF   CDone(I, j)
+         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]                                                                               
+\*    /\ IF   CDone(I, i)
 \*       THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(in(I))    
 \*                       \o " : ret= " \o ToString(Out(I)')) 
@@ -136,10 +138,11 @@ Next(I) ==
      /\ \/ P(I) 
         \/ C(I) 
         \/ R(I)
-        \/ Quit(I)      
+        \/ Eureka(I)        
+        \/ Quit(I)     
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 16:05:41 UYT 2020 by josedu
+\* Last modified Sun Sep 27 16:06:41 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed
