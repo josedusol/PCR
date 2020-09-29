@@ -6,12 +6,12 @@
 
 EXTENDS Typedef, FiniteSets
 
-VARIABLES N, map1, map2 
+VARIABLES N, map1, map2, i_p1, i_p2 
 
 ----------------------------------------------------------------------------
 
-NULL == CHOOSE x : /\ x \notin (VarPType1 \union VarCType1)
-                   /\ x \notin (VarPType2 \union VarCType2)
+NULL == CHOOSE x : /\ x \notin (VarPType1 \union VarCType1 \union IndexType1)
+                   /\ x \notin (VarPType2 \union VarCType2 \union IndexType2)
 
 \* Instanciate first PCR with appropiate types
 PCR1 == INSTANCE PCRFibPrimes2 WITH 
@@ -22,7 +22,8 @@ PCR1 == INSTANCE PCRFibPrimes2 WITH
   VarCType  <- VarCType1,
   VarRType  <- VarRType1,  
   map       <- map1,
-  map2      <- map2
+  map2      <- map2,
+  i_p       <- i_p1
 
 \* Instanciate second PCR with appropiate types  
 PCR2 == INSTANCE PCRIsPrime WITH
@@ -32,11 +33,12 @@ PCR2 == INSTANCE PCRIsPrime WITH
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
-  map       <- map2 
+  map       <- map2,
+  i_p       <- i_p2 
  
 ----------------------------------------------------------------------------
 
-vars == <<N,map1,map2>>
+vars == <<N,map1,map2,i_p1,i_p2>>
 
 Init == /\ N \in InType1
         /\ PCR1!Pre(N)
@@ -45,6 +47,8 @@ Init == /\ N \in InType1
                      THEN PCR1!InitCtx(N)
                      ELSE NULL]
         /\ map2 = [I \in CtxIdType2 |-> NULL]
+        /\ i_p1 = PCR1!LowerBnd(N)
+        /\ i_p2 = NULL
 
 (* PCR1 step at index I *)                  
 Next1(I) == /\ map1[I] # NULL
@@ -54,7 +58,7 @@ Next1(I) == /\ map1[I] # NULL
 (* PCR2 step at index I *)   
 Next2(I) == /\ map2[I] # NULL
             /\ PCR2!Next(I)
-            /\ UNCHANGED <<N,map1>> 
+            /\ UNCHANGED <<N,map1,i_p1>> 
 
 Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
         /\ \A I \in PCR2!CtxIndex : PCR2!Finished(I)
@@ -90,6 +94,8 @@ Solution(in) == LET fibValues == { Fibonacci[n] : n \in 0..in }
 TypeInv == /\ N \in InType1
            /\ map1 \in PCR1!CtxMap
            /\ map2 \in PCR2!CtxMap
+           /\ i_p1 \in IndexType1 \union {NULL}
+           /\ i_p2 \in IndexType2 \union {NULL}
 
 Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(N) )
   
@@ -120,10 +126,12 @@ subst ==
           ]
      ELSE NULL]     
               
-PCRFibPrimes1 == INSTANCE MainPCRFibPrimes1 WITH map1 <- subst
+PCRFibPrimes1 == INSTANCE MainPCRFibPrimes1 
+  WITH map1 <- subst,
+       i_p1 <- i_p1
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 01:00:12 UYT 2020 by josedu
+\* Last modified Tue Sep 29 15:57:56 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

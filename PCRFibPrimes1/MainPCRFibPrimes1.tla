@@ -6,7 +6,7 @@
 
 EXTENDS Typedef, FiniteSets
 
-VARIABLES N, map1   
+VARIABLES N, map1, i_p1   
 
 ----------------------------------------------------------------------------
 
@@ -20,11 +20,12 @@ PCR1 == INSTANCE PCRFibPrimes1 WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1, 
-  map       <- map1          
+  map       <- map1,
+  i_p       <- i_p1          
             
 ----------------------------------------------------------------------------
 
-vars == <<N,map1>>
+vars == <<N,map1,i_p1>>
 
 Init == /\ N \in InType1
         /\ PCR1!Pre(N)
@@ -32,11 +33,12 @@ Init == /\ N \in InType1
                      IF   I = <<0>> 
                      THEN PCR1!InitCtx(N)
                      ELSE NULL]
+        /\ i_p1 = PCR1!LowerBnd(N)             
 
 (* PCR1 step on index I *)                  
 Next1(I) == /\ map1[I] # NULL
             /\ PCR1!Next(I)
-            /\ UNCHANGED N     
+            /\ UNCHANGED <<N>>     
 
 Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
         /\ UNCHANGED vars
@@ -68,6 +70,7 @@ Solution(in) == LET fibValues == { Fibonacci[n] : n \in 0..in }
 
 TypeInv == /\ N \in InType1
            /\ map1 \in PCR1!CtxMap
+           /\ i_p1 \in IndexType1
 
 Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(N) )
   
@@ -77,6 +80,6 @@ GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 00:35:54 UYT 2020 by josedu
+\* Last modified Tue Sep 29 15:14:55 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

@@ -6,7 +6,7 @@
 
 EXTENDS Typedef, FiniteSets
 
-VARIABLES N, map1   
+VARIABLES N, map1, i_p1   
 
 ----------------------------------------------------------------------------
 
@@ -20,11 +20,12 @@ PCR1 == INSTANCE PCRIsPrimeSeq WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1, 
-  map       <- map1
+  map       <- map1,
+  i_p       <- i_p1
 
 ----------------------------------------------------------------------------
 
-vars == <<N,map1>>
+vars == <<N,map1,i_p1>>
 
 Init == /\ N \in InType1
         /\ PCR1!Pre(N)
@@ -32,7 +33,7 @@ Init == /\ N \in InType1
                       IF   i = <<0>> 
                       THEN PCR1!InitCtx(N)
                       ELSE NULL]                  
-
+        /\ i_p1 = PCR1!LowerBnd(N)
 (* 
    PCR1 step at index I 
 *)                          
@@ -64,22 +65,19 @@ Solution(n) == isPrime(n)
 
 TypeInv == /\ N \in InType1
            /\ map1 \in PCR1!CtxMap
+           /\ i_p1 \in IndexType1
 
 Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(N) )
   
 Termination == <> PCR1!Finished(<<0>>) 
 
-\* This Spec is an implementation of PCRIsPrime!Spec.
-\* The following def provides a refinement mapping to prove this fact.
-subst ==                        
-  [I \in DOMAIN map1 |-> 
-     IF map1[I] # NULL       
-     THEN [map1[I] EXCEPT !.i_p = PCR1!LowerBnd(N)]
-     ELSE NULL]     
+\* This Spec is an implementation of PCRIsPrime!Spec. 
               
-PCRIsPrime == INSTANCE MainPCRIsPrime WITH map1 <- subst
+PCRIsPrime == INSTANCE MainPCRIsPrime 
+  WITH map1 <- map1,
+       i_p1 <- PCR1!LowerBnd(N)
   
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 16:14:34 UYT 2020 by josedu
+\* Last modified Tue Sep 29 15:55:38 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

@@ -24,6 +24,8 @@
 
 EXTENDS Typedef, PCRBase
 
+VARIABLE i_p
+
 LOCAL INSTANCE TLC
 
 ----------------------------------------------------------------------------
@@ -59,7 +61,8 @@ INSTANCE PCRIterationSpace WITH
   LowerBnd  <- LowerBnd,
   UpperBnd  <- UpperBnd,  
   Step      <- Step,
-  ECnd      <- ECnd
+  ECnd      <- ECnd,
+  i_p       <- i_p
 
 ----------------------------------------------------------------------------
 
@@ -68,7 +71,7 @@ INSTANCE PCRIterationSpace WITH
 *)
 
 InitCtx(x) == [in  |-> x,
-               i_p |-> LowerBnd(x),
+\*               i_p |-> LowerBnd(x),
                v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                ret |-> 0,
@@ -89,8 +92,9 @@ Pre(x) == TRUE
 P(I) == 
   /\ Bound(I) 
   /\ map' = [map EXCEPT 
-       ![I].v_p[i_p(I)] = [v |-> fib(in(I), v_p(I), i_p(I)), r |-> 0],
-       ![I].i_p         = Step(@)]         
+       ![I].v_p[i_p] = [v |-> fib(in(I), v_p(I), i_p), r |-> 0] ]
+\*       ![I].i_p      = Step(@)]
+  /\ i_p' = Step(i_p)              
 \*  /\ PrintT("P" \o ToString(I \o <<i_p(I)>>) \o " : " \o ToString(v_p(I)[i_p(I)].v'))                  
 
 (* 
@@ -108,7 +112,7 @@ C(I) ==
     /\ ~ Written(v_c(I), i)
     /\ map' = [map EXCEPT 
          ![I].v_p[i].r = 1, 
-         ![I].v_c[i]   = [v |-> isPrime(in(I), v_p(I), i), r |-> 0]]                         
+         ![I].v_c[i]   = [v |-> isPrime(in(I), v_p(I), i), r |-> 0]]                          
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))    
  
@@ -139,15 +143,16 @@ R(I) ==
 Next(I) == 
   \/ /\ State(I) = "OFF" 
      /\ Start(I)
+     /\ UNCHANGED i_p
   \/ /\ State(I) = "RUN"  
      /\ \/ P(I) 
-        \/ C(I) 
-        \/ R(I)
-        \/ Eureka(I)
-        \/ Quit(I)
+        \/ C(I)      /\ UNCHANGED i_p
+        \/ R(I)      /\ UNCHANGED i_p
+        \/ Eureka(I) /\ UNCHANGED i_p
+        \/ Quit(I)   /\ UNCHANGED i_p
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 27 16:08:36 UYT 2020 by josedu
+\* Last modified Tue Sep 29 15:16:10 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

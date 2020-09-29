@@ -6,7 +6,7 @@
 
 LOCAL INSTANCE Naturals
 
-VARIABLE map
+VARIABLES map, i_p
 
 CONSTANTS InType,
           CtxIdType,
@@ -33,7 +33,7 @@ range(start, end, step(_)) ==
 \* Any PCR have an iteration space: a set of indexes  
 Iterator(I) == range(LowerBnd(in(I)), UpperBnd(in(I)), Step)
 
-Bound(I) == i_p(I) \in Iterator(I)    
+Bound(I) == i_p \in Iterator(I)    
 
 CDone(I, i) == \A j \in Iterator(I)\{i} : Read(v_c(I), j)
 
@@ -54,6 +54,6 @@ Quit(I) == /\ Iterator(I) = {}
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 22:10:02 UYT 2020 by josedu
+\* Last modified Tue Sep 29 14:55:35 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

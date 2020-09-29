@@ -25,6 +25,8 @@
 
 EXTENDS Typedef, PCRBase
 
+VARIABLE i_p
+
 LOCAL INSTANCE TLC
 
 ----------------------------------------------------------------------------
@@ -63,7 +65,7 @@ INSTANCE PCRIterationSpace WITH
 *)
                       
 InitCtx(x) == [in  |-> x,
-               i_p |-> LowerBnd(x),
+\*               i_p |-> LowerBnd(x),
                v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                ret |-> x > 1,
@@ -134,15 +136,16 @@ R(I) ==
 Next(I) == 
   \/ /\ State(I) = "OFF"
      /\ Start(I)
+     /\ UNCHANGED i_p
   \/ /\ State(I) = "RUN"
-     /\ \/ P(I) 
-        \/ C(I) 
-        \/ R(I)
-        \/ Eureka(I)        
-        \/ Quit(I)     
+     /\ \/ P(I)      /\ UNCHANGED i_p
+        \/ C(I)      /\ UNCHANGED i_p
+        \/ R(I)      /\ UNCHANGED i_p
+        \/ Eureka(I) /\ UNCHANGED i_p       
+        \/ Quit(I)   /\ UNCHANGED i_p  
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 27 16:06:41 UYT 2020 by josedu
+\* Last modified Tue Sep 29 15:40:52 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

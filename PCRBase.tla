@@ -24,7 +24,7 @@ VarC == [IndexType -> [v : VarCType \union {NULL}, r : Nat]]
 
 \* Any PCR runs in a context. A context is a record with:
 CtxType == [in  : InType   ,   \* input
-            i_p : IndexType,   \* iteration index
+\*            i_p : IndexType,   \* iteration index
             v_p : VarP,        \* producer history
             v_c : VarC,        \* consumer history
             ret : VarRType,    \* reducer result
@@ -36,7 +36,7 @@ CtxIndex == {I \in CtxIdType : map[I] # NULL}
 
 \* Convenient names for context elements            
 in(I)    == map[I].in
-i_p(I)   == map[I].i_p
+\*i_p(I)   == map[I].i_p
 v_p(I)   == map[I].v_p
 v_c(I)   == map[I].v_c
 Out(I)   == map[I].ret 
@@ -62,7 +62,7 @@ ExtR(r, s)    == [k \in DOMAIN r |-> IF k \in DOMAIN s THEN s[k] ELSE r[k]]
                
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 21:13:58 UYT 2020 by josedu
+\* Last modified Tue Sep 29 14:53:41 UYT 2020 by josedu
 \* Last modified Mon Jul 06 15:51:49 UYT 2020 by josed
 \* Last modified Tue Jun 09 12:24:42 GMT-03:00 2020 by JosEdu
 \* Created Mon Jun 08 22:50:44 GMT-03:00 2020 by JosEdu

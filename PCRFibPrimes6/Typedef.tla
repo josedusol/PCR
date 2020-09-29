@@ -42,5 +42,5 @@ Sqrt(n) == Max({ i \in Nat : i*i <= n })
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Sep 25 14:00:27 UYT 2020 by josedu
+\* Last modified Mon Sep 28 22:06:46 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu
