@@ -74,8 +74,10 @@ INSTANCE PCRIterationSpace WITH
 
 InitCtx(x) == [in  |-> x,
 \*               i_p |-> LowerBnd(x),
-               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+\*               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+\*               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               v_p |-> [n \in IndexType |-> Undef],
+               v_c |-> [n \in IndexType |-> Undef],
                ret |-> 0,
                ste |-> "OFF"]
 
@@ -92,7 +94,7 @@ Pre(x) == TRUE
    PCR:   p = produceSeq fib N                              
 *)
 P(I) == 
-  /\ Bound(I) 
+  /\ bound(I) 
   /\ map' = [map EXCEPT 
        ![I].v_p[i_p] = [v |-> fib(in(I), v_p(I), i_p), r |-> 0] ]
 \*       ![I].i_p      = Step(@)] 
@@ -103,9 +105,9 @@ P(I) ==
    Consumer call action
 *)
 C_call(I) == 
-  \E i \in Iterator(I):
-    /\ Written(v_p(I), i)
-    /\ ~ Read(v_p(I), i)
+  \E i \in iterator(I):
+    /\ written(v_p(I), i)
+    /\ ~ read(v_p(I), i)
     /\ map'  = [map  EXCEPT ![I].v_p[i].r = 1] 
     /\ map2' = [map2 EXCEPT 
          ![I \o <<i>>] = isPrime!InitCtx(v_p(I)[i].v)] 
@@ -117,12 +119,13 @@ C_call(I) ==
    Consumer end action
 *)
 C_ret(I) == 
-  \E i \in Iterator(I) :
-     /\ Read(v_p(I), i)       
-     /\ ~ Written(v_c(I), i)
-     /\ isPrime!Finished(I \o <<i>>)   
+  \E i \in iterator(I) :
+     /\ written(v_p(I), i)
+     /\ read(v_p(I), i)       
+     /\ ~ written(v_c(I), i)
+     /\ isPrime!finished(I \o <<i>>)   
      /\ map' = [map EXCEPT 
-          ![I].v_c[i]= [v |-> isPrime!Out(I \o <<i>>), r |-> 0]]  
+          ![I].v_c[i]= [v |-> isPrime!out(I \o <<i>>), r |-> 0]]  
 \*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(isPrime!in(I \o <<i>>))    
 \*                       \o " : ret= " \o ToString(isPrime!Out(I \o <<i>>)))
@@ -141,13 +144,13 @@ C(I) == \/ C_call(I)
    PCR:   r = reduce sum 0 c
 *)
 R(I) == 
-  \E i \in Iterator(I) :
-     /\ Written(v_c(I), i)  
-     /\ ~ Read(v_c(I), i)
+  \E i \in iterator(I) :
+     /\ written(v_c(I), i)  
+     /\ ~ read(v_c(I), i)
      /\ map' = [map EXCEPT 
           ![I].ret      = sum(@, v_c(I)[i].v),
           ![I].v_c[i].r = @ + 1,
-          ![I].ste      = IF CDone(I, i) THEN "END" ELSE @] 
+          ![I].ste      = IF cDone(I, i) THEN "END" ELSE @] 
 \*    /\ IF   CDone(I, i)
 \*       THEN PrintT("FP2 R" \o ToString(I \o <<i>>) 
 \*                           \o " : in= "  \o ToString(in(I))    
@@ -158,10 +161,10 @@ R(I) ==
    PCR FibPrimes2 step at index I 
 *)
 Next(I) == 
-  \/ /\ State(I) = "OFF" 
+  \/ /\ state(I) = "OFF" 
      /\ Start(I)   
      /\ UNCHANGED <<i_p,map2,i_p2>>
-  \/ /\ State(I) = "RUN" 
+  \/ /\ state(I) = "RUN" 
      /\ \/ P(I)      /\ UNCHANGED <<map2,i_p2>>
         \/ C(I)      /\ UNCHANGED i_p
         \/ R(I)      /\ UNCHANGED <<i_p,map2,i_p2>>
@@ -170,6 +173,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Sep 29 15:38:14 UYT 2020 by josedu
+\* Last modified Wed Sep 30 01:32:16 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

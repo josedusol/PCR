@@ -38,11 +38,11 @@ fib(x, p, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
 
 isPrime(x, p, i) ==
   LET n == p[i].v
-      F[d \in Nat] ==
+      f[d \in Nat] ==
         IF d < 2
         THEN n > 1
-        ELSE ~ (n % d = 0) /\ F[d-1]
-  IN F[Sqrt(n)]
+        ELSE ~ (n % d = 0) /\ f[d-1]
+  IN f[Sqrt(n)]
 
 sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)   
 
@@ -52,16 +52,16 @@ sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)
    Iteration space                 
 *)
 
-LowerBnd(x) == 0
-UpperBnd(x) == x
-Step(i)     == i + 1  
-ECnd(r)     == FALSE
+lowerBnd(x) == 0
+upperBnd(x) == x
+step(i)     == i + 1  
+eCnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
-  LowerBnd  <- LowerBnd,
-  UpperBnd  <- UpperBnd,  
-  Step      <- Step,
-  ECnd      <- ECnd,
+  lowerBnd  <- lowerBnd,
+  upperBnd  <- upperBnd,  
+  step      <- step,
+  eCnd      <- eCnd,
   i_p       <- i_p
 
 ----------------------------------------------------------------------------
@@ -70,14 +70,16 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
-InitCtx(x) == [in  |-> x,
+initCtx(x) == [in  |-> x,
 \*               i_p |-> LowerBnd(x),
-               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+\*               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+\*               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               v_p |-> [n \in IndexType |-> Undef],
+               v_c |-> [n \in IndexType |-> Undef],
                ret |-> 0,
                ste |-> "OFF"]
 
-Pre(x) == TRUE 
+pre(x) == TRUE 
 
 ----------------------------------------------------------------------------         
             
@@ -90,11 +92,11 @@ Pre(x) == TRUE
    PCR:   p = produceSeq fib N                              
 *)
 P(I) == 
-  /\ Bound(I) 
+  /\ bound(I) 
   /\ map' = [map EXCEPT 
        ![I].v_p[i_p] = [v |-> fib(in(I), v_p(I), i_p), r |-> 0] ]
 \*       ![I].i_p      = Step(@)]
-  /\ i_p' = Step(i_p)              
+  /\ i_p' = step(i_p)              
 \*  /\ PrintT("P" \o ToString(I \o <<i_p(I)>>) \o " : " \o ToString(v_p(I)[i_p(I)].v'))                  
 
 (* 
@@ -106,10 +108,10 @@ P(I) ==
    PCR:   c = consume isPrime N p
 *)
 C(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_p(I), i)
-    /\ ~ Read(v_p(I), i)
-    /\ ~ Written(v_c(I), i)
+  \E i \in iterator(I) :
+    /\ written(v_p(I), i)
+    /\ ~ read(v_p(I), i)
+    /\ ~ written(v_c(I), i)
     /\ map' = [map EXCEPT 
          ![I].v_p[i].r = 1, 
          ![I].v_c[i]   = [v |-> isPrime(in(I), v_p(I), i), r |-> 0]]                          
@@ -124,14 +126,14 @@ C(I) ==
    PCR:   r = reduce sum 0 c
 *)
 R(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_c(I), i)
-    /\ ~ Read(v_c(I), i)
+  \E i \in iterator(I) :
+    /\ written(v_c(I), i)
+    /\ ~ read(v_c(I), i)
     /\ map' = [map EXCEPT 
          ![I].ret      = sum(@, v_c(I)[i].v),
          ![I].v_c[i].r = @ + 1,
-         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]                                                                            
-\*    /\ IF   CDone(I, i)
+         ![I].ste      = IF cDone(I, i) THEN "END" ELSE @]                                                                            
+\*    /\ IF   cDone(I, i)
 \*       THEN PrintT("FP1 R" \o ToString(I \o <<i>>) 
 \*                           \o " : in= "  \o ToString(in(I))    
 \*                           \o " : ret= " \o ToString(Out(I)')) 
@@ -141,10 +143,10 @@ R(I) ==
    PCR FibPrimes1 step at index I 
 *)
 Next(I) == 
-  \/ /\ State(I) = "OFF" 
+  \/ /\ state(I) = "OFF" 
      /\ Start(I)
      /\ UNCHANGED i_p
-  \/ /\ State(I) = "RUN"  
+  \/ /\ state(I) = "RUN"  
      /\ \/ P(I) 
         \/ C(I)      /\ UNCHANGED i_p
         \/ R(I)      /\ UNCHANGED i_p
@@ -153,6 +155,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Sep 29 15:16:10 UYT 2020 by josedu
+\* Last modified Tue Sep 29 23:56:03 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

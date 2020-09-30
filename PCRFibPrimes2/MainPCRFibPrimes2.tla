@@ -10,8 +10,8 @@ VARIABLES N, map1, map2, i_p1, i_p2
 
 ----------------------------------------------------------------------------
 
-NULL == CHOOSE x : /\ x \notin (VarPType1 \union VarCType1 \union IndexType1)
-                   /\ x \notin (VarPType2 \union VarCType2 \union IndexType2)
+NULL == CHOOSE x : /\ x \notin (VarPType1 \union VarCType1 \union VarRType1)
+                   /\ x \notin (VarPType2 \union VarCType2 \union VarRType2)
 
 \* Instanciate first PCR with appropiate types
 PCR1 == INSTANCE PCRFibPrimes2 WITH 
@@ -34,7 +34,10 @@ PCR2 == INSTANCE PCRIsPrime WITH
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
   map       <- map2,
-  i_p       <- i_p2 
+  i_p       <- i_p2
+
+Undef == CHOOSE x : /\ x # PCR1!Undef
+                    /\ x # PCR2!Undef
  
 ----------------------------------------------------------------------------
 
@@ -45,18 +48,18 @@ Init == /\ N \in InType1
         /\ map1 = [I \in CtxIdType1 |-> 
                      IF   I = <<0>> 
                      THEN PCR1!InitCtx(N)
-                     ELSE NULL]
-        /\ map2 = [I \in CtxIdType2 |-> NULL]
+                     ELSE Undef]
+        /\ map2 = [I \in CtxIdType2 |-> Undef]
         /\ i_p1 = PCR1!LowerBnd(N)
-        /\ i_p2 = NULL
+        /\ i_p2 = Undef
 
 (* PCR1 step at index I *)                  
-Next1(I) == /\ map1[I] # NULL
+Next1(I) == /\ map1[I] # Undef
             /\ PCR1!Next(I)
             /\ UNCHANGED N             
 
 (* PCR2 step at index I *)   
-Next2(I) == /\ map2[I] # NULL
+Next2(I) == /\ map2[I] # Undef
             /\ PCR2!Next(I)
             /\ UNCHANGED <<N,map1,i_p1>> 
 
@@ -94,8 +97,8 @@ Solution(in) == LET fibValues == { Fibonacci[n] : n \in 0..in }
 TypeInv == /\ N \in InType1
            /\ map1 \in PCR1!CtxMap
            /\ map2 \in PCR2!CtxMap
-           /\ i_p1 \in IndexType1 \union {NULL}
-           /\ i_p2 \in IndexType2 \union {NULL}
+           /\ i_p1 \in IndexType1 \union {Undef}
+           /\ i_p2 \in IndexType2 \union {Undef}
 
 Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(N) )
   
@@ -107,24 +110,26 @@ GTermination == [][ PCR1!Finished(<<0>>) <=> Done ]_vars
 \* The following def provides a refinement mapping to prove this fact.
 subst ==                        
   [I \in DOMAIN map1 |-> 
-     IF map1[I] # NULL                               \* For any well-defined PCR1 context with index I
+     IF map1[I] # Undef                              \* For any well-defined PCR1 context with index I
      THEN [map1[I] EXCEPT                                 
-       !.v_p= [i \in DOMAIN @ |-> 
-                 IF @[i].r > 0                       \* For any read producer var v_p[i]
-                 THEN IF PCR2!Finished(I \o <<i>>)   \* If C_ret(I \o <i>) holds (PCR2 finished at I \o <i>)
-                      THEN [v |-> @[i].v, r |-> 1]   \* then producer var is marked as read
-                      ELSE [v |-> @[i].v, r |-> 0]   \* else we pretend is still unread.
-                 ELSE @[i]
+       !.v_p= [i \in DOMAIN @ |->                    \* For any producer var v_p[i]       
+                 IF /\ @[i] # Undef                  \* If is written, read and C_ret(I \o <i>) 
+                    /\ @[i].r > 0                    \* does not hold (PCR2 didnt finished at I \o <i>)
+                    /\ ~ PCR2!Finished(I \o <<i>>)
+                 THEN [v |-> @[i].v, r |-> 0]        \* then we pretend is still unread.
+                 ELSE @[i]                           \* else leave it as is.
               ],
-       !.v_c= [i \in DOMAIN @ |->                    \* For any consumer var v_c[i]
-                 IF /\ PCR1!Read(map1[I].v_p, i)     \* for which corresponding v_p[i] has been read
+       !.v_c= [i \in DOMAIN @ |->                    \* For any consumer var v_c[i]  
+                 IF /\ PCR1!Written(map1[I].v_p, i)
+                    /\ PCR1!Read(map1[I].v_p, i)     \* for which corresponding v_p[i] has been read
                     /\ PCR2!Finished(I \o <<i>>)     \* and C_ret(I \o <<i>>) holds (PCR2 finished at I \o <i>)
+                    /\ @[i] = Undef
                  THEN [v |-> PCR2!Out(I \o <<i>>),   \* then consumer var gets result computed by PCR2
-                       r |-> @[i].r]                 
+                       r |-> 0]                    
                  ELSE @[i]                           \* else leave it as is.
               ]              
           ]
-     ELSE NULL]     
+     ELSE Undef]     
               
 PCRFibPrimes1 == INSTANCE MainPCRFibPrimes1 
   WITH map1 <- subst,
@@ -132,6 +137,6 @@ PCRFibPrimes1 == INSTANCE MainPCRFibPrimes1
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Sep 29 15:57:56 UYT 2020 by josedu
+\* Last modified Tue Sep 29 20:13:41 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

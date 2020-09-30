@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="96"/>
+    <intAttribute key="fpIndex" value="0"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -25,10 +25,10 @@
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
     <listAttribute key="modelCorrectnessInvariants">
-        <listEntry value="0TypeInv"/>
+        <listEntry value="1TypeInv"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
-        <listEntry value="1Termination"/>
+        <listEntry value="0Termination"/>
         <listEntry value="0Correctness"/>
         <listEntry value="0GTermination"/>
     </listAttribute>
@@ -38,10 +38,11 @@
     <listAttribute key="modelParameterConstants"/>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="NULL;;NULL;1;0"/>
         <listEntry value="Nat;;NatMock1;0;0"/>
         <listEntry value="InType1;;Input;0;0"/>
         <listEntry value="CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
+        <listEntry value="PCR1!Undef;;PCR1!Undef;1;0"/>
+        <listEntry value="NULL;;NULL;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
     <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 5&#13;&#10;MaxFN == 8&#13;&#10;Input == 0..MaxN&#13;&#10;NatMock1 == 0..MaxFN"/>
@@ -54,6 +55,9 @@
     <intAttribute key="simuSeed" value="-1"/>
     <stringAttribute key="specName" value="PCRFibPrimes1"/>
     <stringAttribute key="tlcResourcesProfile" value="local custom"/>
+    <listAttribute key="traceExploreExpressions">
+        <listEntry value="1PCR1!Written(PCR1!v_c(&lt;&lt;0&gt;&gt;), 0)"/>
+    </listAttribute>
     <stringAttribute key="view" value=""/>
     <booleanAttribute key="visualizeStateGraph" value="false"/>
 </launchConfiguration>

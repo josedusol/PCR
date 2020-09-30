@@ -13,47 +13,48 @@ CONSTANTS InType,
           IndexType,
           VarPType,
           VarCType,
-          VarRType,       
+          VarRType,    
           NULL
           
 LOCAL INSTANCE PCRBase
 
-CONSTANTS LowerBnd(_),
-          UpperBnd(_),
-          Step(_),
-          ECnd(_)
+CONSTANTS lowerBnd(_),
+          upperBnd(_),
+          step(_),
+          eCnd(_)
 
-range(start, end, step(_)) ==
-  LET F[i \in Nat] == 
+range(start, end, stp(_)) ==
+  LET f[i \in Nat] == 
         IF i <= end
-        THEN {i} \union F[step(i)]
+        THEN {i} \union f[step(i)]
         ELSE {}    
-  IN  F[start]  
+  IN  f[start]  
 
 \* Any PCR have an iteration space: a set of indexes  
-Iterator(I) == range(LowerBnd(in(I)), UpperBnd(in(I)), Step)
+iterator(I) == range(lowerBnd(in(I)), upperBnd(in(I)), step)
 
-Bound(I) == i_p \in Iterator(I)    
+bound(I) == i_p \in iterator(I)    
 
-CDone(I, i) == \A j \in Iterator(I)\{i} : Read(v_c(I), j)
+cDone(I, i) == \A j \in iterator(I)\{i} : /\ written(v_c(I), j) 
+                                          /\ read(v_c(I), j)
 
 \* Start action         
 Start(I) == map' = [map EXCEPT ![I].ste = "RUN"] 
 
 \* Terminate if Eureka condition holds 
 Eureka(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_c(I), i)
-    /\ Read(v_c(I), i)
-    /\ ECnd(Out(I))
+  \E i \in iterator(I) :
+    /\ written(v_c(I), i)
+    /\ read(v_c(I), i)
+    /\ eCnd(out(I))
     /\ map' = [map EXCEPT ![I].ste = "END"]
 
 \* Terminate if iteration space is empty      
-Quit(I) == /\ Iterator(I) = {} 
+Quit(I) == /\ iterator(I) = {} 
            /\ map' = [map EXCEPT ![I].ste = "END"]     
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Sep 29 14:55:35 UYT 2020 by josedu
+\* Last modified Tue Sep 29 23:52:37 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

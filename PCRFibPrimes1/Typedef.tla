@@ -12,7 +12,7 @@ VarCType1  == BOOLEAN
 VarRType1  == Nat 
 IndexType1 == Nat
 CtxIdType1 == Seq(Nat)
-
+                  
 -----------------------------------------------------------------------------
 
 Max(S)  == CHOOSE x \in S : \A y \in S : x >= y
@@ -20,5 +20,5 @@ Sqrt(n) == Max({ i \in Nat : i*i <= n })
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Sep 22 23:45:17 UYT 2020 by josedu
+\* Last modified Tue Sep 29 20:08:52 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu

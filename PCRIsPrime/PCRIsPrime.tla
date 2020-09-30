@@ -66,8 +66,10 @@ INSTANCE PCRIterationSpace WITH
                       
 InitCtx(x) == [in  |-> x,
 \*               i_p |-> LowerBnd(x),
-               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+\*               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+\*               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               v_p |-> [n \in IndexType |-> Undef],
+               v_c |-> [n \in IndexType |-> Undef],
                ret |-> x > 1,
                ste |-> "OFF"]                      
      
@@ -84,8 +86,8 @@ Pre(x) == TRUE
    PCR:   p = produce divisors N
 *)
 P(I) == 
-  \E i \in Iterator(I) :
-    /\ ~ Written(v_p(I), i)
+  \E i \in iterator(I) :
+    /\ ~ written(v_p(I), i)
     /\ map' = [map EXCEPT 
          ![I].v_p[i] = [v |-> divisors(in(I), v_p(I), i), r |-> 0]]         
 \*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))  
@@ -146,6 +148,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Sep 29 15:40:52 UYT 2020 by josedu
+\* Last modified Wed Sep 30 01:39:49 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed
