@@ -6,11 +6,9 @@
 
 EXTENDS Typedef, FiniteSets
 
-VARIABLES N, map1, i_p1   
+VARIABLES N, cm1, im1   
 
 ----------------------------------------------------------------------------
-
-NULL == CHOOSE x : x \notin (VarPType1 \union VarCType1)
          
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRIsPrimeSeq WITH
@@ -20,28 +18,33 @@ PCR1 == INSTANCE PCRIsPrimeSeq WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1, 
-  map       <- map1,
-  i_p       <- i_p1
+  cm        <- cm1,
+  im        <- im1
+
+Undef == PCR1!Undef
 
 ----------------------------------------------------------------------------
 
-vars == <<N,map1,i_p1>>
+vars == <<N,cm1,im1>>
 
 Init == /\ N \in InType1
-        /\ PCR1!Pre(N)
-        /\ map1 = [i \in CtxIdType1 |-> 
-                      IF   i = <<0>> 
-                      THEN PCR1!InitCtx(N)
-                      ELSE NULL]                  
-        /\ i_p1 = PCR1!LowerBnd(N)
+        /\ PCR1!pre(N)
+        /\ cm1 = [i \in CtxIdType1 |-> 
+                      IF   i = << >> 
+                      THEN PCR1!initCtx(N)
+                      ELSE Undef]                  
+        /\ im1 = [i \in CtxIdType1 |-> 
+                      IF   i = << >> 
+                      THEN PCR1!lowerBnd(N)
+                      ELSE Undef]
 (* 
    PCR1 step at index I 
 *)                          
-Next1(i) == /\ map1[i] # NULL
+Next1(i) == /\ cm1[i] # Undef
             /\ PCR1!Next(i)
             /\ UNCHANGED N              
 
-Done == /\ \A i \in PCR1!CtxIndex : PCR1!Finished(i)
+Done == /\ \A i \in PCR1!CtxIndex : PCR1!finished(i)
         /\ UNCHANGED vars
 
 Next == \/ \E i \in CtxIdType1 : Next1(i)
@@ -64,20 +67,19 @@ isPrime(n) == LET div(k,m) == \E d \in 1..m : m = k * d
 Solution(n) == isPrime(n)
 
 TypeInv == /\ N \in InType1
-           /\ map1 \in PCR1!CtxMap
-           /\ i_p1 \in IndexType1
+           /\ cm1 \in PCR1!CtxMap
+           /\ im1 \in PCR1!IndexMap
 
-Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(N) )
+Correctness == []( PCR1!finished(<< >>) => PCR1!out(<< >>) = Solution(N) )
   
-Termination == <> PCR1!Finished(<<0>>) 
+Termination == <> PCR1!finished(<< >>) 
 
 \* This Spec is an implementation of PCRIsPrime!Spec. 
               
 PCRIsPrime == INSTANCE MainPCRIsPrime 
-  WITH map1 <- map1,
-       i_p1 <- PCR1!LowerBnd(N)
+  WITH cm1 <- cm1
   
 =============================================================================
 \* Modification History
-\* Last modified Tue Sep 29 15:55:38 UYT 2020 by josedu
+\* Last modified Wed Oct 28 19:42:24 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

@@ -22,11 +22,9 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase
+EXTENDS Typedef, PCRBase, TLC
 
-LOCAL INSTANCE TLC
-
-VARIABLE map2
+VARIABLE cm2, im
 
 ----------------------------------------------------------------------------
 
@@ -45,7 +43,7 @@ isPrimeRec == INSTANCE PCRIsPrimeRec WITH
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
-  map       <- map2
+  cm        <- cm2
 
 ----------------------------------------------------------------------------
 
@@ -53,16 +51,18 @@ isPrimeRec == INSTANCE PCRIsPrimeRec WITH
    Iteration space                 
 *)
 
-LowerBnd(x) == 0
-UpperBnd(x) == x
-Step(i)     == i + 1  
-ECnd(r)     == FALSE
+lowerBnd(x) == 0
+upperBnd(x) == x
+step(i)     == i + 1  
+eCnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
-  LowerBnd  <- LowerBnd,
-  UpperBnd  <- UpperBnd,  
-  Step      <- Step,
-  ECnd      <- ECnd
+  lowerBnd  <- lowerBnd,
+  upperBnd  <- upperBnd,  
+  step      <- step
+
+i_p(I)   == im[I]
+IndexMap == [CtxIdType -> IndexType \union {Undef}] 
 
 ----------------------------------------------------------------------------
 
@@ -70,14 +70,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
-InitCtx(x) == [in  |-> x,
-               i_p |-> LowerBnd(x),
-               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+initCtx(x) == [in  |-> x,
+               v_p |-> [n \in IndexType |-> Undef],
+               v_c |-> [n \in IndexType |-> Undef],
                ret |-> 0,
                ste |-> "OFF"]
 
-Pre(x) == TRUE
+pre(x) == TRUE
 
 ----------------------------------------------------------------------------
 
@@ -90,46 +89,50 @@ Pre(x) == TRUE
    PCR:   p = produceSeq fib N                              
 *)
 P(I) == 
-  /\ Bound(I) 
-  /\ map' = [map EXCEPT 
-       ![I].v_p[i_p(I)] = [v |-> fib(in(I), v_p(I), i_p(I)), r |-> 0],
-       ![I].i_p         = Step(@)]         
+  /\ i_p(I) \in iterator(I) 
+  /\ cm' = [cm EXCEPT 
+       ![I].v_p[i_p(I)] = [v |-> fib(in(I), v_p(I), i_p(I)), r |-> 0]]     
+  /\ im' = [im EXCEPT 
+       ![I] = step(i_p(I))]         
 \*  /\ PrintT("P" \o ToString(i \o <<i_p(I)>>) \o " : " \o ToString(v_p(I)[i_p(I)].v'))
 
 (*
    Consumer call action
 *)
 C_call(I) == 
-  \E i \in Iterator(I):
-    /\ Written(v_p(I), i)
-    /\ ~ Read(v_p(I), i)
-    /\ map'  = [map  EXCEPT ![I].v_p[i].r = 1] 
-    /\ map2' = [map2 EXCEPT 
-         ![I \o <<i>>] = isPrimeRec!InitCtx(<<v_p(I)[i].v, Sqrt(v_p(I)[i].v)>>)]    
+  \E i \in iterator(I):
+    /\ written(v_p(I), i)
+    /\ ~ read(v_p(I), i)
+    /\ cm'  = [cm  EXCEPT 
+         ![I].v_p[i].r = @ + 1] 
+    /\ cm2' = [cm2 EXCEPT 
+         ![I \o <<i>>] = isPrimeRec!initCtx(<<v_p(I)[i].v, Sqrt(v_p(I)[i].v)>>)]    
 \*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
-\*                       \o " : in1= " \o ToString(isPrimeRec!In1(I \o <<i>>)')      
-\*                       \o " : in2= " \o ToString(isPrimeRec!In2(I \o <<i>>)'))                                                                                                                                        
+\*                       \o " : in1= " \o ToString(isPrimeRec!in1(I \o <<i>>)')      
+\*                       \o " : in2= " \o ToString(isPrimeRec!in2(I \o <<i>>)'))                                                                                                                                        
 
 (*
    Consumer end action
 *)
 C_ret(I) == 
-  \E i \in Iterator(I) :
-     /\ Read(v_p(I), i)       
-     /\ ~ Written(v_c(I), i)
-     /\ isPrimeRec!Finished(I \o <<i>>)   
-     /\ map' = [map EXCEPT 
-          ![I].v_c[i]= [v |-> isPrimeRec!Out(I \o <<i>>), r |-> 0]]  
-\*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
-\*                       \o " : in1= " \o ToString(isPrimeRec!In1(I \o <<i>>)) 
-\*                       \o " : in2= " \o ToString(isPrimeRec!In2(I \o <<i>>))   
-\*                       \o " : ret= " \o ToString(isPrimeRec!Out(I \o <<i>>)))
+  \E i \in iterator(I) :
+    /\ written(v_p(I), i)     
+    /\ read(v_p(I), i)       
+    /\ ~ written(v_c(I), i)
+    /\ isPrimeRec!wellDef(I \o <<i>>)  
+    /\ isPrimeRec!finished(I \o <<i>>)   
+    /\ cm' = [cm EXCEPT 
+         ![I].v_c[i]= [v |-> isPrimeRec!out(I \o <<i>>), r |-> 0]]  
+\*    /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
+\*                      \o " : in1= " \o ToString(isPrimeRec!in1(I \o <<i>>)) 
+\*                      \o " : in2= " \o ToString(isPrimeRec!in2(I \o <<i>>))   
+\*                      \o " : ret= " \o ToString(isPrimeRec!out(I \o <<i>>)))
 
 (*
    Consumer action
 *)
-C(I) == \/ C_call(I) 
-        \/ C_ret(I) /\ UNCHANGED map2   
+C(I) == \/ C_call(I) /\ UNCHANGED im
+        \/ C_ret(I)  /\ UNCHANGED <<cm2,im>>   
 
 (* 
    Reducer action
@@ -139,35 +142,36 @@ C(I) == \/ C_call(I)
    PCR:   r = reduce sum 0 c
 *)
 R(I) == 
-  \E i \in Iterator(I) :
-     /\ Written(v_c(I), i)  
-     /\ ~ Read(v_c(I), i)
-     /\ map' = [map EXCEPT 
-          ![I].ret      = sum(@, v_c(I)[i].v),
-          ![I].v_c[i].r = @ + 1,
-          ![I].ste      = IF CDone(I, i) THEN "END" ELSE @] 
-\*    /\ IF   CDone(I, i)
-\*       THEN PrintT("FP2 R" \o ToString(I \o <<i>>) 
-\*                           \o " : in= "  \o ToString(in(I))    
-\*                           \o " : ret= " \o ToString(Out(I)')) 
-\*       ELSE TRUE 
+  \E i \in iterator(I) :
+    /\ written(v_c(I), i)  
+    /\ ~ read(v_c(I), i)
+    /\ LET newRet == sum(out(I), v_c(I)[i].v)
+           endSte == cDone(I, i) \/ eCnd(newRet)
+       IN  cm' = [cm EXCEPT 
+             ![I].ret      = newRet,
+             ![I].v_c[i].r = @ + 1,
+             ![I].ste      = IF endSte THEN "END" ELSE @] 
+\*          /\ IF endSte
+\*             THEN PrintT("FP2 R" \o ToString(I \o <<i>>) 
+\*                                 \o " : in= "  \o ToString(in(I))    
+\*                                 \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE 
 
 (* 
    PCR FibPrimes3 step at index I 
 *)
 Next(I) == 
-  \/ /\ State(I) = "OFF" 
+  \/ /\ state(I) = "OFF" 
      /\ Start(I)   
-     /\ UNCHANGED map2
-  \/ /\ State(I) = "RUN" 
-     /\ \/ P(I)      /\ UNCHANGED map2
+     /\ UNCHANGED <<cm2,im>> 
+  \/ /\ state(I) = "RUN" 
+     /\ \/ P(I)    /\ UNCHANGED cm2 
         \/ C(I)  
-        \/ R(I)      /\ UNCHANGED map2
-        \/ Eureka(I) /\ UNCHANGED map2
-        \/ Quit(I)   /\ UNCHANGED map2           
+        \/ R(I)    /\ UNCHANGED <<cm2,im>> 
+        \/ Quit(I) /\ UNCHANGED <<cm2,im>>            
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 27 16:08:02 UYT 2020 by josedu
+\* Last modified Thu Oct 29 15:04:42 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

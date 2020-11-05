@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="69"/>
+    <intAttribute key="fpIndex" value="21"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -21,7 +21,7 @@
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
     <intAttribute key="modelBehaviorSpecType" value="1"/>
-    <stringAttribute key="modelBehaviorVars" value="N, map1, i_p1"/>
+    <stringAttribute key="modelBehaviorVars" value="im1, N, cm1"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
     <listAttribute key="modelCorrectnessInvariants">
@@ -30,8 +30,8 @@
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
         <listEntry value="0Correctness"/>
-        <listEntry value="0PCRIsPrime!Spec"/>
-        <listEntry value="1PCRIsPrime!FairSpec"/>
+        <listEntry value="1PCRIsPrime!Spec"/>
+        <listEntry value="0PCRIsPrime!FairSpec"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
@@ -39,10 +39,12 @@
     <listAttribute key="modelParameterConstants"/>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="NULL;;NULL;1;0"/>
         <listEntry value="Nat;;NatMock1;0;0"/>
-        <listEntry value="CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
-        <listEntry value="PCRIsPrime!NULL;;NULL;0;0"/>
+        <listEntry value="CtxIdType1;;{&lt;&lt;&gt;&gt;};0;0"/>
+        <listEntry value="PCR1!Undef;;Undef;0;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
+        <listEntry value="PCRIsPrime!Undef;;Undef;0;0"/>
+        <listEntry value="PCRIsPrime!PCR1!CtxIdType1;;CtxIdType1;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
     <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..15"/>

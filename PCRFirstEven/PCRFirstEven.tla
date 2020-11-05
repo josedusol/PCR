@@ -10,24 +10,25 @@
      ubnd projectProd = lambda x. x
      
      fun id(N,p,i) = i
-     fun checkEven(N,p,i) = if (p[i] % 2 = 0) 
+     fun checkEven(N,p,i) = if (p[i] % 2 == 0) 
                             then p[i] 
-                            else 1
-     fun reducer(r1,r2) = if not (r2 = 1)
+                            else null
+     fun reducer(r1,r2) = if not (r2 == null)
                           then r2
                           else r1  
+                          
+     cnd terminate(r) = not (r == null) and r % 2 == 0
+                          
      PCR FirstEven(N):
        par
          p = produce id N
          forall p
            c = consume checkEven N p
-         r = reduce reducer 0 c
+         r = reduce terminate reducer 0 c
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase
-
-LOCAL INSTANCE TLC
+EXTENDS Typedef, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -37,9 +38,9 @@ LOCAL INSTANCE TLC
 
 id(x, p, i) == i
 
-checkEven(x, p, i) == IF p[i].v % 2 = 0 THEN p[i].v ELSE 1
+checkEven(x, p, i) == IF p[i].v % 2 = 0 THEN p[i].v ELSE Null
 
-reducer(r1, r2) == IF r2 # 1 THEN r2 ELSE r1
+reducer(r1, r2) == IF r2 # Null THEN r2 ELSE r1
 
 ----------------------------------------------------------------------------
 
@@ -47,17 +48,16 @@ reducer(r1, r2) == IF r2 # 1 THEN r2 ELSE r1
    Iteration space                 
 *)
 
-LowerBnd(x) == 0
-UpperBnd(x) == x
-Step(i)     == i + 1
-ECnd(r)     == r % 2 = 0
-\*ECnd(r)     == FALSE
+lowerBnd(x) == 0
+upperBnd(x) == x
+step(i)     == i + 1
+eCnd(r)     == r # Null /\ r % 2 = 0
+\*eCnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
-  LowerBnd  <- LowerBnd,
-  UpperBnd  <- UpperBnd,  
-  Step      <- Step,
-  ECnd      <- ECnd
+  lowerBnd  <- lowerBnd,
+  upperBnd  <- upperBnd,  
+  step      <- step
 
 ----------------------------------------------------------------------------
 
@@ -65,14 +65,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
                       
-InitCtx(x) == [in  |-> x,
-               i_p |-> LowerBnd(x),
-               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               ret |-> 0,
+initCtx(x) == [in  |-> x,
+               v_p |-> [n \in IndexType |-> Undef],
+               v_c |-> [n \in IndexType |-> Undef],
+               ret |-> Null,
                ste |-> "OFF"]  
 
-Pre(x) == TRUE
+pre(x) == TRUE
 
 ----------------------------------------------------------------------------
 
@@ -85,9 +84,9 @@ Pre(x) == TRUE
    PCR:   p = produce id N
 *)
 P(I) == 
-  \E i \in Iterator(I) :
-    /\ ~ Written(v_p(I), i)
-    /\ map' = [map EXCEPT 
+  \E i \in iterator(I) :
+    /\ ~ written(v_p(I), i)
+    /\ cm' = [cm EXCEPT 
          ![I].v_p[i] = [v |-> id(in(I), v_p(I), i), r |-> 0]]         
 \*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))
                                           
@@ -100,12 +99,12 @@ P(I) ==
    PCR:   c = consume checkEven N p
 *)
 C(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_p(I), i)
-    /\ ~ Read(v_p(I), i)
-    /\ ~ Written(v_c(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].v_p[i].r = 1, 
+  \E i \in iterator(I) :
+    /\ written(v_p(I), i)
+\*    /\ ~ read(v_p(I), i)
+    /\ ~ written(v_c(I), i)
+    /\ cm' = [cm EXCEPT 
+         ![I].v_p[i].r = @ + 1, 
          ![I].v_c[i]   = [v |-> checkEven(in(I), v_p(I), i), r |-> 0]]                         
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))  
@@ -118,34 +117,35 @@ C(I) ==
    PCR:   r = reduce reducer 0 c
 *)
 R(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_c(I), i)    
-    /\ ~ Read(v_c(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].ret      = reducer(@, v_c(I)[i].v),
-         ![I].v_c[i].r = @ + 1,
-         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]
-\*    /\ IF   CDone(I, i)
-\*       THEN PrintT("R" \o ToString(I \o <<i>>) 
-\*                       \o " : in= "  \o ToString(in(I))    
-\*                       \o " : ret= " \o ToString(Out(I)')) 
-\*       ELSE TRUE    
+  \E i \in iterator(I) :
+    /\ written(v_c(I), i)    
+    /\ ~ read(v_c(I), i)
+    /\ LET newRet == reducer(out(I), v_c(I)[i].v)
+           endSte == cDone(I, i) \/ eCnd(newRet)
+       IN  cm' = [cm EXCEPT 
+             ![I].ret      = newRet,
+             ![I].v_c[i].r = @ + 1,
+             ![I].ste      = IF endSte THEN "END" ELSE @]
+\*          /\ IF endSte
+\*             THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                             \o " : in= "  \o ToString(in(I))    
+\*                             \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE    
 
 (* 
    PCR FirstEven step at index I 
 *)     
 Next(I) == 
-  \/ /\ State(I) = "OFF"
+  \/ /\ state(I) = "OFF"
      /\ Start(I)
-  \/ /\ State(I) = "RUN"
+  \/ /\ state(I) = "RUN"
      /\ \/ P(I) 
         \/ C(I) 
         \/ R(I)
-        \/ Eureka(I)
-        \/ Quit(I)      
+        \/ Quit(I)        
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 27 17:37:51 UYT 2020 by josedu
+\* Last modified Wed Oct 28 19:33:47 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

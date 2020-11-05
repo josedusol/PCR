@@ -23,17 +23,12 @@
 		<link>
 			<name>PCRCountWordsInLine.tla</name>
 			<type>1</type>
-			<location>PARENT-1-PROJECT_LOC/PCRCountWordsInLine.tla</location>
-		</link>
-		<link>
-			<name>Theorems.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Theorems.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRCountWordsInLine.tla</locationURI>
 		</link>
 		<link>
 			<name>Typedef.tla</name>
 			<type>1</type>
-			<location>PARENT-1-PROJECT_LOC/Typedef.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/Typedef.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

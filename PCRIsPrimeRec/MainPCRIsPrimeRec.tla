@@ -6,11 +6,9 @@
 
 EXTENDS Typedef, FiniteSets
 
-VARIABLES N, M, map1
+VARIABLES N, M, cm1
 
 ----------------------------------------------------------------------------
-
-NULL == CHOOSE x : x \notin (VarPType1 \union VarCType1)
          
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRIsPrimeRec WITH
@@ -20,28 +18,30 @@ PCR1 == INSTANCE PCRIsPrimeRec WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1, 
-  map       <- map1
+  cm        <- cm1
+
+Undef == PCR1!Undef
 
 ----------------------------------------------------------------------------
 
-vars == <<N,M,map1>>
+vars == <<N,M,cm1>>
 
 Init == /\ N \in In1Type1
         /\ M \in In2Type1
-        /\ PCR1!Pre(<<N,M>>) 
-        /\ map1 = [I \in CtxIdType1 |-> 
-                      IF   I = <<0>> 
-                      THEN PCR1!InitCtx(<<N,M>>)
-                      ELSE NULL]                  
+        /\ PCR1!pre(<<N,M>>) 
+        /\ cm1 = [I \in CtxIdType1 |-> 
+                      IF   I = <<>> 
+                      THEN PCR1!initCtx(<<N,M>>)
+                      ELSE Undef]                  
 
 (* 
    PCR1 step at index I 
 *)                           
-Next1(I) == /\ map1[I] # NULL
+Next1(I) == /\ cm1[I] # Undef
             /\ PCR1!Next(I)
             /\ UNCHANGED <<N,M>>              
 
-Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
+Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ UNCHANGED vars
 
 Next == \/ \E I \in CtxIdType1 : Next1(I)
@@ -65,13 +65,13 @@ Solution(n) == isPrime(n)
 
 TypeInv == /\ N \in In1Type1
            /\ M \in In2Type1
-           /\ map1 \in PCR1!CtxMap
+           /\ cm1 \in PCR1!CtxMap
 
-Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(N) )
+Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(N) )
   
-Termination == <> PCR1!Finished(<<0>>) 
+Termination == <> PCR1!finished(<<>>) 
   
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 16:01:36 UYT 2020 by josedu
+\* Last modified Wed Oct 28 21:35:22 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

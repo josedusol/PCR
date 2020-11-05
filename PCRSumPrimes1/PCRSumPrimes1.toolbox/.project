@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>PCRSumPrimes1</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>toolbox.builder.TLAParserBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>toolbox.natures.TLANature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>MainPCRSumPrimes1.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/MainPCRSumPrimes1.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRSumPrimes1.tla</name>
+			<type>1</type>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRSumPrimes1/PCRSumPrimes1.tla</location>
+		</link>
+		<link>
+			<name>Typedef.tla</name>
+			<type>1</type>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRSumPrimes1/Typedef.tla</location>
+		</link>
+	</linkedResources>
+</projectDescription>

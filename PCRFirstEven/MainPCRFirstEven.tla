@@ -6,11 +6,9 @@
 
 EXTENDS Typedef, FiniteSets, TLC
 
-VARIABLES N, map1
+VARIABLES N, cm1
 
 ----------------------------------------------------------------------------
-
-NULL == CHOOSE x : x \notin (VarPType1 \union VarCType1)
          
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRFirstEven WITH
@@ -20,27 +18,28 @@ PCR1 == INSTANCE PCRFirstEven WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1, 
-  map       <- map1
+  cm        <- cm1
+
+Undef == PCR1!Undef
 
 ----------------------------------------------------------------------------
 
-vars == <<N,map1>>
+vars == <<N,cm1>>
 
 Init == /\ N \in InType1
-        /\ PCR1!Pre(N) 
-        /\ map1 = [I \in CtxIdType1 |-> 
-                      IF   I = <<0>> 
-                      THEN PCR1!InitCtx(N)
-                      ELSE NULL]                  
+        /\ PCR1!pre(N) 
+        /\ cm1 = [I \in CtxIdType1 |-> 
+                      IF   I = << >> 
+                      THEN PCR1!initCtx(N)
+                      ELSE Undef]                              
                           
-Next1(I) == /\ map1[I] # NULL
+Next1(I) == /\ cm1[I] # Undef
             /\ PCR1!Next(I)
             /\ UNCHANGED N              
 
-Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
+Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ UNCHANGED vars
-        \*        /\ PrintT("done " \o " : " \o ToString(Cardinality(DOMAIN [I \in PCR1!CtxIndex |-> map[I]] )))    
-        /\ PrintT("done " \o " : " \o ToString(PCR1!Out(<<0>>)))  
+        \*/\ PrintT("done " \o " : " \o ToString(PCR1!out(<<>>)))  
 
 Next == \/ \E I \in CtxIdType1 : Next1(I)
         \/ Done
@@ -59,13 +58,13 @@ FairSpec == /\ Spec
 Solution(in) == { n \in 0..in : n % 2 = 0 }
 
 TypeInv == /\ N \in InType1
-           /\ map1 \in PCR1!CtxMap
+           /\ cm1 \in PCR1!CtxMap
 
-Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) \in Solution(N) )
+Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) \in Solution(N) )
   
-Termination == <> PCR1!Finished(<<0>>) 
+Termination == <> PCR1!finished(<<>>) 
   
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 27 17:16:46 UYT 2020 by josedu
+\* Last modified Wed Oct 28 19:01:03 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

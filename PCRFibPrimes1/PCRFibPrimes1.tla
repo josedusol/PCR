@@ -22,11 +22,9 @@
    ----------------------------------------------------------  
 *)
 
-EXTENDS Typedef, PCRBase
+EXTENDS Typedef, PCRBase, TLC
 
-VARIABLE i_p
-
-LOCAL INSTANCE TLC
+VARIABLE im
 
 ----------------------------------------------------------------------------
 
@@ -60,9 +58,10 @@ eCnd(r)     == FALSE
 INSTANCE PCRIterationSpace WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
-  step      <- step,
-  eCnd      <- eCnd,
-  i_p       <- i_p
+  step      <- step
+  
+i_p(I)   == im[I]
+IndexMap == [CtxIdType -> IndexType \union {Undef}]  
 
 ----------------------------------------------------------------------------
 
@@ -71,9 +70,6 @@ INSTANCE PCRIterationSpace WITH
 *)
 
 initCtx(x) == [in  |-> x,
-\*               i_p |-> LowerBnd(x),
-\*               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-\*               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
                v_p |-> [n \in IndexType |-> Undef],
                v_c |-> [n \in IndexType |-> Undef],
                ret |-> 0,
@@ -92,11 +88,11 @@ pre(x) == TRUE
    PCR:   p = produceSeq fib N                              
 *)
 P(I) == 
-  /\ bound(I) 
-  /\ map' = [map EXCEPT 
-       ![I].v_p[i_p] = [v |-> fib(in(I), v_p(I), i_p), r |-> 0] ]
-\*       ![I].i_p      = Step(@)]
-  /\ i_p' = step(i_p)              
+  /\ i_p(I) \in iterator(I)
+  /\ cm' = [cm EXCEPT 
+       ![I].v_p[i_p(I)] = [v |-> fib(in(I), v_p(I), i_p(I)), r |-> 0] ]
+  /\ im' = [im EXCEPT 
+       ![I] = step(i_p(I))]         
 \*  /\ PrintT("P" \o ToString(I \o <<i_p(I)>>) \o " : " \o ToString(v_p(I)[i_p(I)].v'))                  
 
 (* 
@@ -110,11 +106,11 @@ P(I) ==
 C(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
+\*    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].v_p[i].r = 1, 
-         ![I].v_c[i]   = [v |-> isPrime(in(I), v_p(I), i), r |-> 0]]                          
+    /\ cm' = [cm EXCEPT 
+         ![I].v_p[i].r = @ + 1, 
+         ![I].v_c[i]   = [v |-> isPrime(in(I), v_p(I), i), r |-> 0]]                                          
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))    
  
@@ -129,15 +125,17 @@ R(I) ==
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
     /\ ~ read(v_c(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].ret      = sum(@, v_c(I)[i].v),
-         ![I].v_c[i].r = @ + 1,
-         ![I].ste      = IF cDone(I, i) THEN "END" ELSE @]                                                                            
-\*    /\ IF   cDone(I, i)
-\*       THEN PrintT("FP1 R" \o ToString(I \o <<i>>) 
-\*                           \o " : in= "  \o ToString(in(I))    
-\*                           \o " : ret= " \o ToString(Out(I)')) 
-\*       ELSE TRUE           
+    /\ LET newRet == sum(out(I), v_c(I)[i].v)
+           endSte == cDone(I, i) \/ eCnd(newRet)
+       IN  cm' = [cm EXCEPT 
+             ![I].ret      = newRet,
+             ![I].v_c[i].r = @ + 1,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
+\*          /\ IF   endSte
+\*             THEN PrintT("FP1 R" \o ToString(I \o <<i>>) 
+\*                                 \o " : in= "  \o ToString(in(I))    
+\*                                 \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE           
 
 (* 
    PCR FibPrimes1 step at index I 
@@ -145,16 +143,15 @@ R(I) ==
 Next(I) == 
   \/ /\ state(I) = "OFF" 
      /\ Start(I)
-     /\ UNCHANGED i_p
+     /\ UNCHANGED im
   \/ /\ state(I) = "RUN"  
      /\ \/ P(I) 
-        \/ C(I)      /\ UNCHANGED i_p
-        \/ R(I)      /\ UNCHANGED i_p
-        \/ Eureka(I) /\ UNCHANGED i_p
-        \/ Quit(I)   /\ UNCHANGED i_p
+        \/ C(I)      /\ UNCHANGED im
+        \/ R(I)      /\ UNCHANGED im
+        \/ Quit(I)   /\ UNCHANGED im
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Sep 29 23:56:03 UYT 2020 by josedu
+\* Last modified Wed Oct 28 19:33:57 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

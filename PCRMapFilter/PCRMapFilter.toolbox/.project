@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>PCRMapFilter</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>toolbox.builder.TLAParserBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>toolbox.natures.TLANature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>MainPCRMapFilter.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/MainPCRMapFilter.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRMapFilter.tla</name>
+			<type>1</type>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRMapFilter/PCRMapFilter.tla</location>
+		</link>
+		<link>
+			<name>Typedef.tla</name>
+			<type>1</type>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRMapFilter/Typedef.tla</location>
+		</link>
+	</linkedResources>
+</projectDescription>

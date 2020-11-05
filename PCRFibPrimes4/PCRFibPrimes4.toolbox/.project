@@ -26,11 +26,6 @@
 			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRFibPrimes4/PCRFibPrimes4.tla</location>
 		</link>
 		<link>
-			<name>Theorems.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Theorems.tla</locationURI>
-		</link>
-		<link>
 			<name>Typedef.tla</name>
 			<type>1</type>
 			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRFibPrimes4/Typedef.tla</location>

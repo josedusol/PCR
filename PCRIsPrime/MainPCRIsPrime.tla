@@ -4,13 +4,11 @@
    Main module for PCR IsPrime.
 *)
 
-EXTENDS Typedef, FiniteSets
+EXTENDS PCRIsPrimeTypedef, FiniteSets
 
-VARIABLES N, map1, i_p1   
+VARIABLES N, cm1  
 
 ----------------------------------------------------------------------------
-
-NULL == CHOOSE x : x \notin (VarPType1 \union VarCType1)
          
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRIsPrime WITH
@@ -20,27 +18,27 @@ PCR1 == INSTANCE PCRIsPrime WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1, 
-  map       <- map1,
-  i_p       <- i_p1
+  cm        <- cm1
+
+Undef == PCR1!Undef
 
 ----------------------------------------------------------------------------
 
-vars == <<N,map1,i_p1>>
+vars == <<N,cm1>>
 
 Init == /\ N \in InType1
-        /\ PCR1!Pre(N)
-        /\ map1 = [I \in CtxIdType1 |-> 
-                      IF   I = <<0>> 
-                      THEN PCR1!InitCtx(N)
-                      ELSE NULL]
-        /\ i_p1 = PCR1!LowerBnd(N)
+        /\ PCR1!pre(N)
+        /\ cm1 = [I \in CtxIdType1 |-> 
+                      IF   I = << >> 
+                      THEN PCR1!initCtx(N)
+                      ELSE Undef]     
 
 (* PCR1 step at index I *)                   
-Next1(I) == /\ map1[I] # NULL
+Next1(I) == /\ cm1[I] # Undef
             /\ PCR1!Next(I)
             /\ UNCHANGED N              
 
-Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
+Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ UNCHANGED vars
 
 Next == \/ \E I \in CtxIdType1 : Next1(I)
@@ -63,14 +61,17 @@ isPrime(n) == LET div(k,m) == \E d \in 1..m : m = k * d
 Solution(n) == isPrime(n)
 
 TypeInv == /\ N \in InType1
-           /\ map1 \in PCR1!CtxMap
-           /\ i_p1 \in IndexType1
+           /\ cm1 \in PCR1!CtxMap
 
-Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(N) )
+IteratorType == \A I \in PCR1!CtxIndex : PCR1!iterator(I) \subseteq Nat
+
+Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(N) )
   
-Termination == <> PCR1!Finished(<<0>>) 
-  
+Termination == <> PCR1!finished(<<>>) 
+
+GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
+
 =============================================================================
 \* Modification History
-\* Last modified Tue Sep 29 15:41:41 UYT 2020 by josedu
+\* Last modified Wed Oct 28 19:07:55 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

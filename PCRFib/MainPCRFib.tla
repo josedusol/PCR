@@ -6,11 +6,9 @@
 
 EXTENDS Typedef, FiniteSets
 
-VARIABLES N, map1
+VARIABLES N, cm1, im1
 
 ----------------------------------------------------------------------------
-
-NULL == CHOOSE x : x \notin (VarPType1 \union VarCType1)
          
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRFib WITH
@@ -20,24 +18,31 @@ PCR1 == INSTANCE PCRFib WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1, 
-  map       <- map1
+  cm        <- cm1,
+  im        <- im1
+
+Undef == PCR1!Undef
 
 ----------------------------------------------------------------------------
 
-vars == <<N,map1>>
+vars == <<N,cm1,im1>>
 
 Init == /\ N \in InType1
-        /\ PCR1!Pre(N) 
-        /\ map1 = [I \in CtxIdType1 |-> 
-                      IF   I = <<0>> 
-                      THEN PCR1!InitCtx(N)
-                      ELSE NULL]                  
+        /\ PCR1!pre(N) 
+        /\ cm1 = [I \in CtxIdType1 |-> 
+                      IF   I = <<>> 
+                      THEN PCR1!initCtx(N)
+                      ELSE Undef]  
+        /\ im1 = [I \in CtxIdType1 |-> 
+                     IF   I = <<>> 
+                     THEN PCR1!lowerBnd(N)
+                     ELSE Undef]                               
                           
-Next1(I) == /\ map1[I] # NULL
+Next1(I) == /\ cm1[I] # Undef
             /\ PCR1!Next(I)
             /\ UNCHANGED N              
 
-Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
+Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ UNCHANGED vars
 
 Next == \/ \E I \in CtxIdType1 : Next1(I)
@@ -54,21 +59,22 @@ FairSpec == /\ Spec
    Properties 
 *)
 
-Fibonacci[n \in Nat] == 
+fibonacci[n \in Nat] == 
   IF n < 2 
   THEN 1 
-  ELSE Fibonacci[n-1] + Fibonacci[n-2]                
+  ELSE fibonacci[n-1] + fibonacci[n-2]                
 
-Solution(in) == Fibonacci[in]
+Solution(in) == fibonacci[in]
 
 TypeInv == /\ N \in InType1
-           /\ map1 \in PCR1!CtxMap
+           /\ cm1 \in PCR1!CtxMap
+           /\ im1 \in PCR1!IndexMap
 
-Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(N) )
+Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(N) )
   
-Termination == <> PCR1!Finished(<<0>>) 
+Termination == <> PCR1!finished(<<>>) 
   
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 01:12:40 UYT 2020 by josedu
+\* Last modified Wed Oct 28 19:55:58 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

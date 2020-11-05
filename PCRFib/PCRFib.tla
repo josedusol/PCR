@@ -11,7 +11,7 @@
      
      fun fib(N,p,i) = if i < 2 then 1 else p[i-1] + p[i-2]
      fun checkLast(N,p,i) = if i < N then 0 else p[i]
-     fun projectRed(r1,r2) = r2 
+     fun projectRed(r1,r2) = r1 + r2 
  
      PCR Fib(N):
        par
@@ -22,9 +22,9 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase
+EXTENDS Typedef, PCRBase, TLC
 
-LOCAL INSTANCE TLC
+VARIABLE im
 
 ----------------------------------------------------------------------------
 
@@ -44,16 +44,18 @@ projectRed(r1, r2) == r1 + r2
    Iteration space                 
 *)
 
-LowerBnd(x) == 0
-UpperBnd(x) == x
-Step(i)     == i + 1
-ECnd(r)     == FALSE
+lowerBnd(x) == 0
+upperBnd(x) == x
+step(i)     == i + 1
+eCnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
-  LowerBnd  <- LowerBnd,
-  UpperBnd  <- UpperBnd,  
-  Step      <- Step,
-  ECnd      <- ECnd
+  lowerBnd  <- lowerBnd,
+  upperBnd  <- upperBnd,  
+  step      <- step
+  
+i_p(I)   == im[I]
+IndexMap == [CtxIdType -> IndexType \union {Undef}]    
 
 ----------------------------------------------------------------------------
 
@@ -61,14 +63,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
                       
-InitCtx(x) == [in  |-> x,
-               i_p |-> LowerBnd(x),
-               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+initCtx(x) == [in  |-> x,
+               v_p |-> [n \in IndexType |-> Undef],
+               v_c |-> [n \in IndexType |-> Undef],
                ret |-> 0,
                ste |-> "OFF"]  
 
-Pre(x) == TRUE
+pre(x) == TRUE
 
 ----------------------------------------------------------------------------
 
@@ -81,10 +82,11 @@ Pre(x) == TRUE
    PCR:   p = produceSeq fib N                              
 *)
 P(I) == 
-  /\ Bound(I) 
-  /\ map' = [map EXCEPT 
-       ![I].v_p[i_p(I)] = [v |-> fib(in(I), v_p(I), i_p(I)), r |-> 0],
-       ![I].i_p         = Step(@)]         
+  /\ i_p(I) \in iterator(I)
+  /\ cm' = [cm EXCEPT 
+       ![I].v_p[i_p(I)] = [v |-> fib(in(I), v_p(I), i_p(I)), r |-> 0] ]         
+  /\ im' = [im  EXCEPT 
+       ![I] = step(i_p(I)) ]     
 \*  /\ PrintT("P" \o ToString(I \o <<i_p(I)>>) \o " : " \o ToString(v_p(I)[i_p(I)].v')) 
                                           
 (* 
@@ -96,11 +98,11 @@ P(I) ==
    PCR:   c = consume checkLast N p
 *)
 C(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_p(I), i)
-    /\ ~ Read(v_p(I), i)
-    /\ ~ Written(v_c(I), i)
-    /\ map' = [map EXCEPT 
+  \E i \in iterator(I) :
+    /\ written(v_p(I), i)
+\*    /\ ~ read(v_p(I), i)
+    /\ ~ written(v_c(I), i)
+    /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = 1, 
          ![I].v_c[i]   = [v |-> checkLast(in(I), v_p(I), i), r |-> 0]]                         
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
@@ -114,34 +116,36 @@ C(I) ==
    PCR:   r = reduce projectRed 0 c
 *)
 R(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_c(I), i)    
-    /\ ~ Read(v_c(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].ret      = projectRed(@, v_c(I)[i].v),
-         ![I].v_c[i].r = @ + 1,
-         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]
-\*    /\ IF   CDone(I, i)
-\*       THEN PrintT("R" \o ToString(I \o <<i>>) 
-\*                       \o " : in= "  \o ToString(in(I))    
-\*                       \o " : ret= " \o ToString(Out(I)')) 
-\*       ELSE TRUE    
+  \E i \in iterator(I) :
+    /\ written(v_c(I), i)    
+    /\ ~ read(v_c(I), i)
+    /\ LET newRet == projectRed(out(I), v_c(I)[i].v)
+           endSte == cDone(I, i) \/ eCnd(newRet)
+       IN  cm' = [cm EXCEPT 
+             ![I].ret      = newRet,
+             ![I].v_c[i].r = @ + 1,
+             ![I].ste      = IF endSte THEN "END" ELSE @]
+\*          /\ IF endSte
+\*             THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                             \o " : in= "  \o ToString(in(I))    
+\*                             \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE    
 
 (* 
    PCR Fib step at index I 
 *)     
 Next(I) == 
-  \/ /\ State(I) = "OFF"
+  \/ /\ state(I) = "OFF"
      /\ Start(I)
-  \/ /\ State(I) = "RUN"
+     /\ UNCHANGED im
+  \/ /\ state(I) = "RUN"
      /\ \/ P(I) 
-        \/ C(I) 
-        \/ R(I)
-        \/ Eureka(I)
-        \/ Quit(I)      
+        \/ C(I)      /\ UNCHANGED im
+        \/ R(I)      /\ UNCHANGED im
+        \/ Quit(I)   /\ UNCHANGED im   
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 27 16:08:48 UYT 2020 by josedu
+\* Last modified Wed Oct 28 19:53:16 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

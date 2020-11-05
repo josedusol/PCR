@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.lamport.tla.toolbox.tool.tlc.modelCheck">
+    <stringAttribute key="TLCCmdLineParameters" value=""/>
+    <intAttribute key="collectCoverage" value="0"/>
+    <stringAttribute key="configurationName" value="mc_all"/>
+    <booleanAttribute key="deferLiveness" value="false"/>
+    <intAttribute key="dfidDepth" value="100"/>
+    <booleanAttribute key="dfidMode" value="false"/>
+    <intAttribute key="distributedFPSetCount" value="0"/>
+    <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
+    <intAttribute key="distributedNodesCount" value="1"/>
+    <stringAttribute key="distributedTLC" value="off"/>
+    <stringAttribute key="distributedTLCVMArgs" value=""/>
+    <intAttribute key="fpBits" value="1"/>
+    <intAttribute key="fpIndex" value="28"/>
+    <booleanAttribute key="fpIndexRandom" value="true"/>
+    <intAttribute key="maxHeapSize" value="35"/>
+    <intAttribute key="maxSetSize" value="1000000"/>
+    <booleanAttribute key="mcMode" value="true"/>
+    <stringAttribute key="modelBehaviorInit" value=""/>
+    <stringAttribute key="modelBehaviorNext" value=""/>
+    <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
+    <intAttribute key="modelBehaviorSpecType" value="1"/>
+    <stringAttribute key="modelBehaviorVars" value="L, cm1, cm2"/>
+    <stringAttribute key="modelComments" value=""/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
+    <listAttribute key="modelCorrectnessInvariants">
+        <listEntry value="0TypeInv"/>
+    </listAttribute>
+    <listAttribute key="modelCorrectnessProperties">
+        <listEntry value="0Termination"/>
+        <listEntry value="0Correctness"/>
+        <listEntry value="1PCRSumPrimes1!Spec"/>
+    </listAttribute>
+    <intAttribute key="modelEditorOpenTabs" value="14"/>
+    <stringAttribute key="modelExpressionEval" value=""/>
+    <stringAttribute key="modelParameterActionConstraint" value=""/>
+    <listAttribute key="modelParameterConstants"/>
+    <stringAttribute key="modelParameterContraint" value=""/>
+    <listAttribute key="modelParameterDefinitions">
+        <listEntry value="InType1;;UNION {[1..n -&gt; InputNums] : n \in 0..MaxLen};0;0"/>
+        <listEntry value="CtxIdType2;;{s \in UNION { [1..n -&gt; IndexMock1 \union InputNums] : n \in 1..MaxLen+1 } : &#13;&#10;   \A i \in DOMAIN s : i &lt; Len(s) =&gt; s[i] \in IndexMock1 };0;0"/>
+        <listEntry value="CtxIdType1;;UNION {[1..n -&gt; IndexMock1] : n \in 0..MaxLen};0;0"/>
+        <listEntry value="PCR1!Undef;;PCR1!Undef;1;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
+        <listEntry value="VarRType1;;0..MaxSum;0;0"/>
+        <listEntry value="IndexType1;;IndexMock1;0;0"/>
+        <listEntry value="IndexType2;;IndexMock2;0;0"/>
+        <listEntry value="Nat;;0..MaxSum;0;0"/>
+        <listEntry value="PCRSumPrimes1!Undef;;Undef;0;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterModelValues" value="{}"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="MaxLen == 3&#13;&#10;InputNums == {0,1,2,3,4}&#13;&#10;MaxSum == 9&#13;&#10;IndexMock1 == 0..2&#13;&#10;IndexMock2 == IndexMock1 \union InputNums"/>
+    <intAttribute key="modelVersion" value="20191005"/>
+    <intAttribute key="numberOfWorkers" value="2"/>
+    <booleanAttribute key="recover" value="false"/>
+    <stringAttribute key="result.mail.address" value=""/>
+    <intAttribute key="simuAril" value="-1"/>
+    <intAttribute key="simuDepth" value="100"/>
+    <intAttribute key="simuSeed" value="-1"/>
+    <stringAttribute key="specName" value="PCRSumPrimes2"/>
+    <stringAttribute key="tlcResourcesProfile" value="local custom"/>
+    <stringAttribute key="view" value=""/>
+    <booleanAttribute key="visualizeStateGraph" value="false"/>
+</launchConfiguration>

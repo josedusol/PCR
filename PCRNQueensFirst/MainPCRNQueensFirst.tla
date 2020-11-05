@@ -4,15 +4,11 @@
    Main module for PCR NQueensFirst.
 *)
 
-EXTENDS Typedef, Functions, FiniteSets
+EXTENDS Typedef, Functions, FiniteSets, TLC
 
-LOCAL INSTANCE TLC
-
-VARIABLES B, map   
+VARIABLES B, cm1    
 
 ----------------------------------------------------------------------------
-
-NULL == CHOOSE x : x \notin (VarPType1 \union VarCType1)
          
 \* Instanciate root PCR with appropiate types
 PCR1 == INSTANCE PCRNQueensFirst WITH 
@@ -22,28 +18,30 @@ PCR1 == INSTANCE PCRNQueensFirst WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1,  
-  map       <- map                       
+  cm        <- cm1                      
+           
+Undef == PCR1!Undef           
            
 ----------------------------------------------------------------------------
 
-vars == <<B,map>>
+vars == <<B,cm1>>
 
 Init == /\ B \in InType1
-        /\ PCR1!Pre(B)
-        /\ map = [I \in CtxIdType1 |-> 
-                     IF   I = <<0>> 
-                     THEN PCR1!InitCtx(B)
-                     ELSE NULL]                            
+        /\ PCR1!pre(B)
+        /\ cm1 = [I \in CtxIdType1 |-> 
+                     IF   I = <<>> 
+                     THEN PCR1!initCtx(B)
+                     ELSE Undef]                                                
 
 (* PCR1 step at index I  *)                                                  
-Next1(I) == /\ map[I] # NULL
+Next1(I) == /\ cm1[I] # Undef
             /\ PCR1!Next(I)
             /\ UNCHANGED B    
 
-Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
+Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ UNCHANGED vars         
 \*        /\ PrintT("done " \o " : " \o ToString(Cardinality(DOMAIN [I \in PCR1!CtxIndex |-> map[I]] )))    
-\*        /\ PrintT("done " \o " : " \o ToString(PCR1!Out(<<0>>)))       
+        /\ PrintT("done " \o " : " \o ToString(PCR1!out(<<>>)))       
 
 Next == \/ \E I \in CtxIdType1 : Next1(I)
         \/ Done
@@ -59,23 +57,23 @@ FairSpec == /\ Spec
    Properties 
 *)
 
-Solution(in) == CASE Len(in) = 0      -> { << >> }
+Solution(in) == CASE Len(in) = 0      -> { Null }
                   [] Len(in) = 1      -> { <<1>> }
-                  [] Len(in) \in 2..3 -> { << >> }
+                  [] Len(in) \in 2..3 -> { Null }
                   [] Len(in) = 4      -> { <<3,1,4,2>>, <<2,4,1,3>> }
                \* [] Len(in) = 5      -> { ... 10 solutions ... } 
 
 TypeInv == /\ B \in InType1
-           /\ map \in PCR1!CtxMap
+           /\ cm1 \in PCR1!CtxMap
+           
+Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) \in Solution(B) )
 
-Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) \in Solution(B) )
+Termination == <> PCR1!finished(<<>>)
 
-Termination == <> PCR1!Finished(<<0>>)
-
-GTermination == [][ PCR1!Finished(<<0>>) => Done ]_vars
+GTermination == [][ PCR1!finished(<<>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 27 17:14:06 UYT 2020 by josedu
+\* Last modified Wed Oct 28 20:55:48 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

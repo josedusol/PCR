@@ -19,9 +19,7 @@
    ----------------------------------------------------------  
 *)
 
-EXTENDS Typedef, PCRBase
-
-LOCAL INSTANCE TLC
+EXTENDS Typedef, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -50,16 +48,15 @@ joinCounts(old, new) == old (+) new
    Iteration space                 
 *)
 
-LowerBnd(x) == 1
-UpperBnd(x) == Len(x[1])
-Step(i)     == i + 1  
-ECnd(r)     == FALSE
+lowerBnd(x) == 1
+upperBnd(x) == Len(x[1])
+step(i)     == i + 1  
+eCnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
-  LowerBnd  <- LowerBnd,
-  UpperBnd  <- UpperBnd,  
-  Step      <- Step,
-  ECnd      <- ECnd
+  lowerBnd  <- lowerBnd,
+  upperBnd  <- upperBnd,  
+  step      <- step
 
 ----------------------------------------------------------------------------
 
@@ -67,14 +64,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
-InitCtx(x) == [in  |-> x,
-               i_p |-> LowerBnd(x),
-               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+initCtx(x) == [in  |-> x,
+               v_p |-> [n \in IndexType |-> Undef],
+               v_c |-> [n \in IndexType |-> Undef],
                ret |-> EmptyBag,
                ste |-> "OFF"]
 
-Pre(x) == TRUE
+pre(x) == TRUE
 
 ----------------------------------------------------------------------------
             
@@ -87,9 +83,9 @@ Pre(x) == TRUE
    PCR:   p = produce lines T                              
 *)
 P(I) == 
-  \E i \in Iterator(I) : 
-    /\ ~ Written(v_p(I), i)         
-    /\ map' = [map EXCEPT
+  \E i \in iterator(I) : 
+    /\ ~ written(v_p(I), i)         
+    /\ cm' = [cm EXCEPT
          ![I].v_p[i] = [v |-> lines(in(I), v_p(I), i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
@@ -102,12 +98,12 @@ P(I) ==
    PCR:   c = consume countWordsInLine W
 *)
 C(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_p(I), i)
-    /\ ~ Read(v_p(I), i)
-    /\ ~ Written(v_c(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].v_p[i].r = 1, 
+  \E i \in iterator(I) :
+    /\ written(v_p(I), i)
+\*    /\ ~ read(v_p(I), i)
+    /\ ~ written(v_c(I), i)
+    /\ cm' = [cm EXCEPT 
+         ![I].v_p[i].r = @ + 1, 
          ![I].v_c[i]   = [v |-> countWordsInLine(in(I), v_p(I), i), r |-> 0] ]                  
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))    
@@ -120,35 +116,36 @@ C(I) ==
    PCR:   r = reduce joinCounts {} c
 *)
 R(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_c(I), i)
-    /\ ~ Read(v_c(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].ret      = joinCounts(@, v_c(I)[i].v),
-         ![I].v_c[i].r = @ + 1,
-         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]
-\*    /\ IF   CDone(I, i)
-\*       THEN PrintT("CW1 R" \o ToString(I \o <<i>>) 
-\*                           \o " : in1= " \o ToString(In1(I))    
-\*                           \o " : in2= " \o ToString(In2(I))
-\*                           \o " : ret= " \o ToString(Out(I)')) 
-\*       ELSE TRUE
+  \E i \in iterator(I) :
+    /\ written(v_c(I), i)
+    /\ ~ read(v_c(I), i)
+    /\ LET newRet == joinCounts(out(I), v_c(I)[i].v)
+           endSte == cDone(I, i) \/ eCnd(newRet)
+       IN  cm' = [cm EXCEPT 
+             ![I].ret      = newRet,
+             ![I].v_c[i].r = @ + 1,
+             ![I].ste      = IF endSte THEN "END" ELSE @]
+\*          /\ IF endSte
+\*             THEN PrintT("CW1 R" \o ToString(I \o <<i>>) 
+\*                                 \o " : in1= " \o ToString(in1(I))    
+\*                                 \o " : in2= " \o ToString(in2(I))
+\*                                 \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE
 
 (* 
    PCR CountWords1 step at index I 
 *)
 Next(I) == 
-  \/ /\ State(I) = "OFF" 
+  \/ /\ state(I) = "OFF" 
      /\ Start(I)
-  \/ /\ State(I) = "RUN" 
+  \/ /\ state(I) = "RUN" 
      /\ \/ P(I) 
         \/ C(I) 
         \/ R(I)
-        \/ Eureka(I)
         \/ Quit(I)
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 27 16:09:20 UYT 2020 by josedu
+\* Last modified Wed Oct 28 23:23:13 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

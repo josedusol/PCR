@@ -6,12 +6,9 @@
 
 EXTENDS Typedef, FiniteSets
 
-VARIABLES N, map1, map2 
+VARIABLES N, cm1, cm2 
 
 ----------------------------------------------------------------------------
-
-NULL == CHOOSE x : /\ x \notin (VarPType1 \union VarCType1)
-                   /\ x \notin (VarPType2 \union VarCType2)
 
 \* Instanciate first PCR with appropiate types
 PCR1 == INSTANCE PCRFibPrimes5 WITH 
@@ -21,8 +18,8 @@ PCR1 == INSTANCE PCRFibPrimes5 WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1,  
-  map       <- map1,
-  map2      <- map2
+  cm        <- cm1,
+  cm2       <- cm2
 
 \* Instanciate second PCR with appropiate types  
 PCR2 == INSTANCE PCRFibRec WITH
@@ -32,32 +29,35 @@ PCR2 == INSTANCE PCRFibRec WITH
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
-  map       <- map2 
+  cm        <- cm2
+  
+Undef == CHOOSE x : /\ x = PCR1!Undef
+                    /\ x = PCR2!Undef   
  
 ----------------------------------------------------------------------------
 
-vars == <<N,map1,map2>>
+vars == <<N,cm1,cm2>>
 
 Init == /\ N \in InType1
-        /\ PCR1!Pre(N)
-        /\ map1 = [I \in CtxIdType1 |-> 
-                     IF   I = <<0>> 
-                     THEN PCR1!InitCtx(N)
-                     ELSE NULL]
-        /\ map2 = [I \in CtxIdType2 |-> NULL]
+        /\ PCR1!pre(N)
+        /\ cm1 = [I \in CtxIdType1 |-> 
+                     IF   I = <<>> 
+                     THEN PCR1!initCtx(N)
+                     ELSE Undef]
+        /\ cm2 = [I \in CtxIdType2 |-> Undef]
 
 (* PCR1 step at index I *)                  
-Next1(I) == /\ map1[I] # NULL
+Next1(I) == /\ cm1[I] # Undef
             /\ PCR1!Next(I)
             /\ UNCHANGED N             
 
 (* PCR2 step at index I *)   
-Next2(I) == /\ map2[I] # NULL
+Next2(I) == /\ cm2[I] # Undef
             /\ PCR2!Next(I)
-            /\ UNCHANGED <<N,map1>> 
+            /\ UNCHANGED <<N,cm1>> 
 
-Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
-        /\ \A I \in PCR2!CtxIndex : PCR2!Finished(I)
+Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
+        /\ \A I \in PCR2!CtxIndex : PCR2!finished(I)
         /\ UNCHANGED vars
 
 Next == \/ \E I \in CtxIdType1 : Next1(I)
@@ -79,26 +79,26 @@ FairSpec == /\ Spec
 isPrime(n) == LET div(k,m) == \E d \in 1..m : m = k * d
               IN n > 1 /\ ~ \E m \in 2..n-1 : div(m, n)
        
-Fibonacci[n \in Nat] == 
+fibonacci[n \in Nat] == 
   IF n < 2 
   THEN 1 
-  ELSE Fibonacci[n-1] + Fibonacci[n-2]                
+  ELSE fibonacci[n-1] + fibonacci[n-2]                
 
-Solution(in) == LET fibValues == { Fibonacci[n] : n \in 0..in }
+Solution(in) == LET fibValues == { fibonacci[n] : n \in 0..in }
                 IN  Cardinality({ f \in fibValues : isPrime(f) })
 
 TypeInv == /\ N \in InType1
-           /\ map1 \in PCR1!CtxMap
-           /\ map2 \in PCR2!CtxMap
+           /\ cm1 \in PCR1!CtxMap
+           /\ cm2 \in PCR2!CtxMap
 
-Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(N) )
+Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(N) )
   
-Termination == <> PCR1!Finished(<<0>>) 
+Termination == <> PCR1!finished(<<>>) 
 
-GTermination == [][ PCR1!Finished(<<0>>) <=> Done ]_vars
+GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 01:21:38 UYT 2020 by josedu
+\* Last modified Thu Oct 29 15:54:30 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

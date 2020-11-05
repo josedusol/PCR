@@ -23,13 +23,16 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase
-
-VARIABLE i_p
-
-LOCAL INSTANCE TLC
+EXTENDS PCRIsPrimeTypedef, PCRBase, TLC
 
 ----------------------------------------------------------------------------
+
+test(x, p, i) ==
+  LET f[n \in Nat] ==
+        IF n = 0
+        THEN << >>
+        ELSE <<1>> \o f[n-1]
+  IN f[i]
 
 (* 
    Basic functions                     
@@ -47,16 +50,15 @@ and(r1, r2) == r1 /\ r2
    Iteration space                 
 *)    
           
-LowerBnd(x) == 2
-UpperBnd(x) == Sqrt(x)
-Step(i)     == IF i = 2 THEN 3 ELSE i + 2          
-ECnd(r)     == FALSE
+lowerBnd(x) == 2
+upperBnd(x) == Sqrt(x)
+step(i)     == IF i = 2 THEN 3 ELSE i + 2          
+eCnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
-  LowerBnd  <- LowerBnd,
-  UpperBnd  <- UpperBnd,  
-  Step      <- Step,
-  ECnd      <- ECnd
+  lowerBnd  <- lowerBnd,
+  upperBnd  <- upperBnd,  
+  step      <- step
 
 ----------------------------------------------------------------------------
 
@@ -64,16 +66,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
                       
-InitCtx(x) == [in  |-> x,
-\*               i_p |-> LowerBnd(x),
-\*               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-\*               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+initCtx(x) == [in  |-> x,
                v_p |-> [n \in IndexType |-> Undef],
                v_c |-> [n \in IndexType |-> Undef],
                ret |-> x > 1,
                ste |-> "OFF"]                      
      
-Pre(x) == TRUE
+pre(x) == TRUE
                 
 ----------------------------------------------------------------------------                      
                                                   
@@ -88,7 +87,7 @@ Pre(x) == TRUE
 P(I) == 
   \E i \in iterator(I) :
     /\ ~ written(v_p(I), i)
-    /\ map' = [map EXCEPT 
+    /\ cm' = [cm EXCEPT 
          ![I].v_p[i] = [v |-> divisors(in(I), v_p(I), i), r |-> 0]]         
 \*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))  
 
@@ -101,11 +100,11 @@ P(I) ==
    PCR:   c = consume notDivides N
 *) 
 C(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_p(I), i)
-    /\ ~ Read(v_p(I), i)
-    /\ ~ Written(v_c(I), i)
-    /\ map' = [map EXCEPT 
+  \E i \in iterator(I) :
+    /\ written(v_p(I), i)
+    /\ ~ read(v_p(I), i)
+    /\ ~ written(v_c(I), i)
+    /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
          ![I].v_c[i]   = [v |-> notDivides(in(I), v_p(I), i), r |-> 0] ]               
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
@@ -119,35 +118,35 @@ C(I) ==
    PCR:   r = reduce and (N > 1) c
 *)
 R(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_c(I), i)    
-    /\ ~ Read(v_c(I), i)   
-    /\ map' = [map EXCEPT 
-         ![I].ret      = and(@, v_c(I)[i].v),
-         ![I].v_c[i].r = @ + 1,
-         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]                                                                               
-\*    /\ IF   CDone(I, i)
-\*       THEN PrintT("R" \o ToString(I \o <<i>>) 
-\*                       \o " : in= "  \o ToString(in(I))    
-\*                       \o " : ret= " \o ToString(Out(I)')) 
-\*       ELSE TRUE       
+  \E i \in iterator(I) :
+    /\ written(v_c(I), i)    
+    /\ ~ read(v_c(I), i)   
+    /\ LET newRet == and(out(I), v_c(I)[i].v)
+           endSte == cDone(I, i) \/ eCnd(newRet)
+       IN  cm' = [cm EXCEPT 
+             ![I].ret      = newRet,
+             ![I].v_c[i].r = @ + 1,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                               
+\*          /\ IF endSte
+\*             THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                             \o " : in= "  \o ToString(in(I))    
+\*                             \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE       
 
 (* 
    PCR IsPrime step at index I 
 *)     
 Next(I) == 
-  \/ /\ State(I) = "OFF"
+  \/ /\ state(I) = "OFF"
      /\ Start(I)
-     /\ UNCHANGED i_p
-  \/ /\ State(I) = "RUN"
-     /\ \/ P(I)      /\ UNCHANGED i_p
-        \/ C(I)      /\ UNCHANGED i_p
-        \/ R(I)      /\ UNCHANGED i_p
-        \/ Eureka(I) /\ UNCHANGED i_p       
-        \/ Quit(I)   /\ UNCHANGED i_p  
+  \/ /\ state(I) = "RUN"
+     /\ \/ P(I)
+        \/ C(I)
+        \/ R(I)   
+        \/ Quit(I)   
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 30 01:39:49 UYT 2020 by josedu
+\* Last modified Wed Oct 28 19:33:05 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

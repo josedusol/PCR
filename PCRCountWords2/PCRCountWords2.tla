@@ -19,11 +19,9 @@
    ----------------------------------------------------------   
 *)
 
-EXTENDS Typedef, PCRBase
+EXTENDS Typedef, PCRBase, TLC
 
-LOCAL INSTANCE TLC
-
-VARIABLES map2
+VARIABLES cm2
 
 ----------------------------------------------------------------------------
 
@@ -42,7 +40,7 @@ countWordsInLine == INSTANCE PCRCountWordsInLine WITH
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
-  map       <- map2  
+  cm        <- cm2
 
 ----------------------------------------------------------------------------
 
@@ -50,16 +48,15 @@ countWordsInLine == INSTANCE PCRCountWordsInLine WITH
    Iteration space                 
 *)
 
-LowerBnd(x) == 1
-UpperBnd(x) == Len(x[1])
-Step(i)     == i + 1  
-ECnd(r)     == FALSE
+lowerBnd(x) == 1
+upperBnd(x) == Len(x[1])
+step(i)     == i + 1  
+eCnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
-  LowerBnd  <- LowerBnd,
-  UpperBnd  <- UpperBnd,  
-  Step      <- Step,
-  ECnd      <- ECnd
+  lowerBnd  <- lowerBnd,
+  upperBnd  <- upperBnd,  
+  step      <- step
 
 ----------------------------------------------------------------------------
 
@@ -67,14 +64,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
-InitCtx(x) == [in  |-> x,
-               i_p |-> LowerBnd(x),
-               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+initCtx(x) == [in  |-> x,
+               v_p |-> [n \in IndexType |-> Undef],
+               v_c |-> [n \in IndexType |-> Undef],
                ret |-> EmptyBag,
                ste |-> "OFF"]
 
-Pre(x) == TRUE
+pre(x) == TRUE
 
 ----------------------------------------------------------------------------
 
@@ -87,9 +83,9 @@ Pre(x) == TRUE
    PCR:   p = produce lines T                              
 *)
 P(I) == 
-  \E i \in Iterator(I) :
-    /\ ~ Written(v_p(I), i)             
-    /\ map' = [map EXCEPT
+  \E i \in iterator(I) :
+    /\ ~ written(v_p(I), i)             
+    /\ cm' = [cm EXCEPT
          ![I].v_p[i] = [v |-> lines(in(I), v_p(I), i), r |-> 0] ]          
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))   
 
@@ -97,12 +93,13 @@ P(I) ==
   Consumer call action 
 *)
 C_call(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_p(I), i)
-    /\ ~ Read(v_p(I), i)
-    /\ map'  = [map  EXCEPT ![I].v_p[i].r = 1] 
-    /\ map2' = [map2 EXCEPT 
-         ![I \o <<i>>]= countWordsInLine!InitCtx(<<v_p(I)[i].v, In2(I)>>)]    
+  \E i \in iterator(I) :
+    /\ written(v_p(I), i)
+    /\ ~ read(v_p(I), i)
+    /\ cm'  = [cm  EXCEPT 
+         ![I].v_p[i].r = @ + 1] 
+    /\ cm2' = [cm2 EXCEPT 
+         ![I \o <<i>>] = countWordsInLine!initCtx(<<v_p(I)[i].v, in2(I)>>)]            
 \*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
 \*                       \o " : in= " \o ToString(v_p(I)[i].v))                                                                                                                                            
 
@@ -110,20 +107,21 @@ C_call(I) ==
   Consumer end action 
 *)
 C_ret(I) == 
-  \E i \in Iterator(I) :
-    /\ Read(v_p(I), i)       
-    /\ ~ Written(v_c(I), i)
-    /\ countWordsInLine!Finished(I \o <<i>>)   
-    /\ map' = [map EXCEPT 
-         ![I].v_c[i]= [v |-> countWordsInLine!Out(I \o <<i>>), r |-> 0] ]  
+  \E i \in iterator(I) :
+    /\ written(v_p(I), i)
+    /\ read(v_p(I), i)       
+    /\ ~ written(v_c(I), i)
+    /\ countWordsInLine!finished(I \o <<i>>)   
+    /\ cm' = [cm EXCEPT 
+         ![I].v_c[i] = [v |-> countWordsInLine!out(I \o <<i>>), r |-> 0] ]  
 \*    /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
 \*                      \o " : in= "  \o ToString(countWordsInLine!in(I \o <<i>>))    
 \*                      \o " : ret= " \o ToString(countWordsInLine!Out(I \o <<i>>)))
 (* 
   Consumer action 
 *)
-C(I) == \/ C_call(I) 
-        \/ C_ret(I) /\ UNCHANGED map2    
+C(I) == \/ C_call(I)
+        \/ C_ret(I)  /\ UNCHANGED cm2    
 
 (* 
    Reducer action
@@ -133,36 +131,37 @@ C(I) == \/ C_call(I)
    PCR:   r = reduce joinCounts {} c
 *)
 R(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_c(I), i)  
-    /\ ~ Read(v_c(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].ret      = joinCounts(@, v_c(I)[i].v),
-         ![I].v_c[i].r = @ + 1,
-         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]
-\*    /\ IF   CDone(I, i)
-\*       THEN PrintT("CW2 R" \o ToString(I \o <<i>>) 
-\*                           \o " : in1= " \o ToString(In1(I))    
-\*                           \o " : in2= " \o ToString(In2(I))
-\*                           \o " : ret= " \o ToString(Out(I)')) 
-\*       ELSE TRUE 
+  \E i \in iterator(I) :
+    /\ written(v_c(I), i)  
+    /\ ~ read(v_c(I), i)
+    /\ LET newRet == joinCounts(out(I), v_c(I)[i].v)
+           endSte == cDone(I, i) \/ eCnd(newRet)
+       IN  cm' = [cm EXCEPT 
+             ![I].ret      = newRet,
+             ![I].v_c[i].r = @ + 1,
+             ![I].ste      = IF endSte THEN "END" ELSE @]
+\*          /\ IF endSte
+\*             THEN PrintT("CW2 R" \o ToString(I \o <<i>>) 
+\*                                 \o " : in1= " \o ToString(in1(I))    
+\*                                 \o " : in2= " \o ToString(in2(I))
+\*                                 \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE 
 
 (* 
    PCR CountWords2 step at index I 
 *)
 Next(I) == 
-  \/ /\ State(I) = "OFF" 
+  \/ /\ state(I) = "OFF" 
      /\ Start(I)   
-     /\ UNCHANGED map2
-  \/ /\ State(I) = "RUN" 
-     /\ \/ P(I)      /\ UNCHANGED map2
+     /\ UNCHANGED cm2
+  \/ /\ state(I) = "RUN" 
+     /\ \/ P(I)      /\ UNCHANGED cm2
         \/ C(I)  
-        \/ R(I)      /\ UNCHANGED map2
-        \/ Eureka(I) /\ UNCHANGED map2
-        \/ Quit(I)   /\ UNCHANGED map2  
+        \/ R(I)      /\ UNCHANGED cm2
+        \/ Quit(I)   /\ UNCHANGED cm2 
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 27 16:09:08 UYT 2020 by josedu
+\* Last modified Wed Oct 28 23:24:13 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

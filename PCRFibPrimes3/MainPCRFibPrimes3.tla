@@ -6,12 +6,9 @@
 
 EXTENDS Typedef, FiniteSets
 
-VARIABLES N, map1, map2 
+VARIABLES N, cm1, cm2, im1
 
 ----------------------------------------------------------------------------
-
-NULL == CHOOSE x : /\ x \notin (VarPType1 \union VarCType1)
-                   /\ x \notin (VarPType2 \union VarCType2)
 
 \* Instanciate first PCR with appropiate types
 PCR1 == INSTANCE PCRFibPrimes3 WITH 
@@ -21,8 +18,9 @@ PCR1 == INSTANCE PCRFibPrimes3 WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1,  
-  map       <- map1,
-  map2      <- map2
+  cm        <- cm1,
+  cm2       <- cm2,
+  im        <- im1
 
 \* Instanciate second PCR with appropiate types  
 PCR2 == INSTANCE PCRIsPrimeRec WITH
@@ -32,32 +30,39 @@ PCR2 == INSTANCE PCRIsPrimeRec WITH
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
-  map       <- map2 
+  cm        <- cm2 
+ 
+Undef == CHOOSE x : /\ x = PCR1!Undef
+                    /\ x = PCR2!Undef
  
 ----------------------------------------------------------------------------
 
-vars == <<N,map1,map2>>
+vars == <<N,cm1,cm2,im1>>
 
 Init == /\ N \in InType1
-        /\ PCR1!Pre(N)
-        /\ map1 = [I \in CtxIdType1 |-> 
-                     IF   I = <<0>> 
-                     THEN PCR1!InitCtx(N)
-                     ELSE NULL]
-        /\ map2 = [I \in CtxIdType2 |-> NULL]
+        /\ PCR1!pre(N)
+        /\ cm1 = [I \in CtxIdType1 |-> 
+                     IF   I = <<>> 
+                     THEN PCR1!initCtx(N)
+                     ELSE Undef]
+        /\ im1 = [I \in CtxIdType1 |-> 
+                     IF   I = <<>> 
+                     THEN PCR1!lowerBnd(N)
+                     ELSE Undef]                     
+        /\ cm2 = [I \in CtxIdType2 |-> Undef]
 
 (* PCR1 step at index I *)                  
-Next1(I) == /\ map1[I] # NULL
+Next1(I) == /\ cm1[I] # Undef
             /\ PCR1!Next(I)
             /\ UNCHANGED N             
 
 (* PCR2 step at index I *)   
-Next2(I) == /\ map2[I] # NULL
+Next2(I) == /\ cm2[I] # Undef
             /\ PCR2!Next(I)
-            /\ UNCHANGED <<N,map1>> 
+            /\ UNCHANGED <<N,cm1,im1>> 
 
-Done == /\ \A I \in PCR1!CtxIndex : PCR1!Finished(I)
-        /\ \A I \in PCR2!CtxIndex : PCR2!Finished(I)
+Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
+        /\ \A I \in PCR2!CtxIndex : PCR2!finished(I)
         /\ UNCHANGED vars
 
 Next == \/ \E I \in CtxIdType1 : Next1(I)
@@ -79,51 +84,56 @@ FairSpec == /\ Spec
 isPrime(n) == LET div(k,m) == \E d \in 1..m : m = k * d
               IN n > 1 /\ ~ \E m \in 2..n-1 : div(m, n)
        
-Fibonacci[n \in Nat] == 
+fibonacci[n \in Nat] == 
   IF n < 2 
   THEN 1 
-  ELSE Fibonacci[n-1] + Fibonacci[n-2]                
+  ELSE fibonacci[n-1] + fibonacci[n-2]                
 
-Solution(in) == LET fibValues == { Fibonacci[n] : n \in 0..in }
+Solution(in) == LET fibValues == { fibonacci[n] : n \in 0..in }
                 IN  Cardinality({ f \in fibValues : isPrime(f) })
 
 TypeInv == /\ N \in InType1
-           /\ map1 \in PCR1!CtxMap
-           /\ map2 \in PCR2!CtxMap
+           /\ cm1 \in PCR1!CtxMap
+           /\ cm2 \in PCR2!CtxMap
+           /\ im1 \in PCR1!IndexMap
 
-Correctness == []( PCR1!Finished(<<0>>) => PCR1!Out(<<0>>) = Solution(N) )
+Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(N) )
   
-Termination == <> PCR1!Finished(<<0>>) 
+Termination == <> PCR1!finished(<<>>) 
 
-GTermination == [][ PCR1!Finished(<<0>>) <=> Done ]_vars
+GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
 
 \* This Spec is an implementation of PCRFibPrimes1!Spec.
 \* The following def provides a refinement mapping to prove this fact.
 subst ==                        
-  [I \in DOMAIN map1 |-> 
-     IF map1[I] # NULL                               \* For any well-defined PCR1 context with index I
-     THEN [map1[I] EXCEPT                                 
-       !.v_p= [i \in DOMAIN @ |-> 
-                 IF @[i].r > 0                       \* For any read producer var v_p[i]s
-                 THEN IF PCR2!Finished(I \o <<i>>)   \* If C_ret(I \o <i>) holds (PCR2 finished at I \o <i>)
-                      THEN [v |-> @[i].v, r |-> 1]   \* then producer var is marked as read
-                      ELSE [v |-> @[i].v, r |-> 0]   \* else we pretend is still unread.
-                 ELSE @[i]
+  [I \in DOMAIN cm1 |-> 
+     IF cm1[I] # Undef                               \* For any well-defined PCR1 context with index I
+     THEN [cm1[I] EXCEPT                                 
+       !.v_p= [i \in DOMAIN @ |->                    \* For any producer var v_p[i]       
+                 IF /\ @[i] # Undef                  \* If is written, read and C_ret(I \o <i>) 
+                    /\ @[i].r > 0                    \* does not hold (PCR2 didnt finished at I \o <i>)
+                    /\ ~ PCR2!finished(I \o <<i>>)
+                 THEN [v |-> @[i].v, r |-> 0]        \* then we pretend is still unread.
+                 ELSE @[i]                           \* else leave it as is.
               ],
-       !.v_c= [i \in DOMAIN @ |->                    \* For any consumer var v_c[i]
-                 IF /\ PCR1!Read(map1[I].v_p, i)     \* for which corresponding v_p[i] has been read
-                    /\ PCR2!Finished(I \o <<i>>)     \* and C_ret(I \o <i>) holds (PCR2 finished at I \o <i>)
-                 THEN [v |-> PCR2!Out(I \o <<i>>),   \* then consumer var gets result computed by PCR2
-                       r |-> @[i].r]                 
+       !.v_c= [i \in DOMAIN @ |->                    \* For any consumer var v_c[i]  
+                 IF /\ @[i] = Undef
+                    /\ PCR1!written(cm1[I].v_p, i)
+                    /\ PCR1!read(cm1[I].v_p, i)      \* for which corresponding v_p[i] has been read
+                    /\ PCR2!finished(I \o <<i>>)     \* and C_ret(I \o <<i>>) holds (PCR2 finished at I \o <i>)                   
+                 THEN [v |-> PCR2!out(I \o <<i>>),   \* then consumer var gets result computed by PCR2
+                       r |-> 0]                    
                  ELSE @[i]                           \* else leave it as is.
               ]              
           ]
-     ELSE NULL]     
+     ELSE Undef] 
               
-PCRFibPrimes1 == INSTANCE MainPCRFibPrimes1 WITH map1 <- subst
+PCRFibPrimes1 == INSTANCE MainPCRFibPrimes1 
+  WITH cm1 <- subst,
+       im1 <- im1
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Sep 26 01:19:18 UYT 2020 by josedu
+\* Last modified Wed Oct 28 22:44:30 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

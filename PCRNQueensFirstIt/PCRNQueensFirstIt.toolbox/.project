@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>PCRNQueensFirstIt</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>toolbox.builder.TLAParserBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>toolbox.natures.TLANature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>MainPCRNQueensFirstIt.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/MainPCRNQueensFirstIt.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRNQueensFirstIt.tla</name>
+			<type>1</type>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRNQueensFirstIt/PCRNQueensFirstIt.tla</location>
+		</link>
+		<link>
+			<name>PCRNQueensFirstStep.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRNQueensFirstStep.tla</locationURI>
+		</link>
+		<link>
+			<name>Typedef.tla</name>
+			<type>1</type>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRNQueensFirstIt/Typedef.tla</location>
+		</link>
+	</linkedResources>
+</projectDescription>

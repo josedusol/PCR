@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="0"/>
+    <intAttribute key="fpIndex" value="60"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -37,9 +37,10 @@
     <listAttribute key="modelParameterConstants"/>
     <stringAttribute key="modelParameterContraint" value="N = 8"/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="NULL;;NULL;1;0"/>
         <listEntry value="Nat;;NatMock1;0;0"/>
-        <listEntry value="CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
+        <listEntry value="CtxIdType1;;{&lt;&lt;&gt;&gt;};0;0"/>
+        <listEntry value="PCR1!Null;;PCR1!Null;1;0"/>
+        <listEntry value="PCR1!Undef;;PCR1!Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
     <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..15"/>

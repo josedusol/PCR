@@ -21,11 +21,9 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase
+EXTENDS Typedef, PCRBase, TLC
 
-LOCAL INSTANCE TLC
-
-VARIABLE map2
+VARIABLE cm2
 
 ----------------------------------------------------------------------------
 
@@ -50,7 +48,7 @@ fibRec == INSTANCE PCRFibRec WITH
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
-  map       <- map2
+  cm        <- cm2
 
 ----------------------------------------------------------------------------
 
@@ -58,16 +56,15 @@ fibRec == INSTANCE PCRFibRec WITH
    Iteration space                 
 *)
 
-LowerBnd(x) == 0
-UpperBnd(x) == x
-Step(i)     == i + 1  
-ECnd(r)     == FALSE
+lowerBnd(x) == 0
+upperBnd(x) == x
+step(i)     == i + 1  
+eCnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
-  LowerBnd  <- LowerBnd,
-  UpperBnd  <- UpperBnd,  
-  Step      <- Step,
-  ECnd      <- ECnd
+  lowerBnd  <- lowerBnd,
+  upperBnd  <- upperBnd,  
+  step      <- step
 
 ----------------------------------------------------------------------------
 
@@ -75,14 +72,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
-InitCtx(x) == [in  |-> x,
-               i_p |-> LowerBnd(x),
-               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+initCtx(x) == [in  |-> x,
+               v_p |-> [n \in IndexType |-> Undef],
+               v_c |-> [n \in IndexType |-> Undef],
                ret |-> 0,
                ste |-> "OFF"]
 
-Pre(x) == TRUE
+pre(x) == TRUE
 
 ----------------------------------------------------------------------------
 
@@ -90,11 +86,11 @@ Pre(x) == TRUE
    Producer call action
 *)
 P_call(I) == 
-  \E i \in Iterator(I):
-    /\ ~ Written(v_p(I), i)
-    /\ ~ fibRec!WellDef(I \o <<i>>)
-    /\ map2' = [map2 EXCEPT 
-         ![I \o <<i>>] = fibRec!InitCtx(i)]    
+  \E i \in iterator(I):
+    /\ ~ written(v_p(I), i)
+    /\ ~ fibRec!wellDef(I \o <<i>>)
+    /\ cm2' = [cm2 EXCEPT 
+         ![I \o <<i>>] = fibRec!initCtx(i)]    
 \*    /\ PrintT("P_call" \o ToString(I \o <<i>>) 
 \*                       \o " : in= " \o ToString(i))
 
@@ -102,12 +98,12 @@ P_call(I) ==
    Producer ret action
 *)
 P_ret(I) == 
-  \E i \in Iterator(I) :
-     /\ ~ Written(v_p(I), i)   
-     /\ fibRec!WellDef(I \o <<i>>) 
-     /\ fibRec!Finished(I \o <<i>>)   
-     /\ map' = [map EXCEPT 
-          ![I].v_p[i]= [v |-> fibRec!Out(I \o <<i>>), r |-> 0]]  
+  \E i \in iterator(I) :
+     /\ ~ written(v_p(I), i)   
+     /\ fibRec!wellDef(I \o <<i>>) 
+     /\ fibRec!finished(I \o <<i>>)   
+     /\ cm' = [cm EXCEPT 
+          ![I].v_p[i] = [v |-> fibRec!out(I \o <<i>>), r |-> 0]]  
 \*     /\ PrintT("P_ret" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(fibRec!in(I \o <<i>>))    
 \*                       \o " : ret= " \o ToString(fibRec!Out(I \o <<i>>)))
@@ -115,8 +111,8 @@ P_ret(I) ==
 (*
    Producer action
 *)
-P(I) == \/ P_call(I) /\ UNCHANGED map
-        \/ P_ret(I)  /\ UNCHANGED map2  
+P(I) == \/ P_call(I) /\ UNCHANGED cm
+        \/ P_ret(I)  /\ UNCHANGED cm2  
 
 (* 
    Consumer action
@@ -127,12 +123,12 @@ P(I) == \/ P_call(I) /\ UNCHANGED map
    PCR:   c = consume isPrime N p
 *)
 C(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_p(I), i)
-    /\ ~ Read(v_p(I), i)
-    /\ ~ Written(v_c(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].v_p[i].r = 1, 
+  \E i \in iterator(I) :
+    /\ written(v_p(I), i)
+\*    /\ ~ read(v_p(I), i)
+    /\ ~ written(v_c(I), i)
+    /\ cm' = [cm EXCEPT 
+         ![I].v_p[i].r = @ + 1, 
          ![I].v_c[i]   = [v |-> isPrime(in(I), v_p(I), i), r |-> 0]]                         
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))
@@ -145,35 +141,36 @@ C(I) ==
    PCR:   r = reduce sum 0 c
 *)
 R(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_c(I), i)  
-    /\ ~ Read(v_c(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].ret      = sum(@, v_c(I)[i].v),
-         ![I].v_c[i].r = @ + 1,
-         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @] 
-\*    /\ IF   CDone(I, i)
-\*       THEN PrintT("FP4 R" \o ToString(I \o <<i>>) 
-\*                           \o " : in= "  \o ToString(in(I))    
-\*                           \o " : ret= " \o ToString(Out(I)')) 
-\*       ELSE TRUE 
+  \E i \in iterator(I) :
+    /\ written(v_c(I), i)  
+    /\ ~ read(v_c(I), i)
+    /\ LET newRet == sum(out(I), v_c(I)[i].v)
+           endSte == cDone(I, i) \/ eCnd(newRet)
+       IN  cm' = [cm EXCEPT 
+             ![I].ret      = newRet,
+             ![I].v_c[i].r = @ + 1,
+             ![I].ste      = IF endSte THEN "END" ELSE @] 
+\*          /\ IF endSte
+\*             THEN PrintT("FP4 R" \o ToString(I \o <<i>>) 
+\*                                 \o " : in= "  \o ToString(in(I))    
+\*                                 \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE 
 
 (* 
    PCR FibPrimes5 step at index I 
 *)
 Next(I) == 
-  \/ /\ State(I) = "OFF" 
+  \/ /\ state(I) = "OFF" 
      /\ Start(I)   
-     /\ UNCHANGED map2
-  \/ /\ State(I) = "RUN" 
+     /\ UNCHANGED cm2
+  \/ /\ state(I) = "RUN" 
      /\ \/ P(I)
-        \/ C(I)      /\ UNCHANGED map2
-        \/ R(I)      /\ UNCHANGED map2
-        \/ Eureka(I) /\ UNCHANGED map2
-        \/ Quit(I)   /\ UNCHANGED map2           
+        \/ C(I)    /\ UNCHANGED cm2
+        \/ R(I)    /\ UNCHANGED cm2
+        \/ Quit(I) /\ UNCHANGED cm2           
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 27 16:07:40 UYT 2020 by josedu
+\* Last modified Thu Oct 29 15:32:45 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

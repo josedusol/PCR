@@ -17,13 +17,13 @@
      
      fun subproblem(B,p,i) = if   isBase(B, p, i)
                              then base(B, p, i)
-                             else NQueensFirst(B, p, i)
+                             else NQueensFirst(B)
    
      fun conquer(r1,r2) = if r1 = [] then r2 else r1
      
-     cnd terminate(r) = complete(r) && not (r = [])
+     cnd terminate(r) = not (r = null) and complete(r)
      
-     pre NQueensAll = \forall r \in 1..Len(B) : B[r] == 0
+     pre NQueensFirst = \forall r \in 1..Len(B) : B[r] == 0
    
      PCR NQueensFirst(B):
        par
@@ -34,9 +34,7 @@
    ---------------------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase
-
-LOCAL INSTANCE TLC
+EXTENDS Typedef, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -102,11 +100,11 @@ iterDivide(x, p, i) == divide(x)[i]
 
 complete(x) == \A r \in DOMAIN x : x[r] # 0
 
-base(x, p, i) == IF complete(p[i].v) THEN p[i].v ELSE << >>
+base(x, p, i) == IF complete(p[i].v) THEN p[i].v ELSE Null
 
 isBase(x, p, i) == complete(p[i].v) \/ ~ canAddQueens(p[i].v) 
  
-conquer(r1, r2) == IF r1 = << >> THEN r2 ELSE r1
+conquer(r1, r2) == IF r1 = Null THEN r2 ELSE r1
 
 ----------------------------------------------------------------------------
 
@@ -114,17 +112,16 @@ conquer(r1, r2) == IF r1 = << >> THEN r2 ELSE r1
    Iteration space                 
 *)
 
-LowerBnd(x) == 1
-UpperBnd(x) == Len(divide(x))
-Step(i)     == i + 1  
-ECnd(r)     == complete(r) /\ r # << >>
-\*ECnd(r)     == FALSE
+lowerBnd(x) == 1
+upperBnd(x) == Len(divide(x))
+step(i)     == i + 1  
+eCnd(r)     == r # Null /\ complete(r)   \* /\ r # << >>
+\*eCnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
-  LowerBnd  <- LowerBnd,
-  UpperBnd  <- UpperBnd,  
-  Step      <- Step,
-  ECnd      <- ECnd
+  lowerBnd  <- lowerBnd,
+  upperBnd  <- upperBnd,  
+  step      <- step
 
 ----------------------------------------------------------------------------
 
@@ -132,14 +129,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
-InitCtx(x) == [in  |-> x,
-               i_p |-> LowerBnd(x),
-               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               ret |-> << >>,
+initCtx(x) == [in  |-> x,
+               v_p |-> [n \in IndexType |-> Undef],
+               v_c |-> [n \in IndexType |-> Undef],
+               ret |-> Null,
                ste |-> "OFF"] 
 
-Pre(x) == \A r \in DOMAIN x : x[r] = 0
+pre(x) == \A r \in DOMAIN x : x[r] = 0
 
 ----------------------------------------------------------------------------
             
@@ -152,9 +148,9 @@ Pre(x) == \A r \in DOMAIN x : x[r] = 0
    PCR:   p = produce divide B                            
 *)
 P(I) == 
-  \E i \in Iterator(I) : 
-    /\ ~ Written(v_p(I), i)         
-    /\ map' = [map EXCEPT  
+  \E i \in iterator(I) : 
+    /\ ~ written(v_p(I), i)         
+    /\ cm' = [cm EXCEPT  
          ![I].v_p[i] = [v |-> iterDivide(in(I), v_p(I), i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
@@ -162,12 +158,12 @@ P(I) ==
    Consumer non-recursive action
 *)
 C_base(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_p(I), i)
-    /\ ~ Read(v_p(I), i)
-    /\ ~ Written(v_c(I), i)
+  \E i \in iterator(I) :
+    /\ written(v_p(I), i)
+\*    /\ ~ read(v_p(I), i)
+    /\ ~ written(v_c(I), i)
     /\ isBase(in(I), v_p(I), i)
-    /\ map' = [map EXCEPT 
+    /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
          ![I].v_c[i]   = [v |-> base(in(I), v_p(I), i), r |-> 0] ]               
 \*    /\ PrintT("C_base" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
@@ -177,13 +173,13 @@ C_base(I) ==
    Consumer recursive call action
 *)
 C_call(I) == 
-  \E i \in Iterator(I):
-    /\ Written(v_p(I), i)
-    /\ ~ Read(v_p(I), i)
+  \E i \in iterator(I):
+    /\ written(v_p(I), i)
+    /\ ~ read(v_p(I), i)
     /\ ~ isBase(in(I), v_p(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].v_p[i].r  = 1,
-         ![I \o <<i>>]  = InitCtx(v_p(I)[i].v) ]     
+    /\ cm' = [cm EXCEPT 
+         ![I].v_p[i].r = @ + 1,
+         ![I \o <<i>>] = initCtx(v_p(I)[i].v) ]
 \*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
 \*                       \o " : in= " \o ToString(in(I \o <<i>>)'))                                                                                                                                            
 
@@ -191,12 +187,14 @@ C_call(I) ==
    Consumer recursive return action
 *)
 C_ret(I) == 
-  \E i \in Iterator(I) :
-     /\ Read(v_p(I), i)       
-     /\ ~ Written(v_c(I), i)
-     /\ Finished(I \o <<i>>)   
-     /\ map' = [map EXCEPT 
-          ![I].v_c[i]= [v |-> Out(I \o <<i>>), r |-> 0]]  
+  \E i \in iterator(I) :
+     /\ written(v_p(I), i)
+     /\ read(v_p(I), i)       
+     /\ ~ written(v_c(I), i)
+     /\ wellDef(I \o <<i>>) 
+     /\ finished(I \o <<i>>)   
+     /\ cm' = [cm EXCEPT 
+          ![I].v_c[i] = [v |-> out(I \o <<i>>), r |-> 0]]  
 \*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(in(I \o <<i>>))    
 \*                       \o " : ret= " \o ToString(Out(I \o <<i>>)))                
@@ -206,7 +204,7 @@ C_ret(I) ==
 *)
 C(I) == \/ C_base(I)
         \/ C_call(I) 
-        \/ C_ret(I) 
+        \/ C_ret(I)
   
 (* 
    Reducer action
@@ -216,35 +214,36 @@ C(I) == \/ C_base(I)
    PCR:   r = reduce conquer [] c
 *)
 R(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_c(I), i)
-    /\ ~ Read(v_c(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].ret      = conquer(Out(I), v_c(I)[i].v),
-         ![I].v_c[i].r = @ + 1,
-         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]
-\*  /\ PrintT("ret " \o ToString(conquer(Out(I), v_c(I)[i].v)))      
-\*    /\ IF CDone(I, i)
-\*       THEN PrintT("R" \o ToString(I \o <<i>>) 
-\*                       \o " : in= "  \o ToString(in(I))    
-\*                       \o " : ret= " \o ToString(Out(I)')) 
-\*       ELSE TRUE             
+  \E i \in iterator(I) :
+    /\ written(v_c(I), i)
+    /\ ~ read(v_c(I), i)
+    /\ LET newRet == conquer(out(I), v_c(I)[i].v)
+           endSte == cDone(I, i) \/ eCnd(newRet)
+       IN  cm' = [cm EXCEPT 
+             ![I].ret      = newRet,
+             ![I].v_c[i].r = @ + 1,
+             ![I].ste      = IF endSte THEN "END" ELSE @]
+\*          /\ PrintT("ret " \o ToString(newRet))      
+\*          /\ IF endSte
+\*             THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                             \o " : in= "  \o ToString(in(I))    
+\*                             \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE             
 
 (* 
    PCR NQueensFirst step at index I 
 *)
 Next(I) == 
-  \/ /\ State(I) = "OFF" 
+  \/ /\ state(I) = "OFF" 
      /\ Start(I)
-  \/ /\ State(I) = "RUN" 
-     /\ \/ P(I) 
+  \/ /\ state(I) = "RUN" 
+     /\ \/ P(I)
         \/ C(I) 
         \/ R(I)
-        \/ Eureka(I)
-        \/ Quit(I)
+        \/ Quit(I)  
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 27 15:56:22 UYT 2020 by josedu
+\* Last modified Fri Oct 30 14:15:56 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

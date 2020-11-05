@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="0"/>
+    <intAttribute key="fpIndex" value="85"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="60"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -21,15 +21,15 @@
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
     <intAttribute key="modelBehaviorSpecType" value="1"/>
-    <stringAttribute key="modelBehaviorVars" value="B, map"/>
+    <stringAttribute key="modelBehaviorVars" value="B, cm1"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="0TypeInv"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
-        <listEntry value="0Termination"/>
-        <listEntry value="1Correctness"/>
+        <listEntry value="1Termination"/>
+        <listEntry value="0Correctness"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
@@ -37,14 +37,14 @@
     <listAttribute key="modelParameterConstants"/>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="NULL;;NULL;1;0"/>
         <listEntry value="IndexType1;;NatMock2;0;0"/>
         <listEntry value="CtxIdType1;;UNION {[1..n -&gt; NatMock2] : n \in NatMock2};0;0"/>
-        <listEntry value="Nat;;NatMock2;0;0"/>
+        <listEntry value="Nat;;0..N+1;0;0"/>
         <listEntry value="Config;;UNION {[1..n -&gt; 0..N] : n \in Size};0;0"/>
+        <listEntry value="PCR1!Undef;;PCR1!Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="N == 3&#13;&#10;Size == 3..N&#13;&#10;NatMock2 == 0..N+1"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 3&#13;&#10;Size == 0..N&#13;&#10;NatMock2 == 0..N"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="3"/>
     <booleanAttribute key="recover" value="false"/>
