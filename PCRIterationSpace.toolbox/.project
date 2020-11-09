@@ -26,9 +26,19 @@
 			<locationURI>PARENT-1-PROJECT_LOC/PCRBase2.tla</locationURI>
 		</link>
 		<link>
+			<name>PCRBaseG.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRBaseG.tla</locationURI>
+		</link>
+		<link>
 			<name>PCRBaseN.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/PCRBaseN.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRBaseT.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRBaseT.tla</locationURI>
 		</link>
 		<link>
 			<name>PCRIterationSpace.tla</name>
@@ -41,9 +51,19 @@
 			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpace2.tla</locationURI>
 		</link>
 		<link>
+			<name>PCRIterationSpaceG.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpaceG.tla</locationURI>
+		</link>
+		<link>
 			<name>PCRIterationSpaceN.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpaceN.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRIterationSpaceT.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpaceT.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

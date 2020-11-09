@@ -6,6 +6,8 @@
 
 EXTENDS Typedef, FiniteSets
 
+BLA == INSTANCE SequenceTheorems_proofs
+
 VARIABLES T, W, cm1 
 
 ----------------------------------------------------------------------------
@@ -80,6 +82,6 @@ GTermination == [][ PCR1!finished(<<>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Oct 28 23:18:11 UYT 2020 by josedu
+\* Last modified Fri Nov 06 19:27:49 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

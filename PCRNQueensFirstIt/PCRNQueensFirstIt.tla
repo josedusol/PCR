@@ -4,9 +4,18 @@
    PCR NQueensFirstIt
    
    ---------------------------------------------------------------------
-     fun id  
+    fun divide, complete, abs, canAddQueenInRow, 
+         canAddQueenInCell, canAddQueens, addQueenInRow, addQueen
+     
+     fun divide(B) = 
+       cs = []
+       for i in 1..Len(B)
+         if canAddQueenInRow(B, i) then cs += [addQueenInRow(B, i)]
+       return cs
         
-     cnd found(r) = not (r == null) and complete(r)
+     fun found(y, i) = if i > 0 then y[i] == y[i-1] else false
+     
+     fun found(r) = \exists c \in r : complete(c)
      
      pre NQueensFirstIt = \forall r \in 1..Len(B) : B[r] == 0
    
@@ -15,7 +24,7 @@
          p = produce id B
          forall p
            c = iterate found NQueensFirstStep [B]
-         r = reduce id [] c
+         r = reduce id2 [] c
        
      PCR NQueensFirstStep(B : {[Nat]}) :
        par
@@ -49,9 +58,10 @@ id(x, p, i) == x
 
 complete(x) == \A r \in DOMAIN x : x[r] # 0
  
-id2(r1, r2) == r2
+id2(r, z) == z
 
-found(r) == r = { } \/ \E c \in r : complete(c)
+\*found(y, i) == y[i] = {} \/ \E c \in y[i] : complete(c)
+found(y, i) == IF i > 0 THEN y[i] = y[i-1] ELSE FALSE
 
 ----------------------------------------------------------------------------
 
@@ -77,7 +87,7 @@ INSTANCE PCRIterationSpace WITH
 
 y_i(I)    == ym[I].i
 y_v(I)    == ym[I].v
-y_last(I) == ym[I].v[ym[I].i - 1]
+y_last(I) == ym[I].v[ym[I].i]
 ItMap     == [CtxIdType -> [v : [IndexType -> VarCType1 \union {Undef}], 
                             i : IndexType] 
                            \union {Undef}]
@@ -114,7 +124,7 @@ P(I) ==
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
-   Consumer action
+   Consumer iterator start action
 *)
 C_start(I) == 
   \E i \in iterator(I) :
@@ -127,54 +137,55 @@ C_start(I) ==
                                    IF k = 0 
                                    THEN { in(I) } 
                                    ELSE Undef],
-                          i |-> 1] ]                      
+                          i |-> 0] ]                      
 \*    /\ PrintT("C_start" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                        \o " con v=" \o ToString(y'))
 
 (*
-   Consumer non-recursive action
-*)
-C_end(I) == 
-  \E i \in iterator(I) :
-    /\ written(v_p(I), i)
-    /\ read(v_p(I), i)
-    /\ ~ written(v_c(I), i)
-    /\ found(y_last(I \o <<i>>))
-    /\ cm' = [cm EXCEPT 
-         ![I].v_c[i] = [v |-> y_last(I \o <<i>>), r |-> 0] ]               
-\*    /\ PrintT("C_end" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
-\*                      \o " con v=" \o ToString(y))
-
-(*
-   Consumer recursive call action
+   Consumer iterator call action
 *)
 C_call(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
     /\ read(v_p(I), i)
-    /\ ~ found(y_last(I \o <<i>>))
+    /\ ~ found(y_v(I \o <<i>>), y_i(I \o <<i>>))
     /\ ~ NQueensStep!wellDef(I \o <<i, y_i(I \o <<i>>)>>)
     /\ cm2' = [cm2 EXCEPT 
          ![I \o <<i, y_i(I \o <<i>>)>>] = NQueensStep!initCtx(y_last(I \o <<i>>)) ]     
 \*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
 \*                       \o " : in= " \o ToString(in(I \o <<i>>)'))                                                                                                                                            
 
+
 (*
-   Consumer recursive return action
+   Consumer iterator return action
 *)
 C_ret(I) == 
   \E i \in iterator(I) :
      /\ written(v_p(I), i)
      /\ read(v_p(I), i)     
-     /\ ~ found(y_last(I \o <<i>>))
+     /\ ~ found(y_v(I \o <<i>>), y_i(I \o <<i>>))
      /\ NQueensStep!wellDef(I \o <<i, y_i(I \o <<i>>)>>) 
      /\ NQueensStep!finished(I \o <<i, y_i(I \o <<i>>)>>)   
      /\ ym' = [ym EXCEPT 
-          ![I \o <<i>>].v[y_i(I \o <<i>>)] = NQueensStep!out(I \o <<i, y_i(I \o <<i>>)>>),
+          ![I \o <<i>>].v[y_i(I \o <<i>>) + 1] = NQueensStep!out(I \o <<i, y_i(I \o <<i>>)>>),
           ![I \o <<i>>].i = @ + 1 ]                                      
 \*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(in(I \o <<i>>))    
 \*                       \o " : ret= " \o ToString(Out(I \o <<i>>)))                
+
+(*
+   Consumer iterator end action
+*)
+C_end(I) == 
+  \E i \in iterator(I) :
+    /\ written(v_p(I), i)
+    /\ read(v_p(I), i)
+    /\ ~ written(v_c(I), i)
+    /\ found(y_v(I \o <<i>>), y_i(I \o <<i>>))
+    /\ cm' = [cm EXCEPT 
+         ![I].v_c[i] = [v |-> y_last(I \o <<i>>), r |-> 0] ]               
+\*    /\ PrintT("C_end" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
+\*                      \o " con v=" \o ToString(y))
 
 (*
    Consumer iterator action
@@ -222,6 +233,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Thu Nov 05 00:35:47 UYT 2020 by josedu
+\* Last modified Sun Nov 08 20:47:57 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

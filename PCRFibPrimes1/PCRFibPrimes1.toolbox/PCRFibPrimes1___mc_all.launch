@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="89"/>
+    <intAttribute key="fpIndex" value="6"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -47,7 +47,7 @@
         <listEntry value="PCR1!Undef;;PCR1!Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 5&#13;&#10;MaxFN == 8&#13;&#10;Input == 0..MaxN&#13;&#10;NatMock1 == 0..MaxFN"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 6&#13;&#10;MaxFN == 13&#13;&#10;Input == 0..MaxN&#13;&#10;NatMock1 == 0..MaxFN"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <booleanAttribute key="recover" value="false"/>

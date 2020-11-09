@@ -6,25 +6,25 @@
    ---------------------------------------------------------------------
      fun init, getLast, nextItem, solve, update 
           
-     cnd found(r) = not (r == null) and complete(r)
+     fun until(y, i) = i > Len(y[0].data.w)
         
      PCR KnapSack01(X):
        par
-         p = produce id X
+         p = produce init X
          forall p
-           c = iterate found KnapSack01Step p
-         r = reduce getLast [] c
+           c = iterate until KnapSack01Step p
+         r = reduce getLast 0 c
          
-     PCR KnapSack01Step(Sol):
+     PCR KnapSack01Step(Sol, k):
        par
-         p = produce nextItem Sol
+         p = produce id Sol
          forall p
-           c = consume solve Sol p
+           c = consume solve Sol k p
          r = reduce update Sol c   
    ---------------------------------------------------------------------
 *)
 
-EXTENDS Typedef, FiniteSets, PCRBase, TLC
+EXTENDS Typedef, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -34,21 +34,19 @@ EXTENDS Typedef, FiniteSets, PCRBase, TLC
 
 max(x, y) == IF x >= y THEN x ELSE y
 
-nextItem(x, p, i) == x.item + 1
+id(x, p, i) == i
  
-solve(x, p, i) ==   \* i is capacity column j:  0 <= j <= C
-  LET data == x.data
-      it   == p[i].v
-      row  == x.row
+solve(x1, x2, p, i) ==   \* i is capacity column j:  0 <= j <= C
+  LET data == x1.data      
+      row  == x1.row
+      it   == x2
       j    == i + 1
-  IN  [item |-> it,
-       i    |-> j,
+  IN  [i    |-> j,
        v    |-> CASE  it = 0           ->  0         \* never happen
                   []  data.w[it] >  i  ->  row[j] 
                   []  data.w[it] <= i  ->  max(row[j],  row[j-data.w[it]] + data.v[it]) ]
                        
-update(r1, r2) == [r1 EXCEPT !.item      = r2.item,
-                             !.row[r2.i] = r2.v ]   
+update(r, z) == [z EXCEPT !.row[z.i] = z.v]   
 
 ----------------------------------------------------------------------------
 
@@ -57,7 +55,7 @@ update(r1, r2) == [r1 EXCEPT !.item      = r2.item,
 *)
 
 lowerBnd(x) == 0
-upperBnd(x) == x.data.C
+upperBnd(x) == x[1].data.C
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
@@ -75,7 +73,7 @@ INSTANCE PCRIterationSpace WITH
 initCtx(x) == [in  |-> x,
                v_p |-> [n \in IndexType |-> Undef],
                v_c |-> [n \in IndexType |-> Undef],
-               ret |-> x,
+               ret |-> x[1],
                ste |-> "OFF"] 
 
 pre(x) == TRUE
@@ -94,7 +92,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> nextItem(in(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> id(in(I), v_p(I), i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (* 
@@ -112,7 +110,7 @@ C(I) ==
     /\ ~ written(v_c(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1, 
-         ![I].v_c[i]   = [v |-> solve(in(I), v_p(I), i), r |-> 0]]                                          
+         ![I].v_c[i]   = [v |-> solve(in1(I), in2(I), v_p(I), i), r |-> 0]]                                          
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))  
   
@@ -153,6 +151,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 04 22:55:23 UYT 2020 by josedu
+\* Last modified Sun Nov 08 20:37:38 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

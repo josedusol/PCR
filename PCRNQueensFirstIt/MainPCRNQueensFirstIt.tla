@@ -91,7 +91,8 @@ Solution(in) == CASE Len(in) = 0      -> { <<>> }
                                            <<3, 5, 2, 4, 1>>,                                         
                                            <<4, 1, 3, 5, 2>>,
                                            <<4, 2, 5, 3, 1>>, 
-                                           <<5, 2, 4, 1, 3>> } 
+                                           <<5, 2, 4, 1, 3>>,
+                                           <<5, 3, 1, 4, 2>> }
 
 TypeInv == /\ B \in InType1
            /\ cm1 \in PCR1!CtxMap
@@ -106,6 +107,6 @@ GTermination == [][ PCR1!finished(<<>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Nov 03 22:49:51 UYT 2020 by josedu
+\* Last modified Sun Nov 08 15:57:27 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

@@ -12,11 +12,11 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="113"/>
+    <intAttribute key="fpIndex" value="0"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="50"/>
     <intAttribute key="maxSetSize" value="1000000"/>
-    <booleanAttribute key="mcMode" value="false"/>
+    <booleanAttribute key="mcMode" value="true"/>
     <stringAttribute key="modelBehaviorInit" value=""/>
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
@@ -29,7 +29,7 @@
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="0Correctness"/>
+        <listEntry value="1Correctness"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
@@ -44,10 +44,10 @@
         <listEntry value="CtxIdType2;;{&lt;&lt;0,i&gt;&gt; : i \in IndexType2};0;0"/>
         <listEntry value="IndexType2;;0..N*N*N;0;0"/>
         <listEntry value="PCR1!NQueensStep!Undef;;PCR1!NQueensStep!Undef;1;0"/>
-        <listEntry value="Undef;;Undef;0;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="N == 5&#13;&#10;Size == 5..N&#13;&#10;NatMock2 == 0..N"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 3&#13;&#10;Size == 0..N&#13;&#10;NatMock2 == 0..N"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="3"/>
     <booleanAttribute key="recover" value="false"/>

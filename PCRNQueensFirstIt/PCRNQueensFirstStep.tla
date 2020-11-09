@@ -13,7 +13,9 @@
          if canAddQueenInRow(B, i) then cs += [addQueenInRow(B, i)]
        return cs
           
-     cnd found(r) = not (r == null) and complete(r)
+     fun found(y, i) = if i > 0 then y[i] == y[i-1] else false
+     
+     fun found(r) = \exists c \in r : complete(c)
      
      pre NQueensFirstIt = \forall r \in 1..Len(B) : B[r] == 0
    
@@ -22,7 +24,7 @@
          p = produce id B
          forall p
            c = iterate found NQueensFirstStep B
-         r = reduce id [] c
+         r = reduce id2 [] c
          
      PCR NQueensFirstStep(B):
        par
@@ -101,7 +103,7 @@ complete(c) == \A r \in DOMAIN c : c[r] # 0
 
 extend(x, p, i) == IF complete(p[i].v) THEN { p[i].v } ELSE ToSet(divide(p[i].v))
 
-concat(r1, r2) == r1 \union r2
+concat(r, z) == r \union z
 
 ----------------------------------------------------------------------------
 
@@ -207,6 +209,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Nov 03 20:54:01 UYT 2020 by josedu
+\* Last modified Sun Nov 08 20:48:13 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

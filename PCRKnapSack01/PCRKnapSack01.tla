@@ -4,29 +4,29 @@
    PCR KnapSack01
    
    ---------------------------------------------------------------------
-     fun init, getLast, nextItem, solve, update  
+     fun init, until, getLast, nextItem, solve, update  
         
-     cnd found(r) = r.item >= Len(r.data.w)
+     fun until(y, i) = i > Len(y[0].data.w)
         
      PCR KnapSack01(X):
        par
          p = produce init X
          forall p
-           c = iterate found KnapSack01Step p
+           c = iterate until KnapSack01Step p
          r = reduce getLast [] c
          
-     PCR KnapSack01Step(Sol):
+     PCR KnapSack01Step(Sol, k):
        par
-         p = produce nextItem Sol
+         p = produce id Sol
          forall p
-           c = consume solve Sol p
-         r = reduce update Sol c    
+           c = consume solve Sol k p
+         r = reduce update Sol c   
    ---------------------------------------------------------------------
 *)
 
 EXTENDS Typedef, PCRBase, TLC
 
-VARIABLE y, cm2
+VARIABLE ym, cm2
 
 KnapSack01Step == INSTANCE PCRKnapSack01Step WITH 
   InType    <- InType2,
@@ -44,12 +44,11 @@ KnapSack01Step == INSTANCE PCRKnapSack01Step WITH
 *)
 
 init(x, p, i) == [data |-> x, 
-                  item |-> 0,
                   row  |-> [j \in 1..x.C+1 |-> 0]]
  
-getLast(r1, r2) == r2.row[Len(r2.row)]
+getLast(r, z) == z.row[Len(z.row)]
 
-found(r) == r.item >= Len(r.data.w)
+until(y, i) == i > Len(y[i].data.w)
 
 ----------------------------------------------------------------------------
 
@@ -66,6 +65,19 @@ INSTANCE PCRIterationSpace WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
+
+----------------------------------------------------------------------------
+
+(* 
+   Consumer iterator                 
+*)
+
+y_i(I)    == ym[I].i
+y_v(I)    == ym[I].v
+y_last(I) == ym[I].v[ym[I].i]
+ItMap     == [CtxIdType -> [v : [IndexType -> VarCType1 \union {Undef}], 
+                            i : IndexType] 
+                           \union {Undef}]
 
 ----------------------------------------------------------------------------
 
@@ -99,7 +111,7 @@ P(I) ==
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
-   Consumer action
+   Consumer iterator start action
 *)
 C_start(I) == 
   \E i \in iterator(I) :
@@ -107,64 +119,68 @@ C_start(I) ==
     /\ ~ read(v_p(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1]
-    /\ y'  = v_p(I)[i].v
+    /\ ym' = [ym EXCEPT 
+         ![I \o <<i>>] = [v |-> [k \in IndexType |-> 
+                                   IF k = 0 
+                                   THEN v_p(I)[i].v 
+                                   ELSE Undef],
+                          i |-> 0] ]          
 \*    /\ PrintT("C_start" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                        \o " con v=" \o ToString(y'))
 
 (*
-   Consumer non-recursive action
+   Consumer iterator call action
+*)
+C_call(I) == 
+  \E i \in iterator(I):
+    /\ written(v_p(I), i)
+    /\ read(v_p(I), i)
+    /\ ~ until(y_v(I \o <<i>>), y_i(I \o <<i>>))
+    /\ ~ KnapSack01Step!wellDef(I \o <<i, y_i(I \o <<i>>)>>)
+    /\ cm2' = [cm2 EXCEPT 
+         ![I \o <<i, y_i(I \o <<i>>)>>] = 
+            KnapSack01Step!initCtx(<<y_last(I \o <<i>>), y_i(I \o <<i>>)>>) ]         
+\*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
+\*                       \o " : in= " \o ToString(y))                                                                                                                                            
+
+(*
+   Consumer iterator return action
+*)
+C_ret(I) == 
+  \E i \in iterator(I) :
+     /\ written(v_p(I), i)
+     /\ read(v_p(I), i)
+     /\ ~ until(y_v(I \o <<i>>), y_i(I \o <<i>>))
+     /\ KnapSack01Step!wellDef(I \o <<i, y_i(I \o <<i>>)>>) 
+     /\ KnapSack01Step!finished(I \o <<i, y_i(I \o <<i>>)>>)   
+     /\ ym' = [ym EXCEPT 
+          ![I \o <<i>>].v[y_i(I \o <<i>>) + 1] = KnapSack01Step!out(I \o <<i, y_i(I \o <<i>>)>>),
+          ![I \o <<i>>].i = @ + 1 ]       
+\*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
+\*                       \o " : in= "  \o ToString(in(I \o <<i>>))    
+\*                       \o " : ret= " \o ToString(Out(I \o <<i>>)))                
+
+(*
+   Consumer iterator end action
 *)
 C_end(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
     /\ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
-    /\ found(y)
+    /\ until(y_v(I \o <<i>>), y_i(I \o <<i>>))
     /\ cm' = [cm EXCEPT 
-         ![I].v_c[i] = [v |-> y, r |-> 0] ]               
+         ![I].v_c[i] = [v |-> y_last(I \o <<i>>), r |-> 0] ]           
 \*    /\ PrintT("C_end" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                      \o " con v=" \o ToString(y))
 
 (*
-   Consumer recursive call action
-*)
-C_call(I) == 
-  \E i \in iterator(I):
-    /\ written(v_p(I), i)
-    /\ read(v_p(I), i)
-    /\ ~ found(y)
-    /\ ~ KnapSack01Step!wellDef(I \o <<i>>)
-    /\ cm2' = [cm2 EXCEPT 
-         ![I \o <<i>>] = KnapSack01Step!initCtx(y) ]
-\*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
-\*                       \o " : in= " \o ToString(y))                                                                                                                                            
-
-(*
-   Consumer recursive return action
-*)
-C_ret(I) == 
-  \E i \in iterator(I) :
-     /\ written(v_p(I), i)
-     /\ read(v_p(I), i)       
-     /\ ~ found(y)
-     /\ KnapSack01Step!wellDef(I \o <<i>>) 
-     /\ KnapSack01Step!finished(I \o <<i>>)   
-     /\ cm2' = [cm2 EXCEPT 
-         ![I \o <<i>>] = Undef ]
-     /\ y'   = KnapSack01Step!out(I \o <<i>>)
-\*     /\ cm' = [cm EXCEPT 
-\*          ![I].v_c[i] = [v |-> NQueensStep!out(I \o <<i>>), r |-> 0]]  
-\*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
-\*                       \o " : in= "  \o ToString(in(I \o <<i>>))    
-\*                       \o " : ret= " \o ToString(Out(I \o <<i>>)))                
-
-(*
    Consumer action
 *)
-C(I) == \/ C_start(I) /\ UNCHANGED cm2
-        \/ C_end(I)   /\ UNCHANGED <<cm2,y>>
-        \/ C_call(I)  /\ UNCHANGED <<cm,y>>
-        \/ C_ret(I)   /\ UNCHANGED cm
+C(I) == \/ C_start(I) /\ UNCHANGED cm2        
+        \/ C_call(I)  /\ UNCHANGED <<cm,ym>>
+        \/ C_ret(I)   /\ UNCHANGED <<cm,cm2>>
+        \/ C_end(I)   /\ UNCHANGED <<cm2,ym>>
   
 (* 
    Reducer action
@@ -196,15 +212,15 @@ R(I) ==
 Next(I) == 
   \/ /\ state(I) = "OFF" 
      /\ Start(I)
-     /\ UNCHANGED <<cm2,y>>
+     /\ UNCHANGED <<cm2,ym>>
   \/ /\ state(I) = "RUN" 
-     /\ \/ P(I)    /\ UNCHANGED <<cm2,y>>
+     /\ \/ P(I)    /\ UNCHANGED <<cm2,ym>>
         \/ C(I)  
-        \/ R(I)    /\ UNCHANGED <<cm2,y>>
-        \/ Quit(I) /\ UNCHANGED <<cm2,y>>
+        \/ R(I)    /\ UNCHANGED <<cm2,ym>>
+        \/ Quit(I) /\ UNCHANGED <<cm2,ym>>
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 04 16:38:09 UYT 2020 by josedu
+\* Last modified Sun Nov 08 20:38:05 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

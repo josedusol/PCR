@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>PCRFibPrimes2G</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>toolbox.builder.TLAParserBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>toolbox.natures.TLANature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>PCRFibPrimes2G.tla</name>
+			<type>1</type>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRFibPrimes2G/PCRFibPrimes2G.tla</location>
+		</link>
+		<link>
+			<name>PCRFibPrimes2GMain.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes2GMain.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRFibPrimes2GThms.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes2GThms.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRFibPrimes2GTypes.tla</name>
+			<type>1</type>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRFibPrimes2G/PCRFibPrimes2GTypes.tla</location>
+		</link>
+	</linkedResources>
+</projectDescription>

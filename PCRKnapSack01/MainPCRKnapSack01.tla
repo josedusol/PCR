@@ -6,7 +6,7 @@
 
 EXTENDS Typedef, Functions, FiniteSets, TLC
 
-VARIABLES X, cm1, cm2, y    
+VARIABLES X, cm1, cm2, ym    
 
 ----------------------------------------------------------------------------
          
@@ -20,7 +20,7 @@ PCR1 == INSTANCE PCRKnapSack01 WITH
   VarRType  <- VarRType1,  
   cm        <- cm1,
   cm2       <- cm2,
-  y         <- y                      
+  ym        <- ym                      
 
 PCR2 == INSTANCE PCRKnapSack01Step WITH 
   InType    <- InType2,
@@ -36,7 +36,7 @@ Undef == CHOOSE x : /\ x = PCR1!Undef
            
 ----------------------------------------------------------------------------
 
-vars == <<X,cm1,cm2,y>>
+vars == <<X,cm1,cm2,ym>>
 
 Init == /\ X \in InType1
         /\ PCR1!pre(X)
@@ -45,7 +45,7 @@ Init == /\ X \in InType1
                      THEN PCR1!initCtx(X)
                      ELSE Undef]    
         /\ cm2 = [I \in CtxIdType2 |-> Undef]     
-        /\ y   = Undef                                                    
+        /\ ym  = [I \in CtxIdType1 |-> Undef]                                                     
 
 (* PCR1 step at index I  *)                                                  
 Next1(I) == /\ cm1[I] # Undef
@@ -55,7 +55,7 @@ Next1(I) == /\ cm1[I] # Undef
 (* PCR2 step at index I  *)                                                  
 Next2(I) == /\ cm2[I] # Undef
             /\ PCR2!Next(I)
-            /\ UNCHANGED <<X,cm1,y>>               
+            /\ UNCHANGED <<X,cm1,ym>>               
 
 Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ \A I \in PCR2!CtxIndex : PCR2!finished(I)
@@ -97,7 +97,7 @@ Solution(in) ==
 TypeInv == /\ X \in InType1
            /\ cm1 \in PCR1!CtxMap
            /\ cm2 \in PCR2!CtxMap
-           /\ y \in VarCType1 \union {Undef}
+           /\ ym  \in PCR1!ItMap
            
 Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(X) )
 
@@ -107,6 +107,6 @@ GTermination == [][ PCR1!finished(<<>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 04 16:48:08 UYT 2020 by josedu
+\* Last modified Sun Nov 08 16:21:24 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed
