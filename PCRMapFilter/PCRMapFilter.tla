@@ -72,9 +72,9 @@
 \*<<x1, x1 + x2, (x1 + x2) + x3 >>
 
 
-EXTENDS Typedef, PCRBase2, TLC
+EXTENDS PCRMapFilterTypes, PCRBase2, TLC
 
-VARIABLE ip
+VARIABLE im
 
 ----------------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ createL(len) ==
   LET f[n \in Nat] ==
         IF n = 0
         THEN << >>
-        ELSE <<NULL>> \o f[n-1]
+        ELSE <<Null>> \o f[n-1]
   IN f[len]
 
 prefixList(x, p, c1, i) == 
@@ -103,16 +103,16 @@ prefixList(x, p, c1, i) ==
   ELSE << >>
 
 merge(seq1, seq2) ==
-  LET F[s1, s2 \in Seq(Nat \union {NULL})] ==
+  LET F[s1, s2 \in Seq(Nat \union {Null})] ==
         IF s1 = << >> 
         THEN s2 
         ELSE IF s2 = << >> 
              THEN s1 
-             ELSE CASE Head(s1) = NULL /\ Head(s2) = NULL -> 
-                         <<NULL>> \o F[Tail(s1), Tail(s2)]
-                    [] Head(s1) # NULL /\ Head(s2) = NULL -> 
+             ELSE CASE Head(s1) = Null /\ Head(s2) = Null -> 
+                         <<Null>> \o F[Tail(s1), Tail(s2)]
+                    [] Head(s1) # Null /\ Head(s2) = Null -> 
                          <<Head(s1)>> \o F[Tail(s1), Tail(s2)]
-                    [] Head(s1) = NULL /\ Head(s2) # NULL -> 
+                    [] Head(s1) = Null /\ Head(s2) # Null -> 
                          <<Head(s2)>> \o F[Tail(s1), Tail(s2)]                  
   IN F[seq1, seq2] 
 
@@ -130,9 +130,10 @@ eCnd(r)     == FALSE
 INSTANCE PCRIterationSpace2 WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
-  step      <- step,
-  eCnd      <- eCnd,
-  ip        <- ip
+  step      <- step
+
+i_p(I)   == im[I]
+IndexMap == [CtxIdType -> IndexType \union {Undef}]  
 
 ----------------------------------------------------------------------------
 
@@ -141,13 +142,13 @@ INSTANCE PCRIterationSpace2 WITH
 *)
                       
 initCtx(x) == [in   |-> x,
-               v_p  |-> [n \in IndexType |-> Undef],
-               v_c1 |-> [n \in IndexType |-> Undef],
-               v_c2 |-> [n \in IndexType |-> Undef],
+               v_p  |-> [i \in IndexType |-> Undef],
+               v_c1 |-> [i \in IndexType |-> Undef],
+               v_c2 |-> [i \in IndexType |-> Undef],
                ret  |-> << >>,
                ste  |-> "OFF"]  
 
-pre(x) == \A i \in DOMAIN x : x[i] # NULL
+pre(x) == TRUE
 
 ----------------------------------------------------------------------------
 
@@ -162,7 +163,7 @@ pre(x) == \A i \in DOMAIN x : x[i] # NULL
 P(I) == 
   \E i \in iterator(I) :
     /\ ~ written(v_p(I), i)
-    /\ map' = [map EXCEPT 
+    /\ cm' = [cm EXCEPT 
          ![I].v_p[i] = [v |-> all(in(I), v_p(I), i), r |-> 0]]       
 \*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v')) 
                                           
@@ -179,7 +180,7 @@ C1(I) ==
     /\ written(v_p(I), i)
 \*    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c1(I), i)
-    /\ map' = [map EXCEPT 
+    /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = 1, 
          ![I].v_c1[i]  = [v |-> mapp(in(I), v_p(I), i), r |-> 0]]                         
 \*    /\ PrintT("C1" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
@@ -202,7 +203,7 @@ C2(I) ==
    \* /\ ~ read(v_c1(I), i)        \* ...
     
     /\ ~ written(v_c2(I), i)
-    /\ map' = [map EXCEPT 
+    /\ cm' = [cm EXCEPT 
          ![I].v_c1[i].r = 1, 
          ![I].v_c2[i]   = [v |-> prefixList(in(I), v_p(I), v_c1(I), i), r |-> 0]]                         
 \*    /\ PrintT("C2" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
@@ -219,15 +220,17 @@ R(I) ==
   \E i \in iterator(I) :
     /\ written(v_c2(I), i)    
     /\ ~ read(v_c2(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].ret       = merge(@, v_c1(I)[i].v, v_c2(I)[i].v),
-         ![I].v_c2[i].r = @ + 1,
-         ![I].ste       = IF cDone(I, i) THEN "END" ELSE @]
-\*    /\ IF   CDone(I, i)
-\*       THEN PrintT("R" \o ToString(I \o <<i>>) 
-\*                       \o " : in= "  \o ToString(in(I))    
-\*                       \o " : ret= " \o ToString(Out(I)')) 
-\*       ELSE TRUE    
+    /\ LET newRet == merge(out(I), v_c2(I)[i].v)
+           endSte == cDone(I, i) \/ eCnd(newRet)
+       IN  cm' = [cm EXCEPT 
+             ![I].ret       = newRet,
+             ![I].v_c2[i].r = @ + 1,
+             ![I].ste       = IF endSte THEN "END" ELSE @]
+\*          /\ IF endSte
+\*             THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                             \o " : in= "  \o ToString(in(I))    
+\*                             \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE    
 
 (* 
    PCR Fib step at index I 
@@ -235,18 +238,17 @@ R(I) ==
 Next(I) == 
   \/ /\ state(I) = "OFF"
      /\ Start(I)
-     /\ UNCHANGED ip
+     /\ UNCHANGED im
   \/ /\ state(I) = "RUN"
      /\ \/ P(I) 
         \/ C1(I)
         \/ C2(I)
         \/ R(I)
-        \/ Eureka(I)
         \/ Quit(I)
-     /\ UNCHANGED ip      
+     /\ UNCHANGED im      
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Oct 24 13:30:22 UYT 2020 by josedu
+\* Last modified Mon Nov 09 02:38:17 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

@@ -27,7 +27,7 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase, TLC
+EXTENDS PCRFibRecTypes, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -62,8 +62,8 @@ INSTANCE PCRIterationSpace WITH
 *)
                       
 initCtx(x) == [in  |-> x,
-               v_p |-> [n \in IndexType |-> Undef],
-               v_c |-> [n \in IndexType |-> Undef],
+               v_p |-> [i \in IndexType |-> Undef],
+               v_c |-> [i \in IndexType |-> Undef],
                ret |-> 0,
                ste |-> "OFF"]  
 
@@ -92,7 +92,6 @@ P(I) ==
 C_base(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-\*    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
     /\ v_p(I)[i].v < 2
     /\ cm' = [cm EXCEPT 
@@ -216,6 +215,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Oct 29 14:40:52 UYT 2020 by josedu
+\* Last modified Mon Nov 09 21:54:52 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

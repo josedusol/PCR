@@ -25,9 +25,7 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase
-
-LOCAL INSTANCE TLC
+EXTENDS PCRIsPrimeNaiveTypes, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -41,7 +39,7 @@ notDivides(x, p, i) == IF 2 <= p[i].v /\ p[i].v < x
                        THEN ~ (x % p[i].v = 0)
                        ELSE TRUE
 
-and(r1, r2) == r1 /\ r2 
+and(r, z) == r /\ z 
 
 ----------------------------------------------------------------------------
 
@@ -49,16 +47,15 @@ and(r1, r2) == r1 /\ r2
    Iteration space                 
 *)
 
-LowerBnd(x) == 0
-UpperBnd(x) == x
-Step(i)     == i + 1        
-ECnd(r)     == FALSE
+lowerBnd(x) == 0
+upperBnd(x) == x
+step(i)     == i + 1        
+eCnd(r)     == FALSE
  
 INSTANCE PCRIterationSpace WITH
-  LowerBnd  <- LowerBnd,
-  UpperBnd  <- UpperBnd,  
-  Step      <- Step,
-  ECnd      <- ECnd
+  lowerBnd  <- lowerBnd,
+  upperBnd  <- upperBnd,  
+  step      <- step
 
 ----------------------------------------------------------------------------
 
@@ -67,9 +64,8 @@ INSTANCE PCRIterationSpace WITH
 *)
                       
 InitCtx(x) == [in  |-> x,
-               i_p |-> LowerBnd(x),
-               v_p |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
-               v_c |-> [n \in IndexType |-> [v |-> NULL, r |-> 0]],
+               v_p |-> [i \in IndexType |-> Undef],
+               v_c |-> [i \in IndexType |-> Undef],
                ret |-> x > 1,
                ste |-> "OFF"]  
 
@@ -86,9 +82,9 @@ Pre(x) == TRUE
    PCR:   p = produce divisors N
 *)
 P(I) == 
-  \E i \in Iterator(I) :
-    /\ ~ Written(v_p(I), i)
-    /\ map' = [map EXCEPT 
+  \E i \in iterator(I) :
+    /\ ~ written(v_p(I), i)
+    /\ cm' = [cm EXCEPT 
          ![I].v_p[i] = [v |-> divisors(in(I), v_p(I), i), r |-> 0]]         
 \*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))  
 
@@ -101,11 +97,10 @@ P(I) ==
    PCR:   c = consume notDivides N
 *) 
 C(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_p(I), i)
-    /\ ~ Read(v_p(I), i)
-    /\ ~ Written(v_c(I), i)
-    /\ map' = [map EXCEPT 
+  \E i \in iterator(I) :
+    /\ written(v_p(I), i)
+    /\ ~ written(v_c(I), i)
+    /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
          ![I].v_c[i]   = [v |-> notDivides(in(I), v_p(I), i), r |-> 0] ]               
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
@@ -119,34 +114,35 @@ C(I) ==
    PCR:   r = reduce and (N > 1) c
 *)
 R(I) == 
-  \E i \in Iterator(I) :
-    /\ Written(v_c(I), i)    
-    /\ ~ Read(v_c(I), i)
-    /\ map' = [map EXCEPT 
-         ![I].ret      = and(Out(I), v_c(I)[i].v),
-         ![I].v_c[i].r = @ + 1,
-         ![I].ste      = IF CDone(I, i) THEN "END" ELSE @]         
-\*    /\ IF CDone(I, i)
+  \E i \in iterator(I) :
+    /\ written(v_c(I), i)    
+    /\ ~ read(v_c(I), i)
+    /\ LET newRet == and(out(I), v_c(I)[i].v)
+           endSte == cDone(I, i) \/ eCnd(newRet)
+       IN  cm' = [cm EXCEPT 
+             ![I].ret      = newRet,
+             ![I].v_c[i].r = @ + 1,
+             ![I].ste      = IF endSte THEN "END" ELSE @]         
+\*    /\ IF endSte
 \*       THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(in(I))    
-\*                       \o " : ret= " \o ToString(Out(I)')) 
+\*                       \o " : ret= " \o ToString(out(I)')) 
 \*       ELSE TRUE    
 
 (* 
    PCR IsPrimeNaive step at index I 
 *)     
 Next(I) == 
-  \/ /\ State(I) = "OFF"
+  \/ /\ state(I) = "OFF"
      /\ Start(I)
-  \/ /\ State(I) = "RUN"
+  \/ /\ state(I) = "RUN"
      /\ \/ P(I) 
         \/ C(I) 
         \/ R(I)
-        \/ Eureka(I)
         \/ Quit(I)      
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Sep 27 16:06:33 UYT 2020 by josedu
+\* Last modified Mon Nov 09 21:53:11 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>PCRNQueensAllIT</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>toolbox.builder.TLAParserBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>toolbox.natures.TLANature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>PCRNQueensAllIT.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRNQueensAllIT.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRNQueensAllITStep.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRNQueensAllITStep.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRNQueensAllITTypes.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRNQueensAllITTypes.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRNQueensAllITMain.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRNQueensAllITMain.tla</locationURI>
+		</link>
+	</linkedResources>
+</projectDescription>

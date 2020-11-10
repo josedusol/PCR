@@ -16,9 +16,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRCountWords1.tla</name>
+			<name>PCRCountWords1Main.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRCountWords1.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRCountWords1Main.tla</locationURI>
 		</link>
 		<link>
 			<name>PCRCountWords1.tla</name>
@@ -26,14 +26,9 @@
 			<location>PARENT-1-PROJECT_LOC/PCRCountWords1.tla</location>
 		</link>
 		<link>
-			<name>Theorems.tla</name>
+			<name>PCRCountWords1Types.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Theorems.tla</locationURI>
-		</link>
-		<link>
-			<name>Typedef.tla</name>
-			<type>1</type>
-			<location>PARENT-1-PROJECT_LOC/Typedef.tla</location>
+			<location>PARENT-1-PROJECT_LOC/PCRCountWords1Types.tla</location>
 		</link>
 	</linkedResources>
 </projectDescription>

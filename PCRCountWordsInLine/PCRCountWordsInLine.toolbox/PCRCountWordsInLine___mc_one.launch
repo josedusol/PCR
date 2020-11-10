@@ -21,7 +21,7 @@
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
     <intAttribute key="modelBehaviorSpecType" value="1"/>
-    <stringAttribute key="modelBehaviorVars" value="ip1, L, W, map1"/>
+    <stringAttribute key="modelBehaviorVars" value="L, W, cm1"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
     <listAttribute key="modelCorrectnessInvariants">
@@ -37,16 +37,15 @@
     <stringAttribute key="modelParameterActionConstraint" value=""/>
     <listAttribute key="modelParameterConstants">
         <listEntry value="Word;;0..1;0;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterContraint" value="/\ L = &lt;&lt; 0, 1&gt;&gt;&#13;&#10;/\ W = &lt;&lt; 0 &gt;&gt;"/>
     <listAttribute key="modelParameterDefinitions">
         <listEntry value="Nat;;NatMock2;0;0"/>
-        <listEntry value="NULL;;NULL;1;0"/>
         <listEntry value="BagOf;S:;UNION {[xs -&gt; NatMock2\{0}] : xs \in SUBSET S};0;0"/>
         <listEntry value="CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
         <listEntry value="LType;;UNION {[1..n -&gt; Word] : n \in NatMock1};0;0"/>
         <listEntry value="WType;;LType;0;0"/>
-        <listEntry value="PCR1!Undef;;PCR1!Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
     <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..2&#13;&#10;NatMock2 == 0..8"/>

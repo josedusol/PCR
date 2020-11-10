@@ -23,7 +23,7 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase, TLC
+EXTENDS PCRIsPrimeSeqTypes, PCRBase, TLC
 
 VARIABLE im
 
@@ -65,8 +65,8 @@ IndexMap == [CtxIdType -> IndexType \union {Undef}]
 *)
                       
 initCtx(x) == [in  |-> x,
-               v_p |-> [n \in IndexType |-> Undef],
-               v_c |-> [n \in IndexType |-> Undef],
+               v_p |-> [i \in IndexType |-> Undef],
+               v_c |-> [i \in IndexType |-> Undef],
                ret |-> x > 1,
                ste |-> "OFF"]                      
      
@@ -102,7 +102,6 @@ P(I) ==
 C(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-\*    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
@@ -148,6 +147,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Oct 28 19:45:13 UYT 2020 by josedu
+\* Last modified Mon Nov 09 21:52:12 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

@@ -16,19 +16,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRFib.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRFib.tla</locationURI>
-		</link>
-		<link>
 			<name>PCRFib.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRFib/PCRFib.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFib.tla</locationURI>
 		</link>
 		<link>
-			<name>Typedef.tla</name>
+			<name>PCRFibMain.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRFib/Typedef.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibMain.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRFibTypes.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibTypes.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

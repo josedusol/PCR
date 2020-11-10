@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="6"/>
+    <intAttribute key="fpIndex" value="5"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -32,19 +32,20 @@
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="1Correctness"/>
-        <listEntry value="0GTermination"/>
+        <listEntry value="0Correctness"/>
+        <listEntry value="1GTermination"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
     <stringAttribute key="modelParameterActionConstraint" value=""/>
-    <listAttribute key="modelParameterConstants"/>
+    <listAttribute key="modelParameterConstants">
+        <listEntry value="Undef;;Undef;1;0"/>
+    </listAttribute>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
         <listEntry value="Nat;;NatMock1;0;0"/>
         <listEntry value="InType1;;Input;0;0"/>
         <listEntry value="CtxIdType1;;{&lt;&lt;&gt;&gt;};0;0"/>
-        <listEntry value="PCR1!Undef;;PCR1!Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
     <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 6&#13;&#10;MaxFN == 13&#13;&#10;Input == 0..MaxN&#13;&#10;NatMock1 == 0..MaxFN"/>

@@ -113,7 +113,6 @@ P(I) ==
 C(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-\*    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1, 
@@ -162,6 +161,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Nov 05 18:04:51 UYT 2020 by josedu
+\* Last modified Mon Nov 09 22:00:28 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

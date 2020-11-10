@@ -16,19 +16,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRMergeSort.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRMergeSort.tla</locationURI>
-		</link>
-		<link>
 			<name>PCRMergeSort.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRMergeSort/PCRMergeSort.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRMergeSort.tla</locationURI>
 		</link>
 		<link>
-			<name>Typedef.tla</name>
+			<name>PCRMergeSortMain.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRMergeSort/Typedef.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRMergeSortMain.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRMergeSortTypes.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRMergeSortTypes.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

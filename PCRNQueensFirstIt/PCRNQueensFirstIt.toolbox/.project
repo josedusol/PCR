@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>PCRNQueensFirstIt</name>
+	<name>PCRNQueensFirstIT</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -16,24 +16,24 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRNQueensFirstIt.tla</name>
+			<name>PCRNQueensFirstIT.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRNQueensFirstIt.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRNQueensFirstIT.tla</locationURI>
 		</link>
 		<link>
-			<name>PCRNQueensFirstIt.tla</name>
+			<name>PCRNQueensFirstITStep.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRNQueensFirstIt/PCRNQueensFirstIt.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRNQueensFirstITStep.tla</locationURI>
 		</link>
 		<link>
-			<name>PCRNQueensFirstStep.tla</name>
+			<name>PCRNQueensFirstITTypes.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRNQueensFirstStep.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRNQueensFirstITTypes.tla</locationURI>
 		</link>
 		<link>
-			<name>Typedef.tla</name>
+			<name>PCRNQueensFirstITMain.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRNQueensFirstIt/Typedef.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRNQueensFirstITMain.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

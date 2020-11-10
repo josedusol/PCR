@@ -1,7 +1,7 @@
 ----------------------------- MODULE PCRBaseT -----------------------------
 
 (*
-   Base module for any PCR.
+   Base module for PCR with one consumer.
    
    This is an experimental alternative version where we replace the Undef
    and partial function concepts by explicitly defining and mantaining 
@@ -64,7 +64,7 @@ ExtR(r, s)    == [k \in DOMAIN r |-> IF k \in DOMAIN s THEN s[k] ELSE r[k]]
                
 =============================================================================
 \* Modification History
-\* Last modified Fri Nov 06 14:25:10 UYT 2020 by josedu
+\* Last modified Mon Nov 09 00:01:59 UYT 2020 by josedu
 \* Last modified Mon Jul 06 15:51:49 UYT 2020 by josed
 \* Last modified Tue Jun 09 12:24:42 GMT-03:00 2020 by JosEdu
 \* Created Mon Jun 08 22:50:44 GMT-03:00 2020 by JosEdu

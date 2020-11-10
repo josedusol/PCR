@@ -1,7 +1,7 @@
 ----------------------------- MODULE PCRBase ------------------------------
 
 (*
-   Base module for any PCR.
+   Base module for PCR with one consumer.
 *)
 
 LOCAL INSTANCE Naturals
@@ -14,19 +14,11 @@ CONSTANTS InType,       \* Type of PCR input
           IndexType,    \* Type of iteration space
           VarPType,     \* Type of producer variable
           VarCType,     \* Type of consumer variable
-          VarRType      \* Type of reducer output
+          VarRType,     \* Type of reducer output
+          Undef
           
 \* Any PCR can be in exactly one of three states
-State == {"OFF","RUN","END"}             
-             
-Undef == CHOOSE x : /\ x \notin IndexType
-                    /\ x \notin [v : VarPType, r : Nat]
-                    /\ x \notin [v : VarCType, r : Nat]
-                    /\ x \notin [in  : InType,  
-                                 v_p : [IndexType -> [v : VarPType, r : Nat]],
-                                 v_c : [IndexType -> [v : VarCType, r : Nat]],
-                                 ret : VarRType,
-                                 ste : State]            
+State == {"OFF","RUN","END"}                      
                  
 VarP == [IndexType -> [v : VarPType, r : Nat] \union {Undef}]
 VarC == [IndexType -> [v : VarCType, r : Nat] \union {Undef}]                
@@ -37,6 +29,10 @@ Ctx == [in  : InType,       \* input
         v_c : VarC,         \* consumer history
         ret : VarRType,     \* reducer result
         ste : State]        \* discrete state     
+
+ASSUME /\ Undef \notin Ctx
+       /\ Undef \notin [v : VarPType, r : Nat]
+       /\ Undef \notin [v : VarCType, r : Nat]
 
 \* PCR context map. Root context is indexed at <<0>>. 
 CtxMap   == [CtxIdType -> Ctx \union {Undef}] 
@@ -69,7 +65,7 @@ ExtR(r, s)    == [k \in DOMAIN r |-> IF k \in DOMAIN s THEN s[k] ELSE r[k]]
                
 =============================================================================
 \* Modification History
-\* Last modified Wed Oct 28 23:22:10 UYT 2020 by josedu
+\* Last modified Mon Nov 09 00:04:06 UYT 2020 by josedu
 \* Last modified Mon Jul 06 15:51:49 UYT 2020 by josed
 \* Last modified Tue Jun 09 12:24:42 GMT-03:00 2020 by JosEdu
 \* Created Mon Jun 08 22:50:44 GMT-03:00 2020 by JosEdu

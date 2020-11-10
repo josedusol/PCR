@@ -14,7 +14,8 @@ CONSTANTS InType,
           VarPType,
           VarC1Type,
           VarC2Type,
-          VarRType
+          VarRType,
+          Undef
           
 LOCAL INSTANCE PCRBase2
 
@@ -38,20 +39,12 @@ cDone(I, i) == \A j \in iterator(I)\{i} : /\ written(v_c2(I), j)
 \* Start action         
 Start(I) == cm' = [cm EXCEPT ![I].ste = "RUN"] 
 
-\* Terminate if Eureka condition holds 
-\*Eureka(I) == 
-\*  \E i \in iterator(I) :
-\*    /\ written(v_c2(I), i)
-\*    /\ read(v_c2(I), i)
-\*    /\ eCnd(out(I))
-\*    /\ map' = [map EXCEPT ![I].ste = "END"]
-
 \* Terminate if iteration space is empty      
 Quit(I) == /\ iterator(I) = {} 
-           /\ map' = [map EXCEPT ![I].ste = "END"]     
+           /\ cm' = [cm EXCEPT ![I].ste = "END"]     
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Oct 28 19:32:48 UYT 2020 by josedu
+\* Last modified Mon Nov 09 02:33:20 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

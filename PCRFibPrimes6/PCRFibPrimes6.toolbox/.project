@@ -16,19 +16,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRFibPrimes6.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRFibPrimes6.tla</locationURI>
-		</link>
-		<link>
 			<name>PCRFibPrimes6.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRFibPrimes6/PCRFibPrimes6.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes6.tla</locationURI>
 		</link>
 		<link>
-			<name>Typedef.tla</name>
+			<name>PCRFibPrimes6Main.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRFibPrimes6/Typedef.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes6Main.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRFibPrimes6Types.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes6Types.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -16,19 +16,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRSumPrimes1.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRSumPrimes1.tla</locationURI>
-		</link>
-		<link>
 			<name>PCRSumPrimes1.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRSumPrimes1/PCRSumPrimes1.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRSumPrimes1.tla</locationURI>
 		</link>
 		<link>
-			<name>Typedef.tla</name>
+			<name>PCRSumPrimes1Main.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRSumPrimes1/Typedef.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRSumPrimes1Main.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRSumPrimes1Types.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRSumPrimes1Types.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

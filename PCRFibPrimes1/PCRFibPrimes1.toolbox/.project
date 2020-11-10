@@ -16,24 +16,24 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRFibPrimes1.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRFibPrimes1.tla</locationURI>
-		</link>
-		<link>
 			<name>PCRFibPrimes1.tla</name>
 			<type>1</type>
-			<location>PARENT-1-PROJECT_LOC/PCRFibPrimes1.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes1.tla</locationURI>
 		</link>
 		<link>
-			<name>Theorems.tla</name>
+			<name>PCRFibPrimes1Main.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Theorems.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes1Main.tla</locationURI>
 		</link>
 		<link>
-			<name>Typedef.tla</name>
+			<name>PCRFibPrimes1Thms.tla</name>
 			<type>1</type>
-			<location>PARENT-1-PROJECT_LOC/Typedef.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes1Thms.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRFibPrimes1Types.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes1Types.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

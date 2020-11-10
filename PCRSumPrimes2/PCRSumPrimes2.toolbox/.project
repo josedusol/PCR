@@ -16,9 +16,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRSumPrimes2.tla</name>
+			<name>PCRSumPrimes2Main.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRSumPrimes2.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRSumPrimes2Main.tla</locationURI>
 		</link>
 		<link>
 			<name>PCRSumPrimes2.tla</name>
@@ -26,9 +26,9 @@
 			<locationURI>PARENT-1-PROJECT_LOC/PCRSumPrimes2.tla</locationURI>
 		</link>
 		<link>
-			<name>Typedef.tla</name>
+			<name>PCRSumPrimes2Types.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Typedef.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRSumPrimes2Types.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

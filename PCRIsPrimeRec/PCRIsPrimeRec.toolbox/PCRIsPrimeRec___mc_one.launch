@@ -21,7 +21,7 @@
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
     <intAttribute key="modelBehaviorSpecType" value="1"/>
-    <stringAttribute key="modelBehaviorVars" value="M, N, map1"/>
+    <stringAttribute key="modelBehaviorVars" value="M, N, cm1"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
     <listAttribute key="modelCorrectnessInvariants">
@@ -34,10 +34,11 @@
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
     <stringAttribute key="modelParameterActionConstraint" value=""/>
-    <listAttribute key="modelParameterConstants"/>
+    <listAttribute key="modelParameterConstants">
+        <listEntry value="Undef;;Undef;1;0"/>
+    </listAttribute>
     <stringAttribute key="modelParameterContraint" value="N = 10"/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="NULL;;NULL;1;0"/>
         <listEntry value="Nat;;NatMock1;0;0"/>
         <listEntry value="CtxIdType1;;UNION {[1..n -&gt; {0}] : n \in NatMock1};0;0"/>
         <listEntry value="IndexType1;;{ 0 };0;0"/>

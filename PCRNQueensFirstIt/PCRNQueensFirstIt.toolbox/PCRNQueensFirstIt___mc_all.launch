@@ -34,7 +34,9 @@
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
     <stringAttribute key="modelParameterActionConstraint" value=""/>
-    <listAttribute key="modelParameterConstants"/>
+    <listAttribute key="modelParameterConstants">
+        <listEntry value="Undef;;Undef;1;0"/>
+    </listAttribute>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
         <listEntry value="IndexType1;;0..N+1;0;0"/>
@@ -43,8 +45,6 @@
         <listEntry value="Config;;UNION {[1..n -&gt; 0..N] : n \in Size};0;0"/>
         <listEntry value="CtxIdType2;;{&lt;&lt;0,i&gt;&gt; : i \in IndexType2};0;0"/>
         <listEntry value="IndexType2;;0..N*N*N;0;0"/>
-        <listEntry value="PCR1!NQueensStep!Undef;;PCR1!NQueensStep!Undef;1;0"/>
-        <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
     <stringAttribute key="modelParameterNewDefinitions" value="N == 3&#13;&#10;Size == 0..N&#13;&#10;NatMock2 == 0..N"/>
@@ -55,7 +55,7 @@
     <intAttribute key="simuAril" value="-1"/>
     <intAttribute key="simuDepth" value="1500"/>
     <intAttribute key="simuSeed" value="-1"/>
-    <stringAttribute key="specName" value="PCRNQueensFirstIt"/>
+    <stringAttribute key="specName" value="PCRNQueensFirstIT"/>
     <stringAttribute key="tlcResourcesProfile" value="local custom"/>
     <listAttribute key="traceExploreExpressions"/>
     <stringAttribute key="view" value=""/>

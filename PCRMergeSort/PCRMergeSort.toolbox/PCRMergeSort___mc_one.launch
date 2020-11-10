@@ -5,13 +5,13 @@
     <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
     <intAttribute key="distributedNodesCount" value="1"/>
     <stringAttribute key="distributedTLC" value="off"/>
-    <intAttribute key="fpIndex" value="2"/>
+    <intAttribute key="fpIndex" value="0"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <stringAttribute key="modelBehaviorInit" value=""/>
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
     <intAttribute key="modelBehaviorSpecType" value="1"/>
-    <stringAttribute key="modelBehaviorVars" value="L, map"/>
+    <stringAttribute key="modelBehaviorVars" value="L, cm1"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
     <listAttribute key="modelCorrectnessInvariants">
@@ -26,10 +26,10 @@
     <stringAttribute key="modelParameterActionConstraint" value=""/>
     <listAttribute key="modelParameterConstants">
         <listEntry value="Elem;;0..3;0;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterContraint" value="L = &lt;&lt; 3, 1, 0, 2 &gt;&gt;"/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="NULL;;NULL;1;0"/>
         <listEntry value="InType1;;UNION {[1..n -&gt; Elem] : n \in 0..4};0;0"/>
         <listEntry value="Nat;;0..4;0;0"/>
         <listEntry value="CtxIdType1;;UNION {[1..n -&gt; {0,1,2}] : n \in 0..2};0;0"/>

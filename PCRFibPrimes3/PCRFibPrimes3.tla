@@ -22,7 +22,7 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase, TLC
+EXTENDS PCRFibPrimes3Types, PCRBase, TLC
 
 VARIABLE cm2, im
 
@@ -71,8 +71,8 @@ IndexMap == [CtxIdType -> IndexType \union {Undef}]
 *)
 
 initCtx(x) == [in  |-> x,
-               v_p |-> [n \in IndexType |-> Undef],
-               v_c |-> [n \in IndexType |-> Undef],
+               v_p |-> [i \in IndexType |-> Undef],
+               v_c |-> [i \in IndexType |-> Undef],
                ret |-> 0,
                ste |-> "OFF"]
 
@@ -172,6 +172,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Oct 29 15:04:42 UYT 2020 by josedu
+\* Last modified Mon Nov 09 02:46:35 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

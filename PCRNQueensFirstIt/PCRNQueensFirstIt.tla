@@ -1,45 +1,39 @@
------------------------- MODULE PCRNQueensFirstIt --------------------------
+------------------------ MODULE PCRNQueensFirstIT --------------------------
 
 (*
-   PCR NQueensFirstIt
+   PCR NQueensFirstIT
    
    ---------------------------------------------------------------------
-    fun divide, complete, abs, canAddQueenInRow, 
+     fun divide, complete, abs, canAddQueenInRow, 
          canAddQueenInCell, canAddQueens, addQueenInRow, addQueen
-     
-     fun divide(B) = 
-       cs = []
-       for i in 1..Len(B)
-         if canAddQueenInRow(B, i) then cs += [addQueenInRow(B, i)]
-       return cs
         
      fun found(y, i) = if i > 0 then y[i] == y[i-1] else false
      
-     fun found(r) = \exists c \in r : complete(c)
+     fun eureka(r) = \exists c \in r : complete(c)
      
-     pre NQueensFirstIt = \forall r \in 1..Len(B) : B[r] == 0
+     pre NQueensFirstIT = \forall r \in 1..Len(X) : X[r] == 0
    
-     PCR NQueensFirstIt(B : [Nat]) :  
+     PCR NQueensFirstIT(X : [Nat]) : {[Nat]}  
        par
-         p = produce id B
+         p = produce id X
          forall p
-           c = iterate found NQueensFirstStep [B]
-         r = reduce id2 [] c
+           c = iterate found NQueensFirstStep [X]
+         r = reduce ret {} c
        
-     PCR NQueensFirstStep(B : {[Nat]}) :
+     PCR NQueensFirstITStep(X : {[Nat]}) : {[Nat]}
        par
-         c = produce elem B
-         forall c
-           cs = consume extend B c
-         r = reduce found ++ [] B    
+         p = produce elem X
+         forall p
+           c = consume extend X p
+         r = reduce eureka union {} c    
    ---------------------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase, TLC
+EXTENDS PCRNQueensFirstITTypes, PCRBase, TLC
 
 VARIABLES ym, cm2
 
-NQueensStep == INSTANCE PCRNQueensFirstStep WITH 
+NQueensStep == INSTANCE PCRNQueensFirstITStep WITH 
   InType    <- InType2,
   CtxIdType <- CtxIdType2,
   IndexType <- IndexType2,  
@@ -56,11 +50,10 @@ NQueensStep == INSTANCE PCRNQueensFirstStep WITH
 
 id(x, p, i) == x
 
-complete(x) == \A r \in DOMAIN x : x[r] # 0
- 
-id2(r, z) == z
+ret(r, z) == z
 
-\*found(y, i) == y[i] = {} \/ \E c \in y[i] : complete(c)
+\* complete(x) == \A r \in DOMAIN x : x[r] # 0
+\* found(y, i) == y[i] = {} \/ \E c \in y[i] : complete(c)
 found(y, i) == IF i > 0 THEN y[i] = y[i-1] ELSE FALSE
 
 ----------------------------------------------------------------------------
@@ -206,7 +199,7 @@ R(I) ==
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
     /\ ~ read(v_c(I), i)
-    /\ LET newRet == id2(out(I), v_c(I)[i].v)
+    /\ LET newRet == ret(out(I), v_c(I)[i].v)
            endSte == cDone(I, i) \/ eCnd(newRet)
        IN  cm' = [cm EXCEPT 
              ![I].ret      = newRet,
@@ -233,6 +226,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Nov 08 20:47:57 UYT 2020 by josedu
+\* Last modified Mon Nov 09 21:27:45 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

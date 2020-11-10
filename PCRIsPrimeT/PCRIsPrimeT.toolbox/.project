@@ -16,19 +16,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRIsPrimeT.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRIsPrimeT.tla</locationURI>
-		</link>
-		<link>
 			<name>PCRIsPrimeT.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRIsPrimeT/PCRIsPrimeT.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeT.tla</locationURI>
 		</link>
 		<link>
-			<name>PCRIsPrimeTTypedef.tla</name>
+			<name>PCRIsPrimeTMain.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRIsPrimeT/PCRIsPrimeTTypedef.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeTMain.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRIsPrimeTTypes.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeTTypes.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

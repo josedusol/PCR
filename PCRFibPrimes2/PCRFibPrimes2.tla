@@ -22,7 +22,7 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase, TLC
+EXTENDS PCRFibPrimes2Types, PCRBase, TLC
 
 VARIABLES cm2, im
 
@@ -36,7 +36,7 @@ fib(x, p, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
 
 sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)  
 
-isPrime == INSTANCE PCRIsPrime WITH
+PCRisPrime == INSTANCE PCRIsPrime WITH
   InType    <- InType2,
   CtxIdType <- CtxIdType2,
   IndexType <- IndexType2,
@@ -71,8 +71,8 @@ IndexMap == [CtxIdType -> IndexType \union {Undef}]
 *)
 
 initCtx(x) == [in  |-> x,
-               v_p |-> [n \in IndexType |-> Undef],
-               v_c |-> [n \in IndexType |-> Undef],
+               v_p |-> [i \in IndexType |-> Undef],
+               v_c |-> [i \in IndexType |-> Undef],
                ret |-> 0,
                ste |-> "OFF"]
 
@@ -106,7 +106,7 @@ C_call(I) ==
     /\ cm'  = [cm  EXCEPT 
          ![I].v_p[i].r = @ + 1] 
     /\ cm2' = [cm2 EXCEPT 
-         ![I \o <<i>>] = isPrime!initCtx(v_p(I)[i].v) ]   
+         ![I \o <<i>>] = PCRisPrime!initCtx(v_p(I)[i].v) ]   
 \*    /\ PrintT("C_call" \o ToString(I \o <<j>>) 
 \*                       \o " : in= " \o ToString(v_p(I)[j].v))                                                                                                                                            
 
@@ -118,10 +118,10 @@ C_ret(I) ==
     /\ written(v_p(I), i)
     /\ read(v_p(I), i)       
     /\ ~ written(v_c(I), i)
-    /\ isPrime!wellDef(I \o <<i>>) 
-    /\ isPrime!finished(I \o <<i>>)   
+    /\ PCRisPrime!wellDef(I \o <<i>>) 
+    /\ PCRisPrime!finished(I \o <<i>>)   
     /\ cm' = [cm EXCEPT 
-         ![I].v_c[i] = [v |-> isPrime!out(I \o <<i>>), r |-> 0]]  
+         ![I].v_c[i] = [v |-> PCRisPrime!out(I \o <<i>>), r |-> 0]]  
 \*    /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(isPrime!in(I \o <<i>>))    
 \*                       \o " : ret= " \o ToString(isPrime!Out(I \o <<i>>)))
@@ -170,6 +170,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Oct 28 22:42:10 UYT 2020 by josedu
+\* Last modified Mon Nov 09 02:46:45 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

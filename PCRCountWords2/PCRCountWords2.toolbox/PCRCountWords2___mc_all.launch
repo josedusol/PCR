@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="12"/>
+    <intAttribute key="fpIndex" value="0"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="42"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -39,6 +39,7 @@
     <stringAttribute key="modelParameterActionConstraint" value=""/>
     <listAttribute key="modelParameterConstants">
         <listEntry value="Word;;0..1;0;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
@@ -50,9 +51,6 @@
         <listEntry value="TType;;UNION {[1..n -&gt; LType] : n \in NatMock1};0;0"/>
         <listEntry value="WType;;LType;0;0"/>
         <listEntry value="Seq;S:;UNION {[1..n -&gt; S] : n \in NatMock3};0;0"/>
-        <listEntry value="PCR1!countWordsInLine!Undef;;PCR1!countWordsInLine!Undef;1;0"/>
-        <listEntry value="Undef;;Undef;1;0"/>
-        <listEntry value="PCRCountWords1!Undef;;Undef;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
     <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..2&#13;&#10;NatMock2 == 0..8&#13;&#10;NatMock3 == 0..4"/>

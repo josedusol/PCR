@@ -1,7 +1,7 @@
 --------------------------- MODULE PCRSumPrimes1 ---------------------------
 
 (*
-   PCR SumPrimes
+   PCR SumPrimes1
    
    ---------------------------------------------------------------------
      fun divide, isBase, base, conquer, isPrime
@@ -17,7 +17,7 @@
    
      fun conquer(r1,r2) = r1 + r2
       
-     PCR SumPrimes(L):
+     PCR SumPrimes1(L):
        par
          p = produce iterDivide L
          forall p
@@ -26,7 +26,7 @@
    ---------------------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase, TLC
+EXTENDS PCRSumPrimes1Types, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ base(x, p, i) == IF /\ p[i].v # << >>
 
 isBase(x, p, i) == Len(p[i].v) <= 1
 
-conquer(r1, r2) == r1 + r2
+conquer(r, z) == r + z
 
 ----------------------------------------------------------------------------
 
@@ -75,8 +75,8 @@ INSTANCE PCRIterationSpace WITH
 *)
 
 initCtx(x) == [in  |-> x,
-               v_p |-> [n \in IndexType |-> Undef],
-               v_c |-> [n \in IndexType |-> Undef],
+               v_p |-> [i \in IndexType |-> Undef],
+               v_c |-> [i \in IndexType |-> Undef],
                ret |-> 0,
                ste |-> "OFF"] 
 
@@ -188,6 +188,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Thu Oct 29 17:54:30 UYT 2020 by josedu
+\* Last modified Mon Nov 09 17:00:37 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

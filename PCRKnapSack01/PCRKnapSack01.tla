@@ -17,16 +17,16 @@
          
      PCR KnapSack01Step(Sol, k):
        par
-         p = produce id Sol
+         p = produce id Sol k
          forall p
            c = consume solve Sol k p
          r = reduce update Sol c   
    ---------------------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase, TLC
+EXTENDS PCRKnapSack01Types, PCRBase, TLC
 
-VARIABLE ym, cm2
+VARIABLES ym, cm2
 
 KnapSack01Step == INSTANCE PCRKnapSack01Step WITH 
   InType    <- InType2,
@@ -86,8 +86,8 @@ ItMap     == [CtxIdType -> [v : [IndexType -> VarCType1 \union {Undef}],
 *)
 
 initCtx(x) == [in  |-> x,
-               v_p |-> [n \in IndexType |-> Undef],
-               v_c |-> [n \in IndexType |-> Undef],
+               v_p |-> [i \in IndexType |-> Undef],
+               v_c |-> [i \in IndexType |-> Undef],
                ret |-> 0,
                ste |-> "OFF"] 
 
@@ -198,8 +198,7 @@ R(I) ==
        IN  cm' = [cm EXCEPT 
              ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]
-\*          /\ PrintT("ret " \o ToString(newRet))      
+             ![I].ste      = IF endSte THEN "END" ELSE @]   
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
@@ -207,7 +206,7 @@ R(I) ==
 \*             ELSE TRUE             
 
 (* 
-   PCR NQueensFirstIt step at index I 
+   PCR KnapSack01 step at index I 
 *)
 Next(I) == 
   \/ /\ state(I) = "OFF" 
@@ -221,6 +220,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Nov 08 20:38:05 UYT 2020 by josedu
+\* Last modified Mon Nov 09 21:46:29 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

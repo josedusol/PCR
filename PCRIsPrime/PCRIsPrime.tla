@@ -3,6 +3,9 @@
 (*
    PCR IsPrime
    
+   This is an experimental alternative version where Undef is handled
+   as a constant of the Spec.   
+   
    ----------------------------------------------------------
      fun divisors, notDivides, and
      
@@ -23,7 +26,7 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS PCRIsPrimeTypedef, PCRBase, TLC
+EXTENDS PCRIsPrimeTypes, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -67,8 +70,8 @@ INSTANCE PCRIterationSpace WITH
 *)
                       
 initCtx(x) == [in  |-> x,
-               v_p |-> [n \in IndexType |-> Undef],
-               v_c |-> [n \in IndexType |-> Undef],
+               v_p |-> [i \in IndexType |-> Undef],
+               v_c |-> [i \in IndexType |-> Undef],
                ret |-> x > 1,
                ste |-> "OFF"]                      
      
@@ -102,7 +105,6 @@ P(I) ==
 C(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
@@ -147,6 +149,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Oct 28 19:33:05 UYT 2020 by josedu
+\* Last modified Mon Nov 09 21:53:43 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

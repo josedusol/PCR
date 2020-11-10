@@ -5,13 +5,13 @@
     <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
     <intAttribute key="distributedNodesCount" value="1"/>
     <stringAttribute key="distributedTLC" value="off"/>
-    <intAttribute key="fpIndex" value="75"/>
+    <intAttribute key="fpIndex" value="0"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <stringAttribute key="modelBehaviorInit" value=""/>
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="Spec"/>
     <intAttribute key="modelBehaviorSpecType" value="0"/>
-    <stringAttribute key="modelBehaviorVars" value="X, y, cm1, cm2"/>
+    <stringAttribute key="modelBehaviorVars" value="ym, X, cm1, cm2"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
     <listAttribute key="modelCorrectnessInvariants"/>
@@ -21,7 +21,9 @@
     <intAttribute key="modelEditorOpenTabs" value="10"/>
     <stringAttribute key="modelExpressionEval" value="LET in == [ w |-&gt; &lt;&lt;0&gt;&gt;,&#13;&#10;            v |-&gt; &lt;&lt;3&gt;&gt;,&#13;&#10;            C |-&gt; 0 ]&#13;&#10;  allPicks == { s \in Seq({0,1}) : Len(s) = Len(in.w) }&#13;&#10;  allSol   == { [xs |-&gt; x, &#13;&#10;                 tw |-&gt; Sum([i \in DOMAIN x |-&gt; in.w[i] * x[i] ]), &#13;&#10;                 tv |-&gt; Sum([i \in DOMAIN x |-&gt; in.v[i] * x[i] ])] : x \in allPicks }&#13;&#10;  solSatC == { sol \in allSol  : sol.tw &lt;= in.C }    &#13;&#10;  solMax  == CHOOSE sol \in solSatC : \A sol2 \in solSatC : sol.tv &gt;= sol2.tv&#13;&#10;IN allPicks"/>
     <stringAttribute key="modelParameterActionConstraint" value=""/>
-    <listAttribute key="modelParameterConstants"/>
+    <listAttribute key="modelParameterConstants">
+        <listEntry value="Undef;;Undef;1;0"/>
+    </listAttribute>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
         <listEntry value="Nat;;0..6;0;0"/>

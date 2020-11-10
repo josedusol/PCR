@@ -29,7 +29,7 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase, TLC
+EXTENDS PCRIsPrimeRecTypes, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ EXTENDS Typedef, PCRBase, TLC
 
 projectProd(x, p, i) == x[2]
 
-projectRed(r1, r2) == r2
+projectRed(r, z) == z
 
 ----------------------------------------------------------------------------
 
@@ -64,8 +64,8 @@ INSTANCE PCRIterationSpace WITH
 *)
                       
 initCtx(x) == [in  |-> x,
-               v_p |-> [n \in IndexType |-> Undef],
-               v_c |-> [n \in IndexType |-> Undef],
+               v_p |-> [i \in IndexType |-> Undef],
+               v_c |-> [i \in IndexType |-> Undef],
                ret |-> TRUE,
                ste |-> "OFF"]  
 
@@ -94,7 +94,6 @@ P(I) ==
 C_base(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-\*    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
     /\ v_p(I)[i].v < 2
     /\ cm' = [cm EXCEPT 
@@ -123,7 +122,7 @@ C_call(I) ==
 C_ret(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-\*    /\ read(v_p(I), i)       
+    /\ read(v_p(I), i)       
     /\ ~ written(v_c(I), i)
     /\ wellDef(I \o <<i>>)
     /\ finished(I \o <<i>>)   
@@ -178,6 +177,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Oct 29 14:34:08 UYT 2020 by josedu
+\* Last modified Mon Nov 09 21:57:28 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

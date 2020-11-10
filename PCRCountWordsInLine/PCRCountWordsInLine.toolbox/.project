@@ -16,9 +16,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRCountWordsInLine.tla</name>
+			<name>PCRCountWordsInLineMain.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRCountWordsInLine.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRCountWordsInLineMain.tla</locationURI>
 		</link>
 		<link>
 			<name>PCRCountWordsInLine.tla</name>
@@ -26,9 +26,9 @@
 			<locationURI>PARENT-1-PROJECT_LOC/PCRCountWordsInLine.tla</locationURI>
 		</link>
 		<link>
-			<name>Typedef.tla</name>
+			<name>PCRCountWordsInLineTypes.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Typedef.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRCountWordsInLineTypes.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

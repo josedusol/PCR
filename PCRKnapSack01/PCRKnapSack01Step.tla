@@ -17,14 +17,14 @@
          
      PCR KnapSack01Step(Sol, k):
        par
-         p = produce id Sol
+         p = produce id Sol k
          forall p
            c = consume solve Sol k p
          r = reduce update Sol c   
    ---------------------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase, TLC
+EXTENDS PCRKnapSack01Types, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ EXTENDS Typedef, PCRBase, TLC
 
 max(x, y) == IF x >= y THEN x ELSE y
 
-id(x, p, i) == i
+id(x1, x2, p, i) == i
  
 solve(x1, x2, p, i) ==   \* i is capacity column j:  0 <= j <= C
   LET data == x1.data      
@@ -71,8 +71,8 @@ INSTANCE PCRIterationSpace WITH
 *)
 
 initCtx(x) == [in  |-> x,
-               v_p |-> [n \in IndexType |-> Undef],
-               v_c |-> [n \in IndexType |-> Undef],
+               v_p |-> [i \in IndexType |-> Undef],
+               v_c |-> [i \in IndexType |-> Undef],
                ret |-> x[1],
                ste |-> "OFF"] 
 
@@ -84,7 +84,7 @@ pre(x) == TRUE
    Producer action
    
    FXML:  forall i \in 1..Len(B)
-            c[i] = elem B[i]             
+            c[i] = init B[i]             
    
    PCR:   c = produce elem B                            
 *)
@@ -92,21 +92,20 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> id(in(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> id(in1(I), in2(I), v_p(I), i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (* 
    Consumer action
    
    FXML:  forall i \in Dom(p)
-            cs[i] = extend B c[i]
+            cs[i] = extend X c[i]
 
    PCR:   cs = consume extend B c
 *)
 C(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-\*    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1, 
@@ -138,7 +137,7 @@ R(I) ==
 \*             ELSE TRUE             
 
 (* 
-   PCR NQueensFirstIt step at index I 
+   PCR KnapSack01Step step at index I 
 *)
 Next(I) == 
   \/ /\ state(I) = "OFF" 
@@ -151,6 +150,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sun Nov 08 20:37:38 UYT 2020 by josedu
+\* Last modified Mon Nov 09 21:45:53 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

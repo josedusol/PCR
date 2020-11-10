@@ -16,19 +16,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRMapFilter.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRMapFilter.tla</locationURI>
-		</link>
-		<link>
 			<name>PCRMapFilter.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRMapFilter/PCRMapFilter.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRMapFilter.tla</locationURI>
 		</link>
 		<link>
-			<name>Typedef.tla</name>
+			<name>PCRMapFilterMain.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRMapFilter/Typedef.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRMapFilterMain.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRMapFilterTypes.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRMapFilterTypes.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

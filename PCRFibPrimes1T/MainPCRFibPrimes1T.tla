@@ -46,6 +46,8 @@ Next1(I) == /\ PCR1!Next(I)
 
 Done == /\ \A I \in cm1Dom : PCR1!finished(I)
         /\ UNCHANGED vars       
+\*        /\ PrintT("Done: In = " \o ToString(PCR1!in(<<>>))
+\*                 \o " - Out = " \o ToString(PCR1!out(<<>>)))
 
 Next == \/ \E I \in cm1Dom : Next1(I)
         \/ Done
@@ -98,6 +100,6 @@ GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Nov 05 02:19:47 UYT 2020 by josedu
+\* Last modified Mon Nov 09 22:00:43 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

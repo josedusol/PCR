@@ -27,7 +27,7 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS PCRIsPrimeTTypedef, PCRBaseT, TLC
+EXTENDS PCRIsPrimeTTypes, PCRBaseT, TLC
 
 ----------------------------------------------------------------------------
 
@@ -108,7 +108,6 @@ P(I) ==
 C(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
@@ -156,6 +155,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Nov 05 18:00:43 UYT 2020 by josedu
+\* Last modified Mon Nov 09 21:47:56 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

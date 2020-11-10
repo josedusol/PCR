@@ -16,19 +16,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRFirstEven.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRFirstEven.tla</locationURI>
-		</link>
-		<link>
 			<name>PCRFirstEven.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRFirstEven/PCRFirstEven.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFirstEven.tla</locationURI>
 		</link>
 		<link>
-			<name>Typedef.tla</name>
+			<name>PCRFirstEvenMain.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRFirstEven/Typedef.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFirstEvenMain.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRFirstEvenTypes.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFirstEvenTypes.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -39,7 +39,7 @@
    ---------------------------------------------------------------------
 *)
 
-EXTENDS Typedef, PCRBase, TLC
+EXTENDS PCRSumPrimes2Types, PCRBase, TLC
 
 VARIABLES cm2
 
@@ -66,7 +66,7 @@ iterDivide(x, p, i) == divide(x)[i]
 
 isBase(x, p, i) == Len(p[i].v) <= 1
 
-conquer(r1, r2) == r1 + r2
+conquer(r, z) == r + z
 
 ----------------------------------------------------------------------------
 

@@ -16,24 +16,24 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>MainPCRKnapSack01.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/MainPCRKnapSack01.tla</locationURI>
-		</link>
-		<link>
 			<name>PCRKnapSack01.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRKnapSack01/PCRKnapSack01.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKnapSack01.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRKnapSack01Main.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKnapSack01Main.tla</locationURI>
 		</link>
 		<link>
 			<name>PCRKnapSack01Step.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRKnapSack01/PCRKnapSack01Step.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKnapSack01Step.tla</locationURI>
 		</link>
 		<link>
-			<name>Typedef.tla</name>
+			<name>PCRKnapSack01Types.tla</name>
 			<type>1</type>
-			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/PCRKnapSack01/Typedef.tla</location>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKnapSack01Types.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

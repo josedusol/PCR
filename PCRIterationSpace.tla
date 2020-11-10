@@ -13,8 +13,9 @@ CONSTANTS InType,
           IndexType,
           VarPType,
           VarCType,
-          VarRType
-          
+          VarRType,
+          Undef
+
 LOCAL INSTANCE PCRBase
 
 CONSTANTS lowerBnd(_),
@@ -35,19 +36,11 @@ cDone(I, i) == \A j \in iterator(I)\{i} : /\ written(v_c(I), j)
                                           /\ read(v_c(I), j)
 
 \* Start action         
-Start(I) == cm' = [cm EXCEPT ![I].ste = "RUN"] 
-
-\* Terminate if Eureka condition holds 
-\*Eureka(I) == 
-\*\*  \E i \in iterator(I) :
-\*\*    /\ written(v_c(I), i)
-\*\*    /\ read(v_c(I), i)
-\*  /\ eCnd(out(I))
-\*  /\ cm' = [map EXCEPT ![I].ste = "END"]
+Start(I) == /\ cm' = [cm EXCEPT ![I].ste = "RUN"]
 
 \* Terminate if iteration space is empty      
 Quit(I) == /\ iterator(I) = {} 
-           /\ cm' = [cm EXCEPT ![I].ste = "END"]     
+           /\ cm' = [cm EXCEPT ![I].ste = "END"]   
 
 -----------------------------------------------------------------------------
 
@@ -69,6 +62,6 @@ LEMMA Lem_Range ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Oct 28 22:54:25 UYT 2020 by josedu
+\* Last modified Sun Nov 08 23:58:05 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

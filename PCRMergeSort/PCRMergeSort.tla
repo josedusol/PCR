@@ -35,7 +35,7 @@
    ---------------------------------------------------------------  
 *)
 
-EXTENDS Typedef, PCRBase, TLC
+EXTENDS PCRMergeSortTypes, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ merge(seq1, seq2) ==
                     [] Head(s1) > Head(s2)  -> <<Head(s2)>> \o F[s1, Tail(s2)]
   IN F[seq1, seq2] 
  
-conquer(r1, r2) == merge(r1, r2)
+conquer(r, z) == merge(r, z)
 
 ----------------------------------------------------------------------------
 
@@ -87,8 +87,8 @@ INSTANCE PCRIterationSpace WITH
 *)
 
 initCtx(x) == [in  |-> x,
-               v_p |-> [n \in IndexType |-> Undef],
-               v_c |-> [n \in IndexType |-> Undef],
+               v_p |-> [i \in IndexType |-> Undef],
+               v_c |-> [i \in IndexType |-> Undef],
                ret |-> <<>>,
                ste |-> "OFF"] 
 
@@ -200,6 +200,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Oct 28 22:43:06 UYT 2020 by josedu
+\* Last modified Mon Nov 09 02:44:24 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed
