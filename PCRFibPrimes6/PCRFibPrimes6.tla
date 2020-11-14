@@ -63,13 +63,10 @@ upperBnd(x) == x
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpace WITH
+INSTANCE PCRIterationSpaceSeq WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
-
-i_p(I)   == im[I]
-IndexMap == [CtxIdType -> IndexType \union {Undef}] 
 
 ----------------------------------------------------------------------------
 
@@ -195,6 +192,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 02:46:06 UYT 2020 by josedu
+\* Last modified Tue Nov 10 23:31:18 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="0"/>
+    <intAttribute key="fpIndex" value="29"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="50"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -21,11 +21,11 @@
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
     <intAttribute key="modelBehaviorSpecType" value="1"/>
-    <stringAttribute key="modelBehaviorVars" value="ym, B, cm1, cm2"/>
+    <stringAttribute key="modelBehaviorVars" value="ym1, X, cm1, cm2"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
     <listAttribute key="modelCorrectnessInvariants">
-        <listEntry value="0TypeInv"/>
+        <listEntry value="1TypeInv"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
@@ -39,12 +39,14 @@
     </listAttribute>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="IndexType1;;0..N+1;0;0"/>
-        <listEntry value="CtxIdType1;;{&lt;&lt;&gt;&gt;,&lt;&lt;0&gt;&gt;};0;0"/>
+        <listEntry value="IndexType1;;{0};0;0"/>
+        <listEntry value="CtxIdType1;;{&lt;&lt;&gt;&gt;};0;0"/>
         <listEntry value="Nat;;0..N+1;0;0"/>
         <listEntry value="Config;;UNION {[1..n -&gt; 0..N] : n \in Size};0;0"/>
         <listEntry value="CtxIdType2;;{&lt;&lt;0,i&gt;&gt; : i \in IndexType2};0;0"/>
-        <listEntry value="IndexType2;;0..N*N*N;0;0"/>
+        <listEntry value="IndexType2;;0..N*N;0;0"/>
+        <listEntry value="IndexType1_1;;0..N+1;0;0"/>
+        <listEntry value="CtxIdType1_1;;{&lt;&lt;0&gt;&gt;};0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
     <stringAttribute key="modelParameterNewDefinitions" value="N == 3&#13;&#10;Size == 0..N&#13;&#10;NatMock2 == 0..N"/>

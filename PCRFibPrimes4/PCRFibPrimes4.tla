@@ -61,13 +61,10 @@ upperBnd(x) == x
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpace WITH
+INSTANCE PCRIterationSpaceSeq WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
-
-i_p(I)   == im[I]
-IndexMap == [CtxIdType -> IndexType \union {Undef}] 
 
 ----------------------------------------------------------------------------
 
@@ -100,6 +97,7 @@ P_call(I) ==
    Producer ret action
 *)
 P_ret(I) == 
+  /\ i_p(I) \in iterator(I)
   /\ ~ written(v_p(I), i_p(I))
   /\ fibRec!wellDef(I \o <<i_p(I)>>)
   /\ fibRec!finished(I \o <<i_p(I)>>)
@@ -128,7 +126,6 @@ P(I) == \/ P_call(I) /\ UNCHANGED <<cm,im>>
 C(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-\*    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1, 
@@ -174,6 +171,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 02:46:26 UYT 2020 by josedu
+\* Last modified Tue Nov 10 23:30:55 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

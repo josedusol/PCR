@@ -8,7 +8,7 @@ EXTENDS PCRNQueensAllITTypes, Functions, FiniteSets, TLC
 
 CONSTANT Undef
 
-VARIABLES B, cm1, cm2, ym 
+VARIABLES B, cm1, cm2, ym1 
 
 ----------------------------------------------------------------------------
          
@@ -22,7 +22,7 @@ PCR1 == INSTANCE PCRNQueensAllIT WITH
   VarRType  <- VarRType1,  
   cm        <- cm1,
   cm2       <- cm2,
-  ym        <- ym                      
+  ym        <- ym1                      
 
 PCR2 == INSTANCE PCRNQueensAllITStep WITH 
   InType    <- InType2,
@@ -35,16 +35,16 @@ PCR2 == INSTANCE PCRNQueensAllITStep WITH
            
 ----------------------------------------------------------------------------
 
-vars == <<B,cm1,cm2,ym>>
+vars == <<B,cm1,cm2,ym1>>
 
 Init == /\ B \in InType1
         /\ PCR1!pre(B)
         /\ cm1 = [I \in CtxIdType1 |-> 
                      IF   I = <<>> 
                      THEN PCR1!initCtx(B)
-                     ELSE Undef]  
-        /\ ym  = [I \in CtxIdType1 |-> Undef]            
-        /\ cm2 = [I \in CtxIdType2 |-> Undef]                                                       
+                     ELSE Undef]            
+        /\ cm2 = [I \in CtxIdType2 |-> Undef]            
+        /\ ym1 = [I \in CtxIdType1_1 |-> Undef]                                             
 
 (* PCR1 step at index I  *)                                                  
 Next1(I) == /\ cm1[I] # Undef
@@ -54,7 +54,7 @@ Next1(I) == /\ cm1[I] # Undef
 (* PCR2 step at index I  *)                                                  
 Next2(I) == /\ cm2[I] # Undef
             /\ PCR2!Next(I)
-            /\ UNCHANGED <<B,cm1,ym>>               
+            /\ UNCHANGED <<B,cm1,ym1>>               
 
 Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ \A I \in PCR2!CtxIndex : PCR2!finished(I)
@@ -97,7 +97,7 @@ Solution(in) == CASE Len(in) = 0      -> { <<>> }
 TypeInv == /\ B \in InType1
            /\ cm1 \in PCR1!CtxMap
            /\ cm2 \in PCR2!CtxMap
-           /\ ym  \in PCR1!ItMap
+           /\ ym1 \in PCR1!ItMap
            
 Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(B) )
 
@@ -107,6 +107,6 @@ GTermination == [][ PCR1!finished(<<>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:41:14 UYT 2020 by josedu
+\* Last modified Wed Nov 11 18:44:32 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

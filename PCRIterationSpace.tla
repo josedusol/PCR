@@ -1,7 +1,7 @@
 ------------------------- MODULE PCRIterationSpace --------------------------
 
 (*
-   Iteration space for PCR.
+   Iteration space for PCR with one consumer.
 *)
 
 LOCAL INSTANCE Naturals
@@ -62,6 +62,6 @@ LEMMA Lem_Range ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Nov 08 23:58:05 UYT 2020 by josedu
+\* Last modified Tue Nov 10 23:18:16 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

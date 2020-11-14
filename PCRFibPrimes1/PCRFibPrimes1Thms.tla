@@ -147,7 +147,7 @@ THEOREM Thm_TypeInv == Spec => []TypeInv
               <8>9.  PCR1!v_p(I)[i-1] # Undef
                 BY <2>0, <5>1, <6>2, <8>1, <8>7 DEF ProducerType, PCR1!i_p, PCR1!written 
               <8>10. PCR1!v_p(I)[i-2] # Undef
-                BY <2>0, <5>1, <6>2, <8>1, <8>8 DEF ProducerType, PCR1!i_p
+                BY <2>0, <5>1, <6>2, <8>1, <8>8 DEF ProducerType, PCR1!i_p, PCR1!written
               <8>11. PCR1!v_p(I)[i-1].v \in Nat  
                 BY <3>4, <8>4, <8>7, <8>9  DEF PCR1!Ctx, PCR1!VarP, PCR1!v_p
               <8>12. PCR1!v_p(I)[i-2].v \in Nat  
@@ -340,5 +340,5 @@ THEOREM Thm_Termination ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sat Nov 07 19:54:37 UYT 2020 by josedu
+\* Last modified Tue Nov 10 23:28:11 UYT 2020 by josedu
 \* Created Tue Sep 08 23:52:38 UYT 2020 by josedu

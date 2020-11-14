@@ -29,8 +29,8 @@
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="0Correctness"/>
-        <listEntry value="1PCRFibPrimes1!Spec"/>
+        <listEntry value="1Correctness"/>
+        <listEntry value="0PCRFibPrimes1!Spec"/>
         <listEntry value="0PCRFibPrimes1!FairSpec"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>

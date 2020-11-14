@@ -83,9 +83,9 @@ INSTANCE PCRIterationSpace WITH
 y_i(I)    == ym[I].i
 y_v(I)    == ym[I].v
 y_last(I) == ym[I].v[ym[I].i]
-ItMap     == [CtxIdType -> [v : [IndexType -> VarCType1 \union {Undef}], 
-                            i : IndexType] 
-                           \union {Undef}]
+ItMap     == [CtxIdType1_1 -> [v : [IndexType1_1 -> VarCType1 \union {Undef}], 
+                               i : IndexType1_1] 
+                              \union {Undef}]
 
 ----------------------------------------------------------------------------
 
@@ -128,7 +128,7 @@ C_start(I) ==
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1]
     /\ ym' = [ym EXCEPT 
-         ![I \o <<i>>] = [v |-> [k \in IndexType |-> 
+         ![I \o <<i>>] = [v |-> [k \in IndexType1_1 |-> 
                                    IF k = 0 
                                    THEN { in(I) } 
                                    ELSE Undef],
@@ -228,6 +228,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:05:06 UYT 2020 by josedu
+\* Last modified Wed Nov 11 18:46:43 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -58,13 +58,10 @@ upperBnd(x) == x
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpace WITH
+INSTANCE PCRIterationSpaceSeq WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
-  
-i_p(I)   == im[I]
-IndexMap == [CtxIdType -> IndexType \union {Undef}]  
 
 ----------------------------------------------------------------------------
 
@@ -153,19 +150,8 @@ Next(I) ==
         \/ R(I)    /\ UNCHANGED im
         \/ Quit(I) /\ UNCHANGED im
 
-
-
-LEMMA Lem_fibType == 
-  ASSUME NEW x \in Nat,
-         NEW p \in VarP,
-         NEW i \in Nat,
-         i >= 2 => p[i - 1].v \in Nat,
-         i >= 2 => p[i - 2].v \in Nat   
-  PROVE fib(x, p, i) \in Nat
-  BY DEF fib
-
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 22:01:02 UYT 2020 by josedu
+\* Last modified Tue Nov 10 23:25:19 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

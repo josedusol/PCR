@@ -1,7 +1,7 @@
 ------------------------- MODULE PCRIterationSpaceN -------------------------
 
 (*
-   Iteration space for PCR.
+   Iteration space for PCR with n consumers.
 *)
 
 LOCAL INSTANCE Naturals
@@ -44,5 +44,5 @@ Quit(I) == /\ iterator(I) = {}
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Nov 08 23:55:33 UYT 2020 by josedu
+\* Last modified Tue Nov 10 23:21:51 UYT 2020 by josedu
 \* Created Wed Oct 21 14:41:43 UYT 2020 by josedu

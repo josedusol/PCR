@@ -122,7 +122,6 @@ P(I) ==
 C_isBase_1(I) == 
   \E i \in iterator(I):
     /\ written(v_p(I), i)
-\*    /\ ~ read(v_p(I), i)
     /\ Len(v_p(I)[i].v) <= 1        \* isBase(in(I), v_p(I), i)
     /\ ~ (v_p(I)[i].v # << >>)
     /\ cm' = [cm EXCEPT 
@@ -260,6 +259,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Thu Oct 29 18:03:37 UYT 2020 by josedu
+\* Last modified Tue Nov 10 16:59:02 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

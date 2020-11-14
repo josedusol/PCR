@@ -50,13 +50,10 @@ upperBnd(x) == Sqrt(x)
 step(i)     == IF i = 2 THEN 3 ELSE i + 2          
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpace WITH
+INSTANCE PCRIterationSpaceSeq WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
-
-i_p(I)   == im[I]
-IndexMap == [CtxIdType -> IndexType \union {Undef}]  
 
 ----------------------------------------------------------------------------
 
@@ -147,6 +144,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:52:12 UYT 2020 by josedu
+\* Last modified Tue Nov 10 23:31:40 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed
