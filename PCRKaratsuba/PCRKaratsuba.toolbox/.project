@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>PCRKaratsuba</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>toolbox.builder.TLAParserBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>toolbox.natures.TLANature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>PCRKaratsuba.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKaratsuba.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRKaratsubaMain.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKaratsubaMain.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRKaratsubaTypes.class</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKaratsubaTypes.class</locationURI>
+		</link>
+		<link>
+			<name>PCRKaratsubaTypes.java</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKaratsubaTypes.java</locationURI>
+		</link>
+		<link>
+			<name>PCRKaratsubaTypes.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKaratsubaTypes.tla</locationURI>
+		</link>
+	</linkedResources>
+</projectDescription>
