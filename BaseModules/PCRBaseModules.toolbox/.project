@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>PCRIterationSpace</name>
+	<name>PCRBaseModules</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -18,7 +18,7 @@
 		<link>
 			<name>PCRBase.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRBase.tla</locationURI>
+			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/BaseModules/PCRBase.tla</location>
 		</link>
 		<link>
 			<name>PCRBase2.tla</name>
@@ -29,11 +29,6 @@
 			<name>PCRBaseN.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/PCRBaseN.tla</locationURI>
-		</link>
-		<link>
-			<name>PCRBaseT.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRBaseT.tla</locationURI>
 		</link>
 		<link>
 			<name>PCRIterationSpace.tla</name>
@@ -54,11 +49,6 @@
 			<name>PCRIterationSpaceSeq.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpaceSeq.tla</locationURI>
-		</link>
-		<link>
-			<name>PCRIterationSpaceT.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpaceT.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
