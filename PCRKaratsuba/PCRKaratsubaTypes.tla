@@ -21,9 +21,7 @@ CtxIdType1 == Seq(Nat)
            
 Log(x,b) == CHOOSE n \in Nat : TRUE   \* implemented in Java        
 
-ToInt(s) == CHOOSE n \in Nat : TRUE   \* implemented in Java
-
 =============================================================================
 \* Modification History
-\* Last modified Sat Nov 14 13:02:35 UYT 2020 by josedu
+\* Last modified Sat Nov 14 19:22:22 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu
