@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>PCRKnapSack01_1</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>toolbox.builder.TLAParserBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>toolbox.natures.TLANature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>PCRKnapSack01_1.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKnapSack01_1.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRKnapSack01_1Main.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKnapSack01_1Main.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRKnapSack01_1Step.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKnapSack01_1Step.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRKnapSack01_1Types.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRKnapSack01_1Types.tla</locationURI>
+		</link>
+	</linkedResources>
+</projectDescription>
