@@ -2,7 +2,7 @@
 <launchConfiguration type="org.lamport.tla.toolbox.tool.tlc.modelCheck">
     <stringAttribute key="TLCCmdLineParameters" value=""/>
     <intAttribute key="collectCoverage" value="0"/>
-    <stringAttribute key="configurationName" value="mc_all"/>
+    <stringAttribute key="configurationName" value="test"/>
     <booleanAttribute key="deferLiveness" value="false"/>
     <intAttribute key="dfidDepth" value="100"/>
     <booleanAttribute key="dfidMode" value="false"/>
@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="125"/>
+    <intAttribute key="fpIndex" value="12"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -20,7 +20,7 @@
     <stringAttribute key="modelBehaviorInit" value=""/>
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
-    <intAttribute key="modelBehaviorSpecType" value="1"/>
+    <intAttribute key="modelBehaviorSpecType" value="0"/>
     <stringAttribute key="modelBehaviorVars" value="N, cm1, im1"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
@@ -32,24 +32,26 @@
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="1Correctness"/>
+        <listEntry value="0Correctness"/>
         <listEntry value="0GTermination"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
-    <stringAttribute key="modelExpressionEval" value=""/>
+    <stringAttribute key="modelExpressionEval" value="\*&lt;&lt;[i \in IndexType1 |-&gt; Undef]&gt;&gt; \in UNION {[1..n -&gt; [IndexType1 -&gt; [v : VarC1Type1, r : Nat] \union {Undef}]] : n \in 1..1}&#13;&#10;&#13;&#10;\*&lt;&lt;[i \in IndexType1 |-&gt; Undef]&gt;&gt; \in [1..1 -&gt; [IndexType1 -&gt; [v : VarC1Type1, r : Nat] \union {Undef}]]&#13;&#10;&#13;&#10;\*Cardinality([IndexType1 -&gt; [v : VarC1Type1, r : Nat] \union {Undef}])&#13;&#10;&#13;&#10;\*Cardinality([1..1 -&gt; [IndexType1 -&gt; [v : VarC1Type1, r : Nat] \union {Undef}] ])&#13;&#10;&#13;&#10;&#13;&#10;\*&lt;&lt;[i \in IndexType1 |-&gt; [v |-&gt; FALSE, r |-&gt; 0]],&#13;&#10;\*  [i \in IndexType1 |-&gt; [v |-&gt; 2, r |-&gt; 0]]&gt;&gt; &#13;&#10;\*   \in [IndexType1 -&gt; [v : VarC1Type1, r : Nat] \union {Undef}] \X [IndexType1 -&gt; [v : VarPType1, r : Nat] \union {Undef}]&#13;&#10;&#13;&#10;\* &lt;&lt;1, 1, 1, 1, 1&gt;&gt; \in PCR1!Cartesian(&lt;&lt;1..10,1..10,1..10,1..10,1..10&gt;&gt;)&#13;&#10;&#13;&#10;\*&lt;&lt;10, 10, 10, 10, 10, 10, 10, 10&gt;&gt; \in ((1..30) \X (1..30) \X (1..30) \X (1..30) \X (1..30) \X (1..30) \X (1..30) \X (1..30))&#13;&#10;&#13;&#10;Cardinality(((1..10) \X (1..10) \X (1..10) \X (1..10) \X (1..10) \X (1..10) \X (1..10) \X (1..10)))"/>
     <stringAttribute key="modelParameterActionConstraint" value=""/>
     <listAttribute key="modelParameterConstants">
         <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="Nat;;0..MaxFN+1;0;0"/>
+        <listEntry value="Nat;;0..MaxFN;0;0"/>
         <listEntry value="InType1;;Input;0;0"/>
         <listEntry value="CtxIdType1;;{&lt;&lt;&gt;&gt;};0;0"/>
-        <listEntry value="IndexType1;;0..MaxFN+1;0;0"/>
+        <listEntry value="IndexType1;;0..MaxFN;0;0"/>
+        <listEntry value="PCR1!VarP;;[IndexType1 -&gt; [v : VarPType1, r : Nat] \union {Undef}];0;0"/>
+        <listEntry value="PCR1!VarC;;[{1} -&gt; [IndexType1 -&gt; [v : VarC1Type1, r : Nat] \union {Undef}] ];0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 8&#13;&#10;MaxFN == 34&#13;&#10;Input == 0..MaxN"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 2&#13;&#10;MaxFN == 2&#13;&#10;Input == 0..MaxN"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <booleanAttribute key="recover" value="false"/>
@@ -57,7 +59,7 @@
     <intAttribute key="simuAril" value="-1"/>
     <intAttribute key="simuDepth" value="100"/>
     <intAttribute key="simuSeed" value="-1"/>
-    <stringAttribute key="specName" value="PCRFibPrimes1"/>
+    <stringAttribute key="specName" value="PCRFibPrimes1N"/>
     <stringAttribute key="tlcResourcesProfile" value="local custom"/>
     <listAttribute key="traceExploreExpressions">
         <listEntry value="1PCR1!Written(PCR1!v_c(&lt;&lt;0&gt;&gt;), 0)"/>

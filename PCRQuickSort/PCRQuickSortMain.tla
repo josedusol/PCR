@@ -1,10 +1,10 @@
--------------------------- MODULE PCRMergeSortMain -------------------------
+-------------------------- MODULE PCRQuickSortMain -------------------------
 
 (*
-   Main module for PCR MergeSort.
+   Main module for PCR QuickSort.
 *)
 
-EXTENDS PCRMergeSortTypes, TLC
+EXTENDS PCRQuickSortTypes, TLC
 
 CONSTANT Undef
 
@@ -13,7 +13,7 @@ VARIABLES X, cm1
 ----------------------------------------------------------------------------
          
 \* Instanciate root PCR with appropiate types
-PCR1 == INSTANCE PCRMergeSort WITH 
+PCR1 == INSTANCE PCRQuickSort WITH 
   InType    <- InType1,
   CtxIdType <- CtxIdType1,
   IndexType <- IndexType1,  
@@ -40,8 +40,8 @@ Next1(I) == /\ cm1[I] # Undef
 
 Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ UNCHANGED vars     
-\*        /\ PrintT("Done: In = " \o ToString(PCR1!in(<<>>))
-\*                 \o " - Out = " \o ToString(PCR1!out(<<>>)))
+        /\ PrintT("Done: In = " \o ToString(PCR1!in(<<>>))
+                 \o " - Out = " \o ToString(PCR1!out(<<>>)))
 
 Next == \/ \E I \in CtxIdType1 : Next1(I)
         \/ Done
@@ -70,6 +70,6 @@ GTermination == [][ PCR1!finished(<<>>) => Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Nov 12 21:25:20 UYT 2020 by josedu
+\* Last modified Sun Nov 15 16:29:13 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

@@ -1,19 +1,18 @@
--------------------------- MODULE PCRMergeSort -----------------------------
+-------------------------- MODULE PCRQuickSort -----------------------------
 
 (*
-   PCR MergeSort 
+   PCR QuickSort 
    
    ---------------------------------------------------------------
      fun iterDivide, divide, isBase, base, conquer, merge
      
-     fun iterDivide(L,i) = divide(L)[i]
+     fun iterDivide(X,i) = divide(X)[i]
      
-     fun divide(L) = [ L[1..Len(L)/2],
-                       L[(Len(L)/2)+1..Len(L)] ]
+     fun divide(X) = [ ... ]
      
-     fun subproblem(L,p,i) = if   isBase(L, p, i)
-                             then base(L, p, i)
-                             else MergeSort(L)
+     fun subproblem(X,p,i) = if   isBase(X, p, i)
+                             then base(X, p, i)
+                             else QuickSort(X)
    
      fun merge(l1,l2)
        if  l1 == []
@@ -24,18 +23,19 @@
                 then [head l1] ++ merge(tail s1, s2)  
                 else [head l2] ++ merge(s1, tail s2)
    
-     fun conquer(r1,r2) = merge(r1,r2)
+     fun conquer(r,z) = merge(r,z)
    
-     PCR MergeSort(L)
+     PCR QuickSort(X)
        par
-         p = produce iterDivide L
+         p = produce iterDivide X
          forall p
-           c = consume subproblem L p
-         r = reduce conquer [] c
+           c1 = consume subproblem X p
+           c2 = consume conquer X c1
+         r = reduce ret [] c2
    ---------------------------------------------------------------  
 *)
 
-EXTENDS PCRMergeSortTypes, PCRBase, TLC
+EXTENDS PCRQuickSortTypes, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -43,26 +43,51 @@ EXTENDS PCRMergeSortTypes, PCRBase, TLC
    Basic functions                 
 *)
 
-divide(x) == LET mid == Len(x) \div 2
-             IN  << SubSeq(x, 1, mid),  SubSeq(x, mid+1, Len(x)) >>
+max(a, b) == IF a >= b THEN a ELSE b
+
+medianOf(a, b, c) == LET x == max(a, max(a, b))
+                     IN  CASE  x = a  ->  max(b, c)
+                           []  x = b  ->  max(a, c)
+                           []  OTHER  ->  max(a, b)                                                 
+
+partitionLeft(seq, pivot) == 
+  LET f[s \in Seq(Elem)] ==
+        IF s = << >> 
+        THEN << >> 
+        ELSE IF Head(s) <= pivot
+             THEN <<Head(s)>> \o f[Tail(s)]
+             ELSE f[Tail(s)]
+  IN f[seq]
+
+partitionRight(seq, pivot) == 
+  LET f[s \in Seq(Elem)] ==
+        IF s = << >> 
+        THEN << >> 
+        ELSE IF Head(s) > pivot
+             THEN <<Head(s)>> \o f[Tail(s)]
+             ELSE f[Tail(s)]
+  IN f[seq]   
+
+isBaseCase(x) == Len(x) <= 1
+
+divide(x) == 
+  IF isBaseCase(x)
+  THEN << x >>
+  ELSE LET mid == Len(x) \div 2
+           a   == x[1]
+           b   == x[mid]
+           c   == x[Len(x)]
+           piv == medianOf(a,b,c)
+           x1  == Head(x)
+       IN  << partitionLeft(x, piv), <<x1>>, partitionRight(x, piv) >>
 
 iterDivide(x, p, i) == divide(x)[i]
 
 base(x, p, i) == p[i].v
 
-isBase(x, p, i) == Len(p[i].v) <= 1
+isBase(x, p, i) == isBaseCase(p[i].v)
 
-merge(seq1, seq2) ==
-  LET F[s1, s2 \in Seq(Elem)] ==
-        IF s1 = << >> 
-        THEN s2 
-        ELSE IF s2 = << >> 
-             THEN s1 
-             ELSE CASE Head(s1) <= Head(s2) -> <<Head(s1)>> \o F[Tail(s1), s2]
-                    [] Head(s1) > Head(s2)  -> <<Head(s2)>> \o F[s1, Tail(s2)]
-  IN F[seq1, seq2] 
- 
-conquer(r, z) == merge(r, z)
+conquer(r, z) == r \o z
 
 ----------------------------------------------------------------------------
 
@@ -117,7 +142,6 @@ P(I) ==
 C_base(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-\*    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
     /\ isBase(in(I), v_p(I), i)
     /\ cm' = [cm EXCEPT 
@@ -187,7 +211,7 @@ R(I) ==
 \*             ELSE TRUE              
 
 (* 
-   PCR MergeSort step at index I 
+   PCR QuickSort step at index I 
 *)
 Next(I) == 
   \/ /\ state(I) = "OFF" 
@@ -200,6 +224,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 02:44:24 UYT 2020 by josedu
+\* Last modified Tue Nov 17 14:33:13 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

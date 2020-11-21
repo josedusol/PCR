@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="125"/>
+    <intAttribute key="fpIndex" value="83"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -47,9 +47,11 @@
         <listEntry value="InType1;;Input;0;0"/>
         <listEntry value="CtxIdType1;;{&lt;&lt;&gt;&gt;};0;0"/>
         <listEntry value="IndexType1;;0..MaxFN+1;0;0"/>
+        <listEntry value="PCR1!Val;T:;Val(T);0;0"/>
+        <listEntry value="PCR1!Vars;D:S:;[{1} -&gt; Var(D,S[1])];0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 8&#13;&#10;MaxFN == 34&#13;&#10;Input == 0..MaxN"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 6&#13;&#10;MaxFN == 13&#13;&#10;Input == 0..MaxN&#13;&#10;Val(T) == [v : T, r : Nat]&#13;&#10;Var(D,T) == [D -&gt; Val(T) \union {Undef}]"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <booleanAttribute key="recover" value="false"/>
@@ -57,7 +59,7 @@
     <intAttribute key="simuAril" value="-1"/>
     <intAttribute key="simuDepth" value="100"/>
     <intAttribute key="simuSeed" value="-1"/>
-    <stringAttribute key="specName" value="PCRFibPrimes1"/>
+    <stringAttribute key="specName" value="PCRFibPrimes1N"/>
     <stringAttribute key="tlcResourcesProfile" value="local custom"/>
     <listAttribute key="traceExploreExpressions">
         <listEntry value="1PCR1!Written(PCR1!v_c(&lt;&lt;0&gt;&gt;), 0)"/>

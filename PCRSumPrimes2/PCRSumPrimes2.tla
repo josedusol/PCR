@@ -41,7 +41,7 @@
 
 EXTENDS PCRSumPrimes2Types, PCRBase, TLC
 
-VARIABLES cm2
+VARIABLE cm2
 
 ----------------------------------------------------------------------------
 
@@ -259,6 +259,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Nov 10 16:59:02 UYT 2020 by josedu
+\* Last modified Tue Nov 17 23:04:31 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>PCRIsPrime</name>
+	<name>PCRFibPrimes2N</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -16,24 +16,24 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>PCRIsPrime.tla</name>
+			<name>PCRFibPrimes2N.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrime.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes2N.tla</locationURI>
 		</link>
 		<link>
-			<name>PCRIsPrimeMain.tla</name>
+			<name>PCRFibPrimes2NMain.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeMain.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes2NMain.tla</locationURI>
 		</link>
 		<link>
-			<name>PCRIsPrimeThms.tla</name>
+			<name>PCRFibPrimes2NThms.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeThms.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes2NThms.tla</locationURI>
 		</link>
 		<link>
-			<name>PCRIsPrimeTypes.tla</name>
+			<name>PCRFibPrimes2NTypes.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeTypes.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRFibPrimes2NTypes.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

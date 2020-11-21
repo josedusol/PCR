@@ -4,20 +4,24 @@
    PCR Karatsuba 
    
    ---------------------------------------------------------------
-     fun iterDivide, divide, isBase, base, conquer, merge
+     fun iterDivide, divide, isBase, base, conquer, ret
      
-     fun iterDivide(X,Y,m,i) = divide(X,Y)[i]
+     fun iterDivide(X,Y,p,i) = divide(X,Y)[i]
      
-     fun divide(X,Y) = 
+     fun divide(X,Y) = [ [x0, y0],
+                         [x1 + x0, y1 + y0],
+                         [x1, y1] ]
      
-     fun subproblem(X,Y,m,p,i) = if   isBase(X,Y,m,p,i)
-                                 then base(X,Y,m,p,i)
-                                 else Karatsuba(X,Y,m)
+     fun subproblem(X,Y,p,i) = if   isBase(X,Y,p,i)
+                               then base(X,Y,p,i)
+                               else Karatsuba(X,Y)
    
-     fun conquer(r,z) = z
+     fun conquer(X,Y,c1,i) = (z2*10^(2*m)) + ((z1-z2-z0)*10^m) + z0 
    
-     dep c1(..i) -> c2(i)
-     dep c1(i..) -> c2(i)   
+     fun ret(r,z) = z
+   
+     dep c1(..i) -> c2(i)          \\ dep c1 -> c2(i)
+     dep c1(i..) -> c2(i)       
    
      PCR Karatsuba(X, Y)
        par
@@ -25,8 +29,8 @@
          forall p
            par
              c1 = consume subproblem X Y p
-             c2 = consume compute X Y c1
-         r = reduce conquer 1 c2
+             c2 = consume conquer X Y c1
+         r = reduce ret 1 c2
    ---------------------------------------------------------------  
 *)
 
@@ -45,15 +49,15 @@ isBaseCase(x, y) == x < 10 \/ y < 10
 divide(x, y) == 
   IF isBaseCase(x, y)
   THEN << <<x,y>> >>
-  ELSE LET  m  == max(Len(ToString(x)), Len(ToString(y)))
-            m2 == m \div 2  
-            h1 == x \div 10^m2               \* x1
-            l1 == x %    10^m2               \* x0
-            h2 == y \div 10^m2               \* y1
-            l2 == y %    10^m2               \* y0
-        IN << <<l1, l2>>,                    \* z0 = x0 * y0 
-              <<h1 + l1, h2 + l2>>,          \* z1 = (x1 + x0) * (y1 + y0)
-              <<h1, h2>>                     \* z2 = x1 * y1
+  ELSE LET  mx == max(Len(ToString(x)), Len(ToString(y)))
+            m  == mx \div 2              \* Decompose x and y:
+            x1 == x \div 10^m            \*   x = x1*10^m + x0
+            x0 == x %    10^m            \*   y = y1*10^m + y0
+            y1 == y \div 10^m               
+            y0 == y %    10^m            \* Produce three sub-products:
+        IN << <<x0, y0>>,                \*   z0 = x0 * y0 
+              <<x1 + x0, y1 + y0>>,      \*   z1 = (x1 + x0) * (y1 + y0)
+              <<x1, y1>>                 \*   z2 = x1 * y1
            >>    
                                     
 iterDivide(x, y, p, i) == divide(x, y)[i]
@@ -62,17 +66,17 @@ base(x, y, p, i) == x * y
 
 isBase(x, y, p, i) == isBaseCase(x, y)
 
-compute(x, y, c1, i) == 
+conquer(x, y, c1, i) == 
   IF isBaseCase(x, y)
   THEN c1[1].v
-  ELSE LET  m  == max(Len(ToString(x)), Len(ToString(y)))
-            m2 == m \div 2 
+  ELSE LET  mx == max(Len(ToString(x)), Len(ToString(y)))
+            m  == mx \div 2 
             z0 == c1[1].v
             z1 == c1[2].v
             z2 == c1[3].v
-       IN (z2*10^m) + ((z1-z2-z0)*10^m2) + z0 
+       IN (z2*10^(2*m)) + ((z1-z2-z0)*10^m) + z0 
  
-conquer(r, z) == z
+ret(r, z) == z
 
 ----------------------------------------------------------------------------
 
@@ -89,11 +93,6 @@ INSTANCE PCRIterationSpace2 WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
-
-\* Acceso a last en las historias
-c1_last(I) == v_c1(I)[upperBnd(in(I))].v
-c2_last(I) == v_c2(I)[upperBnd(in(I))].v
-p_last(I)  == v_p(I)[upperBnd(in(I))].v
 
 ----------------------------------------------------------------------------
 
@@ -188,7 +187,7 @@ C2(I) ==
     /\ ~ written(v_c2(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_c1[i].r = @ + 1, 
-         ![I].v_c2[i]   = [v |-> compute(in1(I), in2(I), v_c1(I), i), r |-> 0] ]                                            
+         ![I].v_c2[i]   = [v |-> conquer(in1(I), in2(I), v_c1(I), i), r |-> 0] ]                                            
 \*    /\ PrintT("C2" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                   \o " con v=" \o ToString(v_c2(I)[i].v'))         
   
@@ -203,7 +202,7 @@ R(I) ==
   \E i \in iterator(I) :
     /\ written(v_c2(I), i)
     /\ ~ read(v_c2(I), i)
-    /\ LET newRet == conquer(out(I), v_c2(I)[i].v)
+    /\ LET newRet == ret(out(I), v_c2(I)[i].v)
            endSte == cDone(I, i) \/ eCnd(newRet)
        IN  cm' = [cm EXCEPT 
              ![I].ret       = newRet,
@@ -230,6 +229,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sat Nov 14 18:47:56 UYT 2020 by josedu
+\* Last modified Fri Nov 20 23:07:19 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

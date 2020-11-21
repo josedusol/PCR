@@ -22,9 +22,6 @@ CONSTANTS lowerBnd(_),
           upperBnd(_),
           step(_)
 
-i_p(I)   == im[I]
-IndexMap == [CtxIdType -> IndexType \union {Undef}]
-
 ASSUME Undef \notin IndexType
 
 range(start, end, stp(_)) ==
@@ -33,6 +30,12 @@ range(start, end, stp(_)) ==
         THEN {i} \union f[stp(i)]
         ELSE {}    
   IN  f[start]  
+
+i_p(I)   == im[I]
+IndexMap == [CtxIdType -> IndexType \union {Undef}]
+
+p_last(I) == v_p(I)[upperBnd(in(I))].v
+c_last(I) == v_c(I)[upperBnd(in(I))].v
 
 \* Any PCR have an iteration space: a set of indexes  
 iterator(I) == range(lowerBnd(in(I)), upperBnd(in(I)), step)   
@@ -67,6 +70,6 @@ LEMMA Lem_Range ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Nov 10 23:19:04 UYT 2020 by josedu
+\* Last modified Fri Nov 20 23:11:23 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

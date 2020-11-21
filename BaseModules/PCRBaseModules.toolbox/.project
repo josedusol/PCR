@@ -46,6 +46,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpaceN.tla</locationURI>
 		</link>
 		<link>
+			<name>PCRIterationSpaceNSeq.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpaceNSeq.tla</locationURI>
+		</link>
+		<link>
 			<name>PCRIterationSpaceSeq.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpaceSeq.tla</locationURI>

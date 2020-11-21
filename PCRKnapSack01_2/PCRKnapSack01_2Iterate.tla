@@ -81,10 +81,6 @@ INSTANCE PCRIterationSpaceSeq WITH
   upperBnd  <- upperBnd,  
   step      <- step
 
-\* Acceso a last en las historias
-c_last(I) == v_c(I)[upperBnd(in(I))].v
-p_last(I) == v_p(I)[upperBnd(in(I))].v
-
 ----------------------------------------------------------------------------
 
 (* 
@@ -217,6 +213,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Fri Nov 13 22:07:25 UYT 2020 by josedu
+\* Last modified Fri Nov 20 23:13:06 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

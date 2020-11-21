@@ -1,12 +1,12 @@
-------------------------- MODULE PCRIterationSpaceN -------------------------
+----------------------- MODULE PCRIterationSpaceNSeq ------------------------
 
 (*
-   Iteration space for PCR with N consumers.
+   Iteration space for PCR with sequential producer and N consumers.
 *)
 
 LOCAL INSTANCE Naturals
 
-VARIABLES cm
+VARIABLES cm, im
 
 CONSTANTS InType,
           CtxIdType,
@@ -22,12 +22,17 @@ CONSTANTS lowerBnd(_),
           upperBnd(_),
           step(_)
 
+ASSUME Undef \notin IndexType
+
 range(start, end, stp(_)) ==
   LET f[i \in Nat] == 
         IF i <= end
         THEN {i} \union f[stp(i)]
         ELSE {}    
   IN  f[start]  
+
+i_p(I)   == im[I]
+IndexMap == [CtxIdType -> IndexType \union {Undef}]
 
 p_last(I)   == v_p(I)[upperBnd(in(I))].v
 c_last(k,I) == v_c(k,I)[upperBnd(in(I))].v
@@ -47,5 +52,5 @@ Quit(I) == /\ iterator(I) = {}
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Nov 20 23:09:41 UYT 2020 by josedu
+\* Last modified Fri Nov 20 23:12:26 UYT 2020 by josedu
 \* Created Wed Oct 21 14:41:43 UYT 2020 by josedu

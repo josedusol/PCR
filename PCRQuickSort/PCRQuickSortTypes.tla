@@ -1,9 +1,9 @@
-------------------------- MODULE PCRMergeSortTypes --------------------------
+------------------------- MODULE PCRQuickSortTypes --------------------------
 
 EXTENDS Naturals, Sequences
 
 (* 
-   Types for PCR MergeSort                          
+   Types for PCR QuickSort                          
 *)
 
 CONSTANT Elem

@@ -1,11 +1,12 @@
 ------------------------------ MODULE PCRBaseN ------------------------------
 
 (*
-   Base module for PCR with n consumers.
+   Base module for PCR with N consumers.
 *)
 
 LOCAL INSTANCE Naturals
 LOCAL INSTANCE Sequences
+LOCAL INSTANCE Functions
 
 VARIABLE cm
 
@@ -16,49 +17,50 @@ CONSTANTS InType,       \* Type of PCR input
           VarCType,     \* Types of consumer variables
           VarRType,     \* Type of reducer output
           Undef
-
-Cartesian(s) ==
-  LET f[k \in 0..Len(s)] ==
-    IF k = 0
-    THEN { << >> }
-    ELSE LET C == F[k-1]
-             allCons(seq) == { seq \o <<x>> : x \in s[k] }
-         IN  UNION { allCons(seq) : seq \in C }
-  IN f[Len(s)]
+          
+\* Cartesian(<<S1,S2,...,Sn>>) = S1 \X S2 \X ... \X Sn
+Cartesian(S) == 
+  LET U == UNION Range(S)
+      FSeq == [1..Len(S) -> U]
+  IN  {s \in FSeq : \A i \in 1..Len(s) : s[i] \in S[i]}  
 
 cLen == Len(VarCType)
           
 \* Any PCR can be in exactly one of three states
 State == {"OFF","RUN","END"}             
-                                          
-Var(T) == [IndexType -> [v : T, r : Nat] \union {Undef}]                   
-VarP   == Var(VarPType)
-VarC   == Cartesian([t \in DOMAIN VarCType |-> Var(VarCType[t])])            
 
+Var(T) == [IndexType -> [v : T, r : Nat] \union {Undef}]   
+VarP   == Var(VarPType)
+\*VarC   == VarCC(LAMBDA x : Var(x))
+VarC   == Cartesian([t \in 1..cLen |-> Var(VarCType[t])])   
+\*Val(T)    == [v : T, r : Nat]                                   
+\*Var(D,T)  == [D -> Val(T) \union {Undef}]   
+\*Vars(D,S) == Cartesian([k \in 1..Len(S) |-> Var(D,S[k])])  
+         
 \* Any PCR runs in a context. A context is a record with:
-Ctx == [in  : InType,       \* input
+Ctx == [in  : InType,          \* input
         v_p : VarP,         \* producer history
-        v_c : VarC,         \* consumer history
-        ret : VarRType,     \* reducer result
-        ste : State]        \* discrete state     
+        v_c : VarC,        \* consumers histories, Var(VarCType1) \X ... \X Var(VarCTypeN) 
+        ret : VarRType,        \* reducer result
+        ste : State]           \* discrete state     
 
 ASSUME /\ Undef \notin Ctx
        /\ Undef \notin [v : VarPType,  r : Nat]
-       /\ \A t \in DOMAIN VarCType : Undef \notin VarCType[t]
+       /\ \A t \in 1..cLen : Undef \notin VarCType[t]
 
 \* PCR context map. Root context is indexed at <<0>>. 
 CtxMap   == [CtxIdType -> Ctx \union {Undef}] 
 CtxIndex == {I \in CtxIdType : cm[I] # Undef}
 
 \* Convenient names for context elements            
-in(I)     == cm[I].in
-v_p(I)    == cm[I].v_p
-v_c(k, I) == cm[I].v_c[k]
-out(I)    == cm[I].ret 
-state(I)  == cm[I].ste
-in1(I)    == in(I)[1]
-in2(I)    == in(I)[2] 
-in3(I)    == in(I)[3]
+in(I)    == cm[I].in
+v_p(I)   == cm[I].v_p
+v_c(k,I) == cm[I].v_c[k]
+out(I)   == cm[I].ret 
+state(I) == cm[I].ste
+in1(I)   == in(I)[1]
+in2(I)   == in(I)[2] 
+in3(I)   == in(I)[3]
                       
 \* Useful predicates on indexes   
 wellDef(I)  == cm[I] # Undef
@@ -77,5 +79,5 @@ ExtR(r, s)    == [k \in DOMAIN r |-> IF k \in DOMAIN s THEN s[k] ELSE r[k]]
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 00:05:02 UYT 2020 by josedu
+\* Last modified Fri Nov 20 23:09:53 UYT 2020 by josedu
 \* Created Wed Oct 21 14:41:25 UYT 2020 by josedu

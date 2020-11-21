@@ -1,7 +1,7 @@
--------------------------- MODULE PCRFibPrimes2 ----------------------------
+-------------------------- MODULE PCRFibPrimes2N ---------------------------
 
 (*
-   PCR FibPrimes2
+   PCR FibPrimes2N
    
    ----------------------------------------------------------
      fun fib, sum
@@ -22,7 +22,7 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS PCRFibPrimes2Types, PCRBase, TLC
+EXTENDS PCRFibPrimes2NTypes, PCRBaseN, TLC
 
 VARIABLES cm2, im
 
@@ -36,12 +36,12 @@ fib(x, p, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
 
 sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)  
 
-isPrime == INSTANCE PCRIsPrime WITH
+isPrime == INSTANCE PCRIsPrimeN WITH
   InType    <- InType2,
   CtxIdType <- CtxIdType2,
   IndexType <- IndexType2,
   VarPType  <- VarPType2,
-  VarCType  <- VarCType2,
+  VarCType  <- <<VarC1Type2>>,
   VarRType  <- VarRType2,
   cm        <- cm2
 
@@ -56,7 +56,7 @@ upperBnd(x) == x
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpaceSeq WITH
+INSTANCE PCRIterationSpaceNSeq WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
@@ -69,7 +69,7 @@ INSTANCE PCRIterationSpaceSeq WITH
 
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
-               v_c |-> [i \in IndexType |-> Undef],
+               v_c |-> <<[i \in IndexType |-> Undef]>>,
                ret |-> 0,
                ste |-> "OFF"]
 
@@ -114,11 +114,11 @@ C_ret(I) ==
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
     /\ read(v_p(I), i)       
-    /\ ~ written(v_c(I), i)
+    /\ ~ written(v_c(1,I), i)
     /\ isPrime!wellDef(I \o <<i>>) 
     /\ isPrime!finished(I \o <<i>>)   
     /\ cm' = [cm EXCEPT 
-         ![I].v_c[i] = [v |-> isPrime!out(I \o <<i>>), r |-> 0]]  
+         ![I].v_c[1][i] = [v |-> isPrime!out(I \o <<i>>), r |-> 0]]  
 \*    /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(isPrime!in(I \o <<i>>))    
 \*                       \o " : ret= " \o ToString(isPrime!Out(I \o <<i>>)))
@@ -138,14 +138,14 @@ C(I) == \/ C_call(I) /\ UNCHANGED im
 *)
 R(I) == 
   \E i \in iterator(I) :
-    /\ written(v_c(I), i)  
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == sum(out(I), v_c(I)[i].v)
+    /\ written(v_c(1,I), i)  
+    /\ ~ read(v_c(1,I), i)
+    /\ LET newRet == sum(out(I), v_c(1,I)[i].v)
            endSte == cDone(I, i) \/ eCnd(newRet)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
-             ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @] 
+             ![I].ret         = newRet,
+             ![I].v_c[1][i].r = @ + 1,
+             ![I].ste         = IF endSte THEN "END" ELSE @] 
 \*          /\ IF endSte
 \*             THEN PrintT("FP2 R" \o ToString(I \o <<i>>) 
 \*                                 \o " : in= "  \o ToString(in(I))    
@@ -167,6 +167,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Nov 17 23:41:47 UYT 2020 by josedu
+\* Last modified Wed Nov 18 21:08:34 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

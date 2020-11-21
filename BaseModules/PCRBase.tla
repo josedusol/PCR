@@ -21,18 +21,20 @@ CONSTANTS InType,       \* Type of PCR input
 State == {"OFF","RUN","END"}                      
                  
 VarP == [IndexType -> [v : VarPType, r : Nat] \union {Undef}]
-VarC == [IndexType -> [v : VarCType, r : Nat] \union {Undef}]                
+VarC == [IndexType -> [v : VarCType, r : Nat] \union {Undef}]
+\*VarR == [IndexType -> [v : VarRType, r : Nat] \union {Undef}]                
 
 \* Any PCR runs in a context. A context is a record with:
 Ctx == [in  : InType,       \* input
         v_p : VarP,         \* producer history
         v_c : VarC,         \* consumer history
-        ret : VarRType,     \* reducer result
+        ret : VarRType,         \* reducer history
         ste : State]        \* discrete state     
 
 ASSUME /\ Undef \notin Ctx
        /\ Undef \notin [v : VarPType, r : Nat]
        /\ Undef \notin [v : VarCType, r : Nat]
+\*       /\ Undef \notin [v : VarRType, r : Nat]
 
 \* PCR context map. Root context is indexed at <<0>>. 
 CtxMap   == [CtxIdType -> Ctx \union {Undef}] 
@@ -65,7 +67,7 @@ ExtR(r, s)    == [k \in DOMAIN r |-> IF k \in DOMAIN s THEN s[k] ELSE r[k]]
                
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 00:04:06 UYT 2020 by josedu
+\* Last modified Fri Nov 20 19:34:35 UYT 2020 by josedu
 \* Last modified Mon Jul 06 15:51:49 UYT 2020 by josed
 \* Last modified Tue Jun 09 12:24:42 GMT-03:00 2020 by JosEdu
 \* Created Mon Jun 08 22:50:44 GMT-03:00 2020 by JosEdu

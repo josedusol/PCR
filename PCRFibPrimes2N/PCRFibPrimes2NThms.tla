@@ -1,14 +1,14 @@
-------------------------- MODULE PCRFibPrimes2Thms --------------------------
+------------------------- MODULE PCRFibPrimes2NThms -------------------------
 
 CONSTANT Undef
 
 VARIABLES N, cm1, cm2, im1
 
 INSTANCE TLAPS
-INSTANCE PCRFibPrimes2Main
+INSTANCE PCRFibPrimes2NMain
 
-PCRIsPrimeThms    == INSTANCE PCRIsPrimeThms
-PCRFibPrimes1Thms == INSTANCE PCRFibPrimes1Thms
+PCRIsPrimeThms    == INSTANCE PCRIsPrimeNThms
+PCRFibPrimes1Thms == INSTANCE PCRFibPrimes1NThms
 
 USE DEF IndexType1, CtxIdType1, InType1, VarPType1, VarCType1, VarRType1,
         IndexType2, CtxIdType2, InType2, VarPType2, VarCType2, VarRType2

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>PCRIsPrime</name>
+	<name>PCRQuickSort</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -16,24 +16,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>PCRIsPrime.tla</name>
+			<name>PCRQuickSort.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrime.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRQuickSort.tla</locationURI>
 		</link>
 		<link>
-			<name>PCRIsPrimeMain.tla</name>
+			<name>PCRQuickSortMain.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeMain.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRQuickSortMain.tla</locationURI>
 		</link>
 		<link>
-			<name>PCRIsPrimeThms.tla</name>
+			<name>PCRQuickSortTypes.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeThms.tla</locationURI>
-		</link>
-		<link>
-			<name>PCRIsPrimeTypes.tla</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeTypes.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRQuickSortTypes.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>PCRMergeSort</name>
+	<name>PCRIsPrimeN</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -16,19 +16,24 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>PCRMergeSort.tla</name>
+			<name>PCRIsPrimeN.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRMergeSort.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeN.tla</locationURI>
 		</link>
 		<link>
-			<name>PCRMergeSortMain.tla</name>
+			<name>PCRIsPrimeNMain.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRMergeSortMain.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeNMain.tla</locationURI>
 		</link>
 		<link>
-			<name>PCRMergeSortTypes.tla</name>
+			<name>PCRIsPrimeNThms.tla</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/PCRMergeSortTypes.tla</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeNThms.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRIsPrimeNTypes.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRIsPrimeNTypes.tla</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -1,10 +1,10 @@
---------------------------- MODULE PCRIsPrime -----------------------------
+--------------------------- MODULE PCRIsPrimeN ----------------------------
 
 (*
-   PCR IsPrime
+   PCR IsPrimeN
    
-   This is an experimental alternative version where Undef is handled
-   as a constant of the Spec.   
+   This is an experimental alternative version where we use base modules
+   that works with arbitrary number of consumers.
    
    ----------------------------------------------------------
      fun divisors, notDivides, and
@@ -26,16 +26,9 @@
    ----------------------------------------------------------
 *)
 
-EXTENDS PCRIsPrimeTypes, PCRBase, TLC
+EXTENDS PCRIsPrimeNTypes, PCRBaseN, TLC
 
 ----------------------------------------------------------------------------
-
-test(x, p, i) ==
-  LET f[n \in Nat] ==
-        IF n = 0
-        THEN << >>
-        ELSE <<1>> \o f[n-1]
-  IN f[i]
 
 (* 
    Basic functions                     
@@ -58,7 +51,7 @@ upperBnd(x) == Sqrt(x)
 step(i)     == IF i = 2 THEN 3 ELSE i + 2          
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpace WITH
+INSTANCE PCRIterationSpaceN WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
@@ -71,7 +64,7 @@ INSTANCE PCRIterationSpace WITH
                       
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
-               v_c |-> [i \in IndexType |-> Undef],
+               v_c |-> <<[i \in IndexType |-> Undef]>>,
                ret |-> x > 1,
                ste |-> "OFF"]                      
      
@@ -105,10 +98,10 @@ P(I) ==
 C(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ written(v_c(I), i)
+    /\ ~ written(v_c(1,I), i)
     /\ cm' = [cm EXCEPT 
-         ![I].v_p[i].r = @ + 1,
-         ![I].v_c[i]   = [v |-> notDivides(in(I), v_p(I), i), r |-> 0] ]               
+         ![I].v_p[i].r  = @ + 1,
+         ![I].v_c[1][i] = [v |-> notDivides(in(I), v_p(I), i), r |-> 0] ]               
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))       
 
@@ -121,14 +114,14 @@ C(I) ==
 *)
 R(I) == 
   \E i \in iterator(I) :
-    /\ written(v_c(I), i)    
-    /\ ~ read(v_c(I), i)   
-    /\ LET newRet == and(out(I), v_c(I)[i].v)
+    /\ written(v_c(1,I), i)    
+    /\ ~ read(v_c(1,I), i)   
+    /\ LET newRet == and(out(I), v_c(1,I)[i].v)
            endSte == cDone(I, i) \/ eCnd(newRet)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
-             ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                               
+             ![I].ret         = newRet,
+             ![I].v_c[1][i].r = @ + 1,
+             ![I].ste         = IF endSte THEN "END" ELSE @]                                                                               
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
@@ -149,6 +142,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 18 17:43:25 UYT 2020 by josedu
+\* Last modified Wed Nov 18 21:02:09 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

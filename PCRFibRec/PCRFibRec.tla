@@ -15,8 +15,8 @@
      
      fun projectRet(r1,r2) = r2 
      
-     lbnd projectProd = lambda x. 0 
-     ubnd projectProd = lambda x. if x < 2 then 0 else 1
+     lbnd idProd = lambda x. 0 
+     ubnd idProd = lambda x. if x < 2 then 0 else 1
      
      PCR FibRec(N):
        par
@@ -215,6 +215,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:54:52 UYT 2020 by josedu
+\* Last modified Sun Nov 15 14:39:52 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed
