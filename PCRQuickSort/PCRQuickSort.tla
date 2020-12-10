@@ -4,34 +4,27 @@
    PCR QuickSort 
    
    ---------------------------------------------------------------
-     fun iterDivide, divide, isBase, base, conquer, merge
+     fun iterDivide, divide, isBase, base, conquer
      
      fun iterDivide(X,i) = divide(X)[i]
      
-     fun divide(X) = [ ... ]
+     fun divide(X) = [ partitionLeft(tail(x), X[1]),
+                       partitionRight(tail(x), X[1]) ]
      
      fun subproblem(X,p,i) = if   isBase(X, p, i)
                              then base(X, p, i)
                              else QuickSort(X)
    
-     fun merge(l1,l2)
-       if  l1 == []
-       then l2
-       else if l2 == []
-           then l1
-           else if head l1 <= head l2
-                then [head l1] ++ merge(tail s1, s2)  
-                else [head l2] ++ merge(s1, tail s2)
+     fun conquer(X, c, i) = c[1] ++ X[1] ++ c[2]
    
-     fun conquer(r,z) = merge(r,z)
+     dep c -> r(i)
    
      PCR QuickSort(X)
        par
          p = produce iterDivide X
          forall p
-           c1 = consume subproblem X p
-           c2 = consume conquer X c1
-         r = reduce ret [] c2
+           c = consume subproblem X p
+         r = reduce [] conquer X c
    ---------------------------------------------------------------  
 *)
 
@@ -43,12 +36,14 @@ EXTENDS PCRQuickSortTypes, PCRBase, TLC
    Basic functions                 
 *)
 
-max(a, b) == IF a >= b THEN a ELSE b
-
-medianOf(a, b, c) == LET x == max(a, max(a, b))
-                     IN  CASE  x = a  ->  max(b, c)
-                           []  x = b  ->  max(a, c)
-                           []  OTHER  ->  max(a, b)                                                 
+\*Position(s, e) == CHOOSE i \in 1..Len(s) : s[i] = e
+\*
+\*max(a, b) == IF a >= b THEN a ELSE b
+\*
+\*medianOf(a, b, c) == LET x == max(a, max(b, c))
+\*                     IN  CASE  x = a  ->  max(b, c)
+\*                           []  x = b  ->  max(a, c)
+\*                           []  OTHER  ->  max(a, b)                                                 
 
 partitionLeft(seq, pivot) == 
   LET f[s \in Seq(Elem)] ==
@@ -73,13 +68,9 @@ isBaseCase(x) == Len(x) <= 1
 divide(x) == 
   IF isBaseCase(x)
   THEN << x >>
-  ELSE LET mid == Len(x) \div 2
-           a   == x[1]
-           b   == x[mid]
-           c   == x[Len(x)]
-           piv == medianOf(a,b,c)
-           x1  == Head(x)
-       IN  << partitionLeft(x, piv), <<x1>>, partitionRight(x, piv) >>
+  ELSE LET piv == Head(x)
+       IN << partitionLeft(Tail(x), piv), 
+             partitionRight(Tail(x), piv) >>               
 
 iterDivide(x, p, i) == divide(x)[i]
 
@@ -87,7 +78,11 @@ base(x, p, i) == p[i].v
 
 isBase(x, p, i) == isBaseCase(p[i].v)
 
-conquer(r, z) == r \o z
+conquer(x, o, c, I, i) == 
+  IF isBaseCase(x)
+  THEN c[1].v
+  ELSE LET piv == Head(x)
+       IN  c[1].v \o <<piv>> \o c[2].v
 
 ----------------------------------------------------------------------------
 
@@ -185,8 +180,8 @@ C_ret(I) ==
 *)
 C(I) == \/ C_base(I)
         \/ C_call(I) 
-        \/ C_ret(I)
-  
+        \/ C_ret(I)   
+          
 (* 
    Reducer action
    
@@ -197,8 +192,9 @@ C(I) == \/ C_base(I)
 R(I) == 
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
+    /\ \A j \in iterator(I) : written(v_c(I), j)           \* dep c -> r(i)    
     /\ ~ read(v_c(I), i)
-    /\ LET newRet == conquer(out(I), v_c(I)[i].v)
+    /\ LET newRet == conquer(in(I), out(I), v_c(I), i)
            endSte == cDone(I, i) \/ eCnd(newRet)
        IN  cm' = [cm EXCEPT 
              ![I].ret      = newRet,
@@ -224,6 +220,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Nov 17 14:33:13 UYT 2020 by josedu
+\* Last modified Fri Dec 04 17:20:40 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed
