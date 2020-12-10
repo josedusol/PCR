@@ -6,9 +6,9 @@
    This is a variant of PCRKnapSack01 where we try to implement the Iterate
    PCR construct using an auxiliary PCR with sequential producer and also
    imposing some extra dependencies between consumer and reducer.
-   
-   ---------------------------------------------------------------------
-     fun init, getLast, apply, pass, retLast, solve, update  
+          
+   ---------------------------------------------------------------------         
+     fun init, getLast, apply, consumeLast, ret, solve, update 
      
      lbnd init = lambda x. 0 
      ubnd init = lambda x. 0                 \\ just one instance
@@ -17,39 +17,39 @@
        par
          p = produce init X
          forall p
-           c = consume KnapSack01_3Iterate p
+           c = consume KnapSack01_3Iterate X p
          r = reduce getLast [] c
          
-     fun apply(Y, p, i) = if i = 0 
-                          then Y                            \\ initial value
-                          else KnapSack01_3Step(p[i-1], i)  \\ apply step on previous value      
-     fun pass(Y, p, i) = p[i]     
-     fun retLast(r, c, i) = c.last
+     fun apply(X, R, p, i) = if i = 0 
+                             then R                               \\ initial value
+                             else KnapSack01_3Step(X, p[i-1], i)  \\ apply step on previous value      
+     fun pass(X, R, p, i) = p[i]   
+     fun retLast(X, R, o, c, i) = c.last
          
      lbnd apply = lambda x. 0 
-     ubnd apply = lambda x. Len(x.data.w)    \\ iterate sequentially on number of items to consider
+     ubnd apply = lambda x. Len(x[1].n)     \\ iterate sequentially on number of items to consider
      step apply = lambda i. i + 1   
      
      dep c(i-1) -> c(i)                     \\ consumers should also be sequential
      dep c(i..) -> r(i)                     \\ reducer should wait for consumer future
          
-     PCR KnapSack01_3Iterate(Y):            \\ auxiliary PCR to simulate "iterate" construct
+     PCR KnapSack01_3Iterate(X, R):         \\ auxiliary PCR to simulate "iterate" construct
        par
-         p = produceSeq apply Y
+         p = produceSeq apply X R
          forall p
-           c = consume pass Y p
-         r = reduce retLast Y c             \\ we just want the last value of c
+           c = consume pass X R p    
+         r = reduce retLast X R c           \\ we just want the last value of c       
 
      lbnd id = lambda x. 0 
-     ubnd id = lambda x. Len(x[0].C)        \\ solve in paralell for all weights <= C
+     ubnd id = lambda x. Len(x[1].C)        \\ solve in paralell for all weights <= C
      step id = lambda i. i + 1
          
-     PCR KnapSack01_3Step(Y, k):
+     PCR KnapSack01_3Step(X, R, k):
        par
-         p = produce id Y k
+         p = produce id X R k
          forall p
-           c = consume solve Y k p
-         r = reduce update Y c    
+           c = consume solve X R k p
+         r = reduce update X R k c          
    ---------------------------------------------------------------------
 *)
 
@@ -57,7 +57,7 @@ EXTENDS PCRKnapSack01_3Types, PCRBase, TLC
 
 VARIABLES cm2, cm3, im2
 
-KnapSack01_2Iterate == INSTANCE PCRKnapSack01_3Iterate WITH 
+KnapSack01_3Iterate == INSTANCE PCRKnapSack01_3Iterate WITH 
   InType    <- InType2,
   CtxIdType <- CtxIdType2,
   IndexType <- IndexType2,  
@@ -74,10 +74,9 @@ KnapSack01_2Iterate == INSTANCE PCRKnapSack01_3Iterate WITH
    Basic functions                 
 *)
 
-init(x, p, i) == [data |-> x, 
-                  row  |-> [j \in 1..x.C+1 |-> 0]]
+init(x, p, i) == [j \in 1..x.C+1 |-> 0]    
  
-getLast(r, z) == z.row[z.data.C+1]
+getLast(x, o, c, I, i) == c[i].v[x.C + 1]
 
 ----------------------------------------------------------------------------
 
@@ -136,9 +135,9 @@ C_call(I) ==
     /\ cm'  = [cm  EXCEPT 
          ![I].v_p[i].r = @ + 1] 
     /\ cm2' = [cm2 EXCEPT 
-         ![I \o <<i>>] = KnapSack01_2Iterate!initCtx(v_p(I)[i].v) ]
+         ![I \o <<i>>] = KnapSack01_3Iterate!initCtx(<<in(I), v_p(I)[i].v>>) ]
     /\ im2' = [im2 EXCEPT 
-         ![I \o <<i>>] = KnapSack01_2Iterate!lowerBnd(v_p(I)[i].v) ]            
+         ![I \o <<i>>] = KnapSack01_3Iterate!lowerBnd(<<in(I), v_p(I)[i].v>>) ]            
 \*    /\ PrintT("C_call" \o ToString(I \o <<j>>) 
 \*                       \o " : in= " \o ToString(v_p(I)[j].v))                                                                                                                                            
 
@@ -150,10 +149,10 @@ C_ret(I) ==
     /\ written(v_p(I), i)
     /\ read(v_p(I), i)       
     /\ ~ written(v_c(I), i)
-    /\ KnapSack01_2Iterate!wellDef(I \o <<i>>) 
-    /\ KnapSack01_2Iterate!finished(I \o <<i>>)   
+    /\ KnapSack01_3Iterate!wellDef(I \o <<i>>) 
+    /\ KnapSack01_3Iterate!finished(I \o <<i>>)   
     /\ cm' = [cm EXCEPT 
-         ![I].v_c[i] = [v |-> KnapSack01_2Iterate!out(I \o <<i>>), r |-> 0]]  
+         ![I].v_c[i] = [v |-> KnapSack01_3Iterate!out(I \o <<i>>), r |-> 0]]  
 \*    /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(isPrime!in(I \o <<i>>))    
 \*                       \o " : ret= " \o ToString(isPrime!Out(I \o <<i>>)))
@@ -175,7 +174,7 @@ R(I) ==
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
     /\ ~ read(v_c(I), i)
-    /\ LET newRet == getLast(out(I), v_c(I)[i].v)
+    /\ LET newRet == getLast(in(I), out(I), v_c(I), I, i)
            endSte == cDone(I, i) \/ eCnd(newRet)
        IN  cm' = [cm EXCEPT 
              ![I].ret      = newRet,
@@ -202,6 +201,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Fri Nov 13 22:10:52 UYT 2020 by josedu
+\* Last modified Wed Nov 25 15:44:03 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

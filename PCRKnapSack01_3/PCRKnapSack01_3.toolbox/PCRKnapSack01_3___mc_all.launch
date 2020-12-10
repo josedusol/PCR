@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="17"/>
+    <intAttribute key="fpIndex" value="49"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="50"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -45,12 +45,11 @@
         <listEntry value="CtxIdType2;;{&lt;&lt;0&gt;&gt;};0;0"/>
         <listEntry value="IndexType2;;0..N+1;0;0"/>
         <listEntry value="Input;;[n : Items,&#13;&#10; w : UNION {[1..n -&gt; Weights] : n \in 0..N},&#13;&#10; v : UNION {[1..n -&gt; Values] : n \in 0..N},&#13;&#10; C : Capacity ];0;0"/>
-        <listEntry value="Sol;;[data : Input,&#13;&#10; row  : Row ];0;0"/>
         <listEntry value="Row;;[1..X.C+1 -&gt; Profits];0;0"/>
         <listEntry value="VarRType1;;Profits;0;0"/>
         <listEntry value="CtxIdType3;;{&lt;&lt;0,i&gt;&gt; : i \in 0..N};0;0"/>
         <listEntry value="IndexType3;;0..MaxC;0;0"/>
-        <listEntry value="VarCType3;;[j : Capacity, v : Profits];0;0"/>
+        <listEntry value="VarCType3;;Profits;0;0"/>
         <listEntry value="Seq;S:;UNION {[1..n -&gt; S] : n \in 0..N};0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>

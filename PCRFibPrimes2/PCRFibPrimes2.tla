@@ -11,7 +11,7 @@
      step fib = lambda x. x + 1
    
      fun fib(N,p,i) = if i < 2 then 1 else p[i-1] + p[i-2]
-     fun sum(r1,r2) = r1 + (if r2 then 1 else 0)  
+     fun sum(r,z) = r + (if z then 1 else 0)  
    
      PCR FibPrimes2(N):
        par
@@ -34,7 +34,7 @@ VARIABLES cm2, im
 
 fib(x, p, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
 
-sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)  
+sum(r, z) == r + (IF z THEN 1 ELSE 0)  
 
 isPrime == INSTANCE PCRIsPrime WITH
   InType    <- InType2,
@@ -93,13 +93,16 @@ P(I) ==
        ![I] = step(i_p(I))]   
 \*  /\ PrintT("P" \o ToString(I \o <<i_p(I)>>) \o " : " \o ToString(v_p(I)[i_p(I)].v'))
 
+
+v_p [ [v NULL, r = 0], ]
+
 (*
    Consumer call action
 *)
 C_call(I) == 
   \E i \in iterator(I):
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
+    /\ ~ read(v_p(I), i)    \* isPrime!wellDef(I \o <<i>>)
     /\ cm'  = [cm  EXCEPT 
          ![I].v_p[i].r = @ + 1] 
     /\ cm2' = [cm2 EXCEPT 
@@ -113,7 +116,7 @@ C_call(I) ==
 C_ret(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ read(v_p(I), i)       
+    \* /\ read(v_p(I), i)       
     /\ ~ written(v_c(I), i)
     /\ isPrime!wellDef(I \o <<i>>) 
     /\ isPrime!finished(I \o <<i>>)   
@@ -167,6 +170,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Nov 17 23:41:47 UYT 2020 by josedu
+\* Last modified Fri Dec 04 17:35:54 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

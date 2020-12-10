@@ -4,25 +4,25 @@
    PCR KnapSack01_4Step
    
    ---------------------------------------------------------------------
-     fun init, getLast, nextItem, solve, update 
-          
-     fun until(y, i) = i > y[0].data.n
-     
+     fun init, until, getLast, nextItem, solve, update  
+        
+     fun until(X, y, y_i) = y_i > X.n
+        
      PCR KnapSack01_4(X):
        par
          p = produce init X
          forall p
            par
-             c1 = iterate until KnapSack01_4Step p
+             c1 = iterate until KnapSack01_4Step X p
              c2 = consume backtrack X c1
          r = reduce retSol [] c1 c2
          
-     PCR KnapSack01Step_4(Sol, k):
+     PCR KnapSack01Step_4(X, S, k):
        par
-         p = produce id Sol k
+         p = produce id X S k
          forall p
-           c = consume solve Sol k p
-         r = reduce update Sol c
+           c = consume solve X S k p
+         r = reduce update X S c  
    ---------------------------------------------------------------------
 *)
 
@@ -36,20 +36,22 @@ EXTENDS PCRKnapSack01_4Types, PCRBase, TLC
 
 max(x, y) == IF x >= y THEN x ELSE y
 
-id(x1, x2, p, j) == j
+id(x, p, I, j) == j
  
-solve(x1, x2, p, j) ==       \* capacity j where 0 <= j <= C
-  LET v     == x1.data.v     \* item values 
-      w     == x1.data.w     \* item weights 
-      table == x1.table      \* profit table
-      i     == x2            \* current item 
+solve(x, p, I, j) ==              \* capacity j where 0 <= j <= C
+  LET v     == x[1].v             \* item values 
+      w     == x[1].w             \* item weights 
+      table == x[2]               \* profit table
+      i     == x[3]               \* current item 
   IN  [c |-> <<i, j>>,
-       v |-> CASE i = 0      ->  0                       \* never happen
+       v |-> CASE i = 0      ->  0                   \* never happen
                [] w[i] >  j  ->  table[<<i-1, j>>]
                [] w[i] <= j  ->  max(table[<<i-1, j>>], 
                                      table[<<i-1, j - w[i]>>] + v[i]) ]
                        
-update(r, z) == [r EXCEPT !.table[z.c] = z.v]   
+\*update(r, z) == [r EXCEPT !.table[z.c] = z.v]   
+
+update(x, o, c, I, i) == [o EXCEPT ![c[i].v.c] = c[i].v.v] 
 
 ----------------------------------------------------------------------------
 
@@ -58,7 +60,7 @@ update(r, z) == [r EXCEPT !.table[z.c] = z.v]
 *)
 
 lowerBnd(x) == 0
-upperBnd(x) == x[1].data.C
+upperBnd(x) == x[1].C
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
@@ -76,7 +78,7 @@ INSTANCE PCRIterationSpace WITH
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> x[1],
+               ret |-> x[2],
                ste |-> "OFF"] 
 
 pre(x) == TRUE
@@ -95,7 +97,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> id(in1(I), in2(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> id(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (* 
@@ -112,7 +114,7 @@ C(I) ==
     /\ ~ written(v_c(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1, 
-         ![I].v_c[i]   = [v |-> solve(in1(I), in2(I), v_p(I), i), r |-> 0]]                                          
+         ![I].v_c[i]   = [v |-> solve(in(I), v_p(I), I, i), r |-> 0]]                                          
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))  
   
@@ -127,7 +129,7 @@ R(I) ==
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
     /\ ~ read(v_c(I), i)
-    /\ LET newRet == update(out(I), v_c(I)[i].v)
+    /\ LET newRet == update(in(I), out(I), v_c(I), I, i)
            endSte == cDone(I, i) \/ eCnd(newRet)
        IN  cm' = [cm EXCEPT 
              ![I].ret      = newRet,
@@ -153,6 +155,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 11 17:18:06 UYT 2020 by josedu
+\* Last modified Wed Nov 25 17:02:18 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

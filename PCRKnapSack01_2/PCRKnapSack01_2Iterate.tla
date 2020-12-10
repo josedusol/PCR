@@ -17,38 +17,38 @@
        par
          p = produce init X
          forall p
-           c = consume KnapSack01_2Iterate p
+           c = consume KnapSack01_2Iterate X p
          r = reduce getLast [] c
          
-     fun apply(Y, p, i) = if i = 0 
-                          then Y                            \\ initial value
-                          else KnapSack01_2Step(p[i-1], i)  \\ apply step on previous value      
-     fun consumeLast(Y, p, i) = p.last   
-     fun ret(r, z) = z
+     fun apply(X, R, p, i) = if i = 0 
+                             then R                               \\ initial value
+                             else KnapSack01_2Step(X, p[i-1], i)  \\ apply step on previous value      
+     fun consumeLast(X, R, p, i) = p.last   
+     fun ret(X, R, o, c, i) = c[i]
          
      lbnd apply = lambda x. 0 
-     ubnd apply = lambda x. Len(x.data.w)    \\ iterate sequentially on number of items to consider
+     ubnd apply = lambda x. Len(x[1].n)     \\ iterate sequentially on number of items to consider
      step apply = lambda i. i + 1   
      
      dep p(i..) -> c(i)                     \\ consumer should wait for producer future
          
-     PCR KnapSack01_2Iterate(Y):            \\ auxiliary PCR to simulate "iterate" construct
+     PCR KnapSack01_2Iterate(X, R):         \\ auxiliary PCR to simulate "iterate" construct
        par
-         p = produceSeq apply Y
+         p = produceSeq apply X R
          forall p
-           c = consume consumeLast Y p      \\ we just want the last value
-         r = reduce ret Y c                 
+           c = consume consumeLast X R p    \\ we just want the last value
+         r = reduce ret X R c                 
 
      lbnd id = lambda x. 0 
-     ubnd id = lambda x. Len(x[0].C)        \\ solve in paralell for all weights <= C
+     ubnd id = lambda x. Len(x[1].C)        \\ solve in paralell for all weights <= C
      step id = lambda i. i + 1
          
-     PCR KnapSack01_2Step(Y, k):
+     PCR KnapSack01_2Step(X, R, k):
        par
-         p = produce id Y k
+         p = produce id X R k
          forall p
-           c = consume solve Y k p
-         r = reduce update Y c   
+           c = consume solve X R k p
+         r = reduce update X R k c   
    ---------------------------------------------------------------------
 *)
 
@@ -72,7 +72,7 @@ KnapSack01_2Step == INSTANCE PCRKnapSack01_2Step WITH
 *)
 
 lowerBnd(x) == 0
-upperBnd(x) == x.data.n
+upperBnd(x) == x[1].n
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
@@ -90,7 +90,7 @@ INSTANCE PCRIterationSpaceSeq WITH
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> x,
+               ret |-> x[2],
                ste |-> "OFF"] 
 
 pre(x) == TRUE
@@ -103,7 +103,7 @@ pre(x) == TRUE
 
 consumeLast(x, p, I, i) == p_last(I)     
                        
-ret(r, z) == z
+ret(x, o, c, I, i) == c[i].v
 
 ----------------------------------------------------------------------------
 
@@ -115,7 +115,7 @@ P_1(I) ==
   /\ i_p(I) = 0
   /\ ~ KnapSack01_2Step!wellDef(I \o <<i_p(I)>>)
   /\ cm' = [cm EXCEPT 
-       ![I].v_p[i_p(I)] = [v |-> in(I), r |-> 0]] 
+       ![I].v_p[i_p(I)] = [v |-> in(I)[2], r |-> 0]] 
   /\ im'  = [im  EXCEPT 
        ![I] = step(i_p(I)) ]                       
 \*  /\ PrintT("P_1" \o ToString(I \o <<i_p(I)>>) 
@@ -129,7 +129,7 @@ P_2_call(I) ==
   /\ ~ (i_p(I) = 0) 
   /\ ~ KnapSack01_2Step!wellDef(I \o <<i_p(I)>>)
   /\ cm3' = [cm3 EXCEPT 
-       ![I \o <<i_p(I)>>] = KnapSack01_2Step!initCtx(<<v_p(I)[i_p(I)-1].v, i_p(I)>>) ]                  
+       ![I \o <<i_p(I)>>] = KnapSack01_2Step!initCtx(<<in(I)[1], v_p(I)[i_p(I)-1].v, i_p(I)>>) ]                  
 \*  /\ PrintT("P_2_call" \o ToString(I \o <<i_p(I)>>) 
 \*                       \o " : in= " \o ToString(i_p(I)))
 
@@ -186,7 +186,7 @@ R(I) ==
   \E i \in iterator(I) :
     /\ written(v_c(I), i)   
     /\ ~ read(v_c(I), i)
-    /\ LET newRet == ret(out(I), v_c(I)[i].v)
+    /\ LET newRet == ret(in(I), out(I), v_c(I), I, i)
            endSte == cDone(I, i) \/ eCnd(newRet)
        IN  cm' = [cm EXCEPT 
              ![I].ret      = newRet,
@@ -213,6 +213,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Fri Nov 20 23:13:06 UYT 2020 by josedu
+\* Last modified Wed Nov 25 14:45:16 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

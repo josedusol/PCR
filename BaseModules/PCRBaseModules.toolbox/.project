@@ -21,9 +21,19 @@
 			<location>C:/Users/JosEdu/OneDrive/Documentos/TLA+/PCR/BaseModules/PCRBase.tla</location>
 		</link>
 		<link>
+			<name>PCRBase1R.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRBase1R.tla</locationURI>
+		</link>
+		<link>
 			<name>PCRBase2.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/PCRBase2.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRBase2R.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRBase2R.tla</locationURI>
 		</link>
 		<link>
 			<name>PCRBaseN.tla</name>
@@ -36,9 +46,19 @@
 			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpace.tla</locationURI>
 		</link>
 		<link>
+			<name>PCRIterationSpace1R.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpace1R.tla</locationURI>
+		</link>
+		<link>
 			<name>PCRIterationSpace2.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpace2.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRIterationSpace2R.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRIterationSpace2R.tla</locationURI>
 		</link>
 		<link>
 			<name>PCRIterationSpaceN.tla</name>

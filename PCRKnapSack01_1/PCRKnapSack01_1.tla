@@ -4,23 +4,23 @@
    PCR KnapSack01_1
    
    ---------------------------------------------------------------------
-     fun init, until, getLast, id, solve, update  
-        
-     fun until(y, i) = i > y[0].data.n
+     fun init, until, getLast, id, solve, update 
+          
+     fun until(X, y, i) = i > X.n
         
      PCR KnapSack01_1(X):
        par
          p = produce init X
          forall p
-           c = iterate until KnapSack01_1Step p
-         r = reduce getLast [] c
+           c = iterate until KnapSack01_1Step X p
+         r = reduce getLast 0 X c
          
-     PCR KnapSack01_1Step(Sol, k):
+     PCR KnapSack01_1Step(X, row, k):
        par
-         p = produce id Sol k
+         p = produce id X row k
          forall p
-           c = consume solve Sol k p
-         r = reduce update Sol c   
+           c = consume solve X row k p
+         r = reduce update row X row k c   
    ---------------------------------------------------------------------
 *)
 
@@ -43,12 +43,11 @@ KnapSack01Step == INSTANCE PCRKnapSack01_1Step WITH
    Basic functions                 
 *)
 
-init(x, p, i) == [data |-> x, 
-                  row  |-> [j \in 1..x.C+1 |-> 0]]
+init(x, p, I, i) == [j \in 1..x.C+1 |-> 0]
  
-getLast(r, z) == z.row[z.data.C+1]
+getLast(x, r, c, I, i) == c[i].v[x.C + 1]   
 
-until(y, i) == i > y[i].data.n
+until(x, y, i) == i > x.n  
 
 ----------------------------------------------------------------------------
 
@@ -107,7 +106,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> init(in(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> init(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
@@ -135,11 +134,11 @@ C_call(I) ==
   \E i \in iterator(I):
     /\ written(v_p(I), i)
     /\ read(v_p(I), i)
-    /\ ~ until(y_v(I \o <<i>>), y_i(I \o <<i>>))
+    /\ ~ until(in(I), y_v(I \o <<i>>), y_i(I \o <<i>>))
     /\ ~ KnapSack01Step!wellDef(I \o <<i, y_i(I \o <<i>>)>>)
     /\ cm2' = [cm2 EXCEPT 
          ![I \o <<i, y_i(I \o <<i>>)>>] = 
-            KnapSack01Step!initCtx(<<y_last(I \o <<i>>), y_i(I \o <<i>>)>>) ]         
+            KnapSack01Step!initCtx(<<in(I), y_last(I \o <<i>>), y_i(I \o <<i>>)>>) ]         
 \*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
 \*                       \o " : in= " \o ToString(y))                                                                                                                                            
 
@@ -150,7 +149,7 @@ C_ret(I) ==
   \E i \in iterator(I) :
      /\ written(v_p(I), i)
      /\ read(v_p(I), i)
-     /\ ~ until(y_v(I \o <<i>>), y_i(I \o <<i>>))
+     /\ ~ until(in(I), y_v(I \o <<i>>), y_i(I \o <<i>>))
      /\ KnapSack01Step!wellDef(I \o <<i, y_i(I \o <<i>>)>>) 
      /\ KnapSack01Step!finished(I \o <<i, y_i(I \o <<i>>)>>)   
      /\ ym' = [ym EXCEPT 
@@ -168,7 +167,7 @@ C_end(I) ==
     /\ written(v_p(I), i)
     /\ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
-    /\ until(y_v(I \o <<i>>), y_i(I \o <<i>>))
+    /\ until(in(I), y_v(I \o <<i>>), y_i(I \o <<i>>))
     /\ cm' = [cm EXCEPT 
          ![I].v_c[i] = [v |-> y_last(I \o <<i>>), r |-> 0] ]           
 \*    /\ PrintT("C_end" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
@@ -193,7 +192,7 @@ R(I) ==
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
     /\ ~ read(v_c(I), i)
-    /\ LET newRet == getLast(out(I), v_c(I)[i].v)
+    /\ LET newRet == getLast(in(I), out(I), v_c(I), I, i)
            endSte == cDone(I, i) \/ eCnd(newRet)
        IN  cm' = [cm EXCEPT 
              ![I].ret      = newRet,
@@ -220,6 +219,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Fri Nov 13 22:26:40 UYT 2020 by josedu
+\* Last modified Tue Nov 24 19:26:19 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

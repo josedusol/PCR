@@ -14,7 +14,7 @@
      step fib = lambda x. x + 1
    
      fun fib(N,p,i) = if i < 2 then 1 else p[i-1] + p[i-2]
-     fun sum(r1,r2) = r1 + (if r2 then 1 else 0)
+     fun sum(r,z) = r + (if z then 1 else 0)
    
      PCR FibPrimes1(N):
        par
@@ -45,7 +45,7 @@ isPrime(x, p, i) ==
         ELSE ~ (n % d = 0) /\ f[d-1]
   IN f[Sqrt(n)]
 
-sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)   
+sum(r, z) == r + (IF z THEN 1 ELSE 0)   
 
 ----------------------------------------------------------------------------         
 
@@ -152,6 +152,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Nov 10 23:25:19 UYT 2020 by josedu
+\* Last modified Sat Nov 21 17:30:53 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

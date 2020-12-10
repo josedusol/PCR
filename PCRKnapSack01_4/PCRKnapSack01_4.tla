@@ -6,23 +6,23 @@
    ---------------------------------------------------------------------
      fun init, until, getLast, nextItem, solve, update  
         
-     fun until(y, i) = i > y[0].data.n
+     fun until(X, y, y_i) = y_i > X.n
         
      PCR KnapSack01_4(X):
        par
          p = produce init X
          forall p
            par
-             c1 = iterate until KnapSack01_4Step p
+             c1 = iterate until KnapSack01_4Step X p
              c2 = consume backtrack X c1
          r = reduce retSol [] c1 c2
          
-     PCR KnapSack01Step_4(Sol, k):
+     PCR KnapSack01Step_4(X, S, k):
        par
-         p = produce id Sol k
+         p = produce id X S k
          forall p
-           c = consume solve Sol k p
-         r = reduce update Sol c   
+           c = consume solve X S k p
+         r = reduce update X S c   
    ---------------------------------------------------------------------
 *)
 
@@ -47,11 +47,10 @@ KnapSack01Step == INSTANCE PCRKnapSack01_4Step WITH
 
 zeroTable(n,m) == [c \in {<<i, j>> : i \in 0..n, j \in 0..m } |-> 0]
 
-init(x, p, i) == [data  |-> x,
-                  table |-> zeroTable(x.n, x.C)]
+init(x, p, i) == zeroTable(x.n, x.C) 
 
-backtrack(x, c2, i_) == 
-  LET table == c2[i_].v.table
+backtrack(x, c1, I, i_) == 
+  LET table == c1[i_].v
       N == x.n
       C == x.C     
       f[i \in Nat, j \in Nat] ==
@@ -62,10 +61,10 @@ backtrack(x, c2, i_) ==
          ELSE <<>>    
   IN f[N,C]
  
-retSol(r, z1, z2) == [items  |-> z2, 
-                      profit |-> z1.table[<<z1.data.n, z1.data.C>>] ]
+retSol(x, o, c1, c2, i) == [items  |-> c2[i].v, 
+                            profit |-> c1[i].v[<<x.n, x.C>>] ]
 
-until(y, i) == i > y[i].data.n
+until(x, y, y_i) == y_i > x.n
 
 ----------------------------------------------------------------------------
 
@@ -153,11 +152,11 @@ C1_call(I) ==
   \E i \in iterator(I):
     /\ written(v_p(I), i)
     /\ read(v_p(I), i)
-    /\ ~ until(y_v(I \o <<i>>), y_i(I \o <<i>>))
+    /\ ~ until(in(I), y_v(I \o <<i>>), y_i(I \o <<i>>))
     /\ ~ KnapSack01Step!wellDef(I \o <<i, y_i(I \o <<i>>)>>)
     /\ cm2' = [cm2 EXCEPT 
          ![I \o <<i, y_i(I \o <<i>>)>>] = 
-            KnapSack01Step!initCtx(<<y_last(I \o <<i>>), y_i(I \o <<i>>)>>) ]         
+            KnapSack01Step!initCtx(<<in(I), y_last(I \o <<i>>), y_i(I \o <<i>>)>>) ]         
 \*    /\ PrintT("C1_call" \o ToString(I \o <<i>>) 
 \*                        \o " : in= " \o ToString(y))                                                                                                                                            
 
@@ -168,7 +167,7 @@ C1_ret(I) ==
   \E i \in iterator(I) :
      /\ written(v_p(I), i)
      /\ read(v_p(I), i)
-     /\ ~ until(y_v(I \o <<i>>), y_i(I \o <<i>>))
+     /\ ~ until(in(I), y_v(I \o <<i>>), y_i(I \o <<i>>))
      /\ KnapSack01Step!wellDef(I \o <<i, y_i(I \o <<i>>)>>) 
      /\ KnapSack01Step!finished(I \o <<i, y_i(I \o <<i>>)>>)   
      /\ ym' = [ym EXCEPT 
@@ -186,7 +185,7 @@ C1_end(I) ==
     /\ written(v_p(I), i)
     /\ read(v_p(I), i)
     /\ ~ written(v_c1(I), i)
-    /\ until(y_v(I \o <<i>>), y_i(I \o <<i>>))
+    /\ until(in(I), y_v(I \o <<i>>), y_i(I \o <<i>>))
     /\ cm' = [cm EXCEPT 
          ![I].v_c1[i] = [v |-> y_last(I \o <<i>>), r |-> 0] ]           
 \*    /\ PrintT("C1_end" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
@@ -209,7 +208,7 @@ C2(I) ==
     /\ ~ written(v_c2(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_c1[i].r = @ + 1, 
-         ![I].v_c2[i]   = [v |-> backtrack(in(I), v_c1(I), i), r |-> 0] ]                                            
+         ![I].v_c2[i]   = [v |-> backtrack(in(I), v_c1(I), I, i), r |-> 0] ]                                            
 \*    /\ PrintT("C2" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                   \o " con v=" \o ToString(v_c2(I)[i].v'))  
   
@@ -224,11 +223,11 @@ R(I) ==
   \E i \in iterator(I) :
     /\ written(v_c2(I), i)
     /\ ~ read(v_c2(I), i)
-    /\ LET newRet == retSol(out(I), v_c1(I)[i].v, v_c2(I)[i].v)
+    /\ LET newRet == retSol(in(I), out(I), v_c1(I), v_c2(I), i)
            endSte == cDone(I, i) \/ eCnd(newRet)
        IN  cm' = [cm EXCEPT 
              ![I].ret       = newRet,
-\*             ![I].v_c1[i].r = @ + 1,                         \* ???
+             ![I].v_c1[i].r = @ + 1,                         \* ???
              ![I].v_c2[i].r = @ + 1,
              ![I].ste       = IF endSte THEN "END" ELSE @]   
 \*          /\ IF endSte
@@ -253,6 +252,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 11 18:11:50 UYT 2020 by josedu
+\* Last modified Wed Nov 25 23:36:50 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

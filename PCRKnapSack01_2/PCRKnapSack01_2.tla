@@ -17,38 +17,38 @@
        par
          p = produce init X
          forall p
-           c = consume KnapSack01_2Iterate p
+           c = consume KnapSack01_2Iterate X p
          r = reduce getLast [] c
          
-     fun apply(Y, p, i) = if i = 0 
-                          then Y                            \\ initial value
-                          else KnapSack01_2Step(p[i-1], i)  \\ apply step on previous value      
-     fun consumeLast(Y, p, i) = p.last   
-     fun ret(r, z) = z
+     fun apply(X, R, p, i) = if i = 0 
+                             then R                               \\ initial value
+                             else KnapSack01_2Step(X, p[i-1], i)  \\ apply step on previous value      
+     fun consumeLast(X, R, p, i) = p.last   
+     fun ret(X, R, o, c, i) = c[i]
          
      lbnd apply = lambda x. 0 
-     ubnd apply = lambda x. Len(x.data.w)    \\ iterate sequentially on number of items to consider
+     ubnd apply = lambda x. Len(x[1].n)     \\ iterate sequentially on number of items to consider
      step apply = lambda i. i + 1   
      
      dep p(i..) -> c(i)                     \\ consumer should wait for producer future
          
-     PCR KnapSack01_2Iterate(Y):            \\ auxiliary PCR to simulate "iterate" construct
+     PCR KnapSack01_2Iterate(X, R):         \\ auxiliary PCR to simulate "iterate" construct
        par
-         p = produceSeq apply Y
+         p = produceSeq apply X R
          forall p
-           c = consume consumeLast Y p      \\ we just want the last value
-         r = reduce ret Y c                 
+           c = consume consumeLast X R p    \\ we just want the last value
+         r = reduce ret X R c                 
 
      lbnd id = lambda x. 0 
-     ubnd id = lambda x. Len(x[0].C)        \\ solve in paralell for all weights <= C
+     ubnd id = lambda x. Len(x[1].C)        \\ solve in paralell for all weights <= C
      step id = lambda i. i + 1
          
-     PCR KnapSack01_2Step(Y, k):
+     PCR KnapSack01_2Step(X, R, k):
        par
-         p = produce id Y k
+         p = produce id X R k
          forall p
-           c = consume solve Y k p
-         r = reduce update Y c    
+           c = consume solve X R k p
+         r = reduce update X R k c    
    ---------------------------------------------------------------------
 *)
 
@@ -73,10 +73,9 @@ KnapSack01_2Iterate == INSTANCE PCRKnapSack01_2Iterate WITH
    Basic functions                 
 *)
 
-init(x, p, i) == [data |-> x, 
-                  row  |-> [j \in 1..x.C+1 |-> 0]]
+init(x, p, i) == [j \in 1..x.C+1 |-> 0]
  
-getLast(r, z) == z.row[z.data.C+1]
+getLast(x, o, c, I, i) == c[i].v[x.C + 1]
 
 ----------------------------------------------------------------------------
 
@@ -135,9 +134,9 @@ C_call(I) ==
     /\ cm'  = [cm  EXCEPT 
          ![I].v_p[i].r = @ + 1] 
     /\ cm2' = [cm2 EXCEPT 
-         ![I \o <<i>>] = KnapSack01_2Iterate!initCtx(v_p(I)[i].v) ]
+         ![I \o <<i>>] = KnapSack01_2Iterate!initCtx(<<in(I), v_p(I)[i].v>>) ]
     /\ im2' = [im2 EXCEPT 
-         ![I \o <<i>>] = KnapSack01_2Iterate!lowerBnd(v_p(I)[i].v) ]            
+         ![I \o <<i>>] = KnapSack01_2Iterate!lowerBnd(<<in(I), v_p(I)[i].v>>) ]            
 \*    /\ PrintT("C_call" \o ToString(I \o <<j>>) 
 \*                       \o " : in= " \o ToString(v_p(I)[j].v))                                                                                                                                            
 
@@ -174,7 +173,7 @@ R(I) ==
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
     /\ ~ read(v_c(I), i)
-    /\ LET newRet == getLast(out(I), v_c(I)[i].v)
+    /\ LET newRet == getLast(in(I), out(I), v_c(I), I, i)
            endSte == cDone(I, i) \/ eCnd(newRet)
        IN  cm' = [cm EXCEPT 
              ![I].ret      = newRet,
@@ -201,6 +200,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Fri Nov 13 22:07:33 UYT 2020 by josedu
+\* Last modified Wed Nov 25 15:48:09 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

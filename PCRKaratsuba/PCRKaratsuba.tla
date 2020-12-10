@@ -3,6 +3,9 @@
 (*
    PCR Karatsuba 
    
+   TODO: delete second consumer when is possible to declare the correct
+         dependencies in the reducer.
+   
    ---------------------------------------------------------------
      fun iterDivide, divide, isBase, base, conquer, ret
      
@@ -60,13 +63,13 @@ divide(x, y) ==
               <<x1, y1>>                 \*   z2 = x1 * y1
            >>    
                                     
-iterDivide(x, y, p, i) == divide(x, y)[i]
+iterDivide(x, y, p, I, i) == divide(x, y)[i]
 
-base(x, y, p, i) == x * y
+base(x, y, p, I, i) == x * y
 
-isBase(x, y, p, i) == isBaseCase(x, y)
+isBase(x, y, p, I, i) == isBaseCase(x, y)
 
-conquer(x, y, c1, i) == 
+conquer(x, y, c1, I, i) == 
   IF isBaseCase(x, y)
   THEN c1[1].v
   ELSE LET  mx == max(Len(ToString(x)), Len(ToString(y)))
@@ -76,7 +79,7 @@ conquer(x, y, c1, i) ==
             z2 == c1[3].v
        IN (z2*10^(2*m)) + ((z1-z2-z0)*10^m) + z0 
  
-ret(r, z) == z
+ret(x, y, c2, I, i) == c2[i].v
 
 ----------------------------------------------------------------------------
 
@@ -123,7 +126,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> iterDivide(in1(I), in2(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> iterDivide(in1(I), in2(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
@@ -133,10 +136,10 @@ C1_base(I) ==
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
     /\ ~ written(v_c1(I), i)
-    /\ isBase(in1(I), in2(I), v_p(I), i)
+    /\ isBase(in1(I), in2(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
-         ![I].v_c1[i]  = [v |-> base(in1(I), in2(I), v_p(I), i), r |-> 0] ]               
+         ![I].v_c1[i]  = [v |-> base(in1(I), in2(I), v_p(I), I, i), r |-> 0] ]               
 \*    /\ PrintT("C1_base" \o ToString(i) \o " : P" \o ToString(i) 
 \*                        \o " con v=" \o ToString(v_p(I)[i].v))
  
@@ -147,7 +150,7 @@ C1_call(I) ==
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
     /\ ~ read(v_p(I), i)
-    /\ ~ isBase(in1(I), in2(I), v_p(I), i)
+    /\ ~ isBase(in1(I), in2(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
          ![I \o <<i>>] = initCtx(v_p(I)[i].v) ]              
@@ -187,7 +190,7 @@ C2(I) ==
     /\ ~ written(v_c2(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_c1[i].r = @ + 1, 
-         ![I].v_c2[i]   = [v |-> conquer(in1(I), in2(I), v_c1(I), i), r |-> 0] ]                                            
+         ![I].v_c2[i]   = [v |-> conquer(in1(I), in2(I), v_c1(I), I, i), r |-> 0] ]                                            
 \*    /\ PrintT("C2" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                   \o " con v=" \o ToString(v_c2(I)[i].v'))         
   
@@ -202,7 +205,7 @@ R(I) ==
   \E i \in iterator(I) :
     /\ written(v_c2(I), i)
     /\ ~ read(v_c2(I), i)
-    /\ LET newRet == ret(out(I), v_c2(I)[i].v)
+    /\ LET newRet == ret(in1(I), in2(I), v_c2(I), I, i)
            endSte == cDone(I, i) \/ eCnd(newRet)
        IN  cm' = [cm EXCEPT 
              ![I].ret       = newRet,
@@ -229,6 +232,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Fri Nov 20 23:07:19 UYT 2020 by josedu
+\* Last modified Fri Nov 20 23:33:54 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

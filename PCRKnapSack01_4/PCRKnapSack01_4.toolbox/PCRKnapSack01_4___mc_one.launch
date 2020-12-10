@@ -7,12 +7,12 @@
     <intAttribute key="dfidDepth" value="1500"/>
     <booleanAttribute key="dfidMode" value="false"/>
     <intAttribute key="distributedFPSetCount" value="0"/>
-    <stringAttribute key="distributedNetworkInterface" value="127.0.0.1"/>
+    <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
     <intAttribute key="distributedNodesCount" value="1"/>
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="109"/>
+    <intAttribute key="fpIndex" value="64"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="50"/>
     <intAttribute key="maxSetSize" value="10000000"/>
@@ -37,26 +37,25 @@
     <listAttribute key="modelParameterConstants">
         <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
-    <stringAttribute key="modelParameterContraint" value="X = [n |-&gt; 3,&#13;&#10;     w |-&gt; &lt;&lt;1,1,1&gt;&gt;, &#13;&#10;     v |-&gt; &lt;&lt;1,1,3&gt;&gt;, &#13;&#10;     C |-&gt; 2]"/>
+    <stringAttribute key="modelParameterContraint" value="X = [n |-&gt; 3,&#13;&#10;     w |-&gt; &lt;&lt;1,1,1&gt;&gt;, &#13;&#10;     v |-&gt; &lt;&lt;0,1,2&gt;&gt;, &#13;&#10;     C |-&gt; 2]"/>
     <listAttribute key="modelParameterDefinitions">
         <listEntry value="IndexType1;;{0};0;0"/>
         <listEntry value="CtxIdType1;;{&lt;&lt;&gt;&gt;};0;0"/>
-        <listEntry value="Nat;;0..N+1;0;0"/>
-        <listEntry value="CtxIdType2;;{&lt;&lt;0,i&gt;&gt; : i \in 0..N};0;0"/>
-        <listEntry value="IndexType2;;0..MaxC;0;0"/>
+        <listEntry value="Nat;;0..N;0;0"/>
+        <listEntry value="CtxIdType2;;{&lt;&lt;0,i&gt;&gt; : i \in 0..X.n};0;0"/>
+        <listEntry value="IndexType2;;0..X.C;0;0"/>
         <listEntry value="Input;;[n : Items,&#13;&#10; w : UNION {[1..n -&gt; Weights] : n \in 0..N},&#13;&#10; v : UNION {[1..n -&gt; Values] : n \in 0..N},&#13;&#10; C : Capacity ];0;0"/>
         <listEntry value="Sol;;[items  : VarC2Type1,&#13;&#10; profit : Profits ];0;0"/>
         <listEntry value="VarCType2;;[c : Pos, v : Profits];0;0"/>
-        <listEntry value="Seq;S:;UNION {[1..n -&gt; S] : n \in Items};0;0"/>
-        <listEntry value="Tables;;[Pos -&gt; Profits];0;0"/>
-        <listEntry value="SolData;;[data  : Input,&#13;&#10; table : Tables ];0;0"/>
         <listEntry value="VarC2Type1;;[1..X.n -&gt; {0,1}] \union {&lt;&lt;&gt;&gt;};0;0"/>
         <listEntry value="Pos;;{&lt;&lt;x, y&gt;&gt; : x \in 0..X.n, y \in 0..X.C};0;0"/>
         <listEntry value="CtxIdType1_1;;{&lt;&lt;0&gt;&gt;};0;0"/>
-        <listEntry value="IndexType1_1;;0..N+1;0;0"/>
+        <listEntry value="IndexType1_1;;0..X.n+1;0;0"/>
+        <listEntry value="Table;;[Pos -&gt; Profits];0;0"/>
+        <listEntry value="VarPType2;;Capacity;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="N == 3&#13;&#10;Items == 0..N&#13;&#10;NatMock2 == 0..N&#13;&#10;MaxW == 2&#13;&#10;MaxV == 3&#13;&#10;MaxC == 2&#13;&#10;Weights == 0..MaxW&#13;&#10;Values == 0..MaxV&#13;&#10;Capacity == 0..MaxC&#13;&#10;MaxProfit == N*MaxV&#13;&#10;Profits == 0..MaxProfit"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 3&#13;&#10;Items == 0..N&#13;&#10;NatMock2 == 0..N&#13;&#10;MaxW == 2&#13;&#10;MaxV == 2&#13;&#10;MaxC == 2&#13;&#10;Weights == 0..MaxW&#13;&#10;Values == 0..MaxV&#13;&#10;Capacity == 0..MaxC&#13;&#10;MaxProfit == N*MaxV&#13;&#10;Profits == 0..MaxProfit"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="3"/>
     <booleanAttribute key="recover" value="false"/>

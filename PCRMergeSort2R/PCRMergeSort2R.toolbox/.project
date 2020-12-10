@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>PCRMergeSort2R</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>toolbox.builder.TLAParserBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>toolbox.natures.TLANature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>PCRMergeSort2R.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRMergeSort2R.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRMergeSort2RMain.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRMergeSort2RMain.tla</locationURI>
+		</link>
+		<link>
+			<name>PCRMergeSort2RTypes.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCRMergeSort2RTypes.tla</locationURI>
+		</link>
+	</linkedResources>
+</projectDescription>

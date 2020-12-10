@@ -11,12 +11,10 @@ Input == [n : Nat,
           v : Seq(Nat),
           C : Nat ]  
 Row   == Seq(Nat)
-Sol   == [data : Input,
-          row  : Row ]           
-                    
+        
 InType1      == Input
-VarPType1    == Sol 
-VarCType1    == Sol
+VarPType1    == Row 
+VarCType1    == Row
 VarRType1    == Nat
 IndexType1   == Nat
 CtxIdType1   == Seq(Nat)
@@ -27,14 +25,14 @@ CtxIdType1_1 == Seq(Nat)
    Types for PCR KnapSack01_1Step                          
 *)
 
-InType2    == Sol \X IndexType1_1
+InType2    == Input \X Row \X IndexType1_1
 VarPType2  == Nat 
-VarCType2  == [j : Nat, v : Nat]
-VarRType2  == Sol
+VarCType2  == Nat
+VarRType2  == Row
 IndexType2 == Nat
 CtxIdType2 == Seq(Nat)
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 11 17:59:58 UYT 2020 by josedu
+\* Last modified Sat Nov 21 00:15:35 UYT 2020 by josedu
 \* Created Fri Aug 07 14:29:49 UYT 2020 by josedu
