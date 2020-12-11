@@ -1,3 +1,4 @@
 
-
-![](PCRFibPrimes1.png?raw=true)
+<p align="center">
+  <img width="70%" src="./PCRFibPrimes1.png">
+</p>
