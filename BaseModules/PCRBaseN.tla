@@ -35,17 +35,20 @@ VarP   == Var(VarPType)
 VarC   == Cartesian([t \in 1..cLen |-> Var(VarCType[t])])   
 \*Val(T)    == [v : T, r : Nat]                                   
 \*Var(D,T)  == [D -> Val(T) \union {Undef}]   
-\*Vars(D,S) == Cartesian([k \in 1..Len(S) |-> Var(D,S[k])])  
+\*Vars(D,S) == Cartesian([k \in 1..Len(S) |-> Var(D,S[k])]) 
+VarR   == Var(VarRType)
          
 \* Any PCR runs in a context. A context is a record with:
 Ctx == [in  : InType,          \* input
-        v_p : VarP,         \* producer history
-        v_c : VarC,        \* consumers histories, Var(VarCType1) \X ... \X Var(VarCTypeN) 
-        ret : VarRType,        \* reducer result
+        v_p : VarP,            \* producer history
+        v_c : VarC,            \* consumers histories, Var(VarCType1) \X ... \X Var(VarCTypeN) 
+        v_r : VarR,            \* reducer history
+        i_r : IndexType,       \* reducer index
         ste : State]           \* discrete state     
 
 ASSUME /\ Undef \notin Ctx
-       /\ Undef \notin [v : VarPType,  r : Nat]
+       /\ Undef \notin [v : VarPType, r : Nat]
+       /\ Undef \notin [v : VarRType, r : Nat]
        /\ \A t \in 1..cLen : Undef \notin VarCType[t]
 
 \* PCR context map. Root context is indexed at <<0>>. 
@@ -56,7 +59,9 @@ CtxIndex == {I \in CtxIdType : cm[I] # Undef}
 in(I)    == cm[I].in
 v_p(I)   == cm[I].v_p
 v_c(k,I) == cm[I].v_c[k]
-out(I)   == cm[I].ret 
+v_r(I)   == cm[I].v_r
+i_r(I)   == cm[I].i_r
+out(I)   == cm[I].v_r[cm[I].i_r].v
 state(I) == cm[I].ste
 in1(I)   == in(I)[1]
 in2(I)   == in(I)[2] 
@@ -67,6 +72,7 @@ wellDef(I)  == cm[I] # Undef
 off(I)      == cm[I].ste = "OFF"
 running(I)  == cm[I].ste = "RUN"
 finished(I) == cm[I].ste = "END"
+pending(I, i) == cm[I].v_r[i].r = 0
    
 \* Useful predicates on vars
 written(var, i) == var[i] # Undef
@@ -79,5 +85,5 @@ ExtR(r, s)    == [k \in DOMAIN r |-> IF k \in DOMAIN s THEN s[k] ELSE r[k]]
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Nov 20 23:09:53 UYT 2020 by josedu
+\* Last modified Tue Dec 15 18:45:10 UYT 2020 by josedu
 \* Created Wed Oct 21 14:41:25 UYT 2020 by josedu

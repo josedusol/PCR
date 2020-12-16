@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="122"/>
+    <intAttribute key="fpIndex" value="0"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="42"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -21,17 +21,17 @@
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
     <intAttribute key="modelBehaviorSpecType" value="1"/>
-    <stringAttribute key="modelBehaviorVars" value="T, W, map1, map2"/>
+    <stringAttribute key="modelBehaviorVars" value="T, W, cm1, cm2"/>
     <stringAttribute key="modelComments" value=""/>
-    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
     <listAttribute key="modelCorrectnessInvariants">
-        <listEntry value="0TypeInv"/>
+        <listEntry value="1TypeInv"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="0Correctness"/>
+        <listEntry value="1Correctness"/>
         <listEntry value="0PCRCountWords1!FairSpec"/>
-        <listEntry value="1PCRCountWords1!Spec"/>
+        <listEntry value="0PCRCountWords1!Spec"/>
         <listEntry value="0GTermination"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
@@ -39,25 +39,27 @@
     <stringAttribute key="modelParameterActionConstraint" value=""/>
     <listAttribute key="modelParameterConstants">
         <listEntry value="Word;;0..1;0;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterContraint" value="/\ T = &lt;&lt; &lt;&lt;0,1&gt;&gt;, &lt;&lt;0,0&gt;&gt; &gt;&gt;&#13;&#10;/\ W = &lt;&lt; 0 &gt;&gt;"/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="Nat;;NatMock3;0;0"/>
+        <listEntry value="Nat;;NatMock2;0;0"/>
         <listEntry value="BagOf;S:;UNION {[xs -&gt; NatMock2\{0}] : xs \in SUBSET S};0;0"/>
-        <listEntry value="CtxIdType2;;{&lt;&lt;0,i&gt;&gt; : i \in NatMock1 };0;0"/>
-        <listEntry value="CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
+        <listEntry value="CtxIdType2;;{&lt;&lt;i&gt;&gt; : i \in 1..Len(T) };0;0"/>
+        <listEntry value="CtxIdType1;;{&lt;&lt;&gt;&gt;};0;0"/>
         <listEntry value="LType;;UNION {[1..n -&gt; Word] : n \in NatMock1};0;0"/>
         <listEntry value="TType;;UNION {[1..n -&gt; LType] : n \in NatMock1};0;0"/>
         <listEntry value="WType;;LType;0;0"/>
-        <listEntry value="Seq;S:;UNION {[1..n -&gt; S] : n \in NatMock3};0;0"/>
-        <listEntry value="PCR1!CtxIdType1;;{&lt;&lt;0&gt;&gt;};0;0"/>
-        <listEntry value="NULL;;NULL;1;0"/>
-        <listEntry value="PCRCountWords1!NULL;;NULL;0;0"/>
+        <listEntry value="Seq;S:;UNION {[1..n -&gt; S] : n \in NatMock2};0;0"/>
+        <listEntry value="IndexType1;;IF T = &lt;&lt;&gt;&gt; THEN {1} ELSE 1..Len(T);0;0"/>
+        <listEntry value="IndexType2;;IF W = &lt;&lt;&gt;&gt; THEN {1} ELSE 1..Len(W);0;0"/>
+        <listEntry value="PCRCountWords1!CtxIdType1;;CtxIdType1;0;0"/>
+        <listEntry value="PCRCountWords1!PCR1!IndexType1;;IndexType1;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..2&#13;&#10;NatMock2 == 0..8&#13;&#10;NatMock3 == 0..4"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..2&#13;&#10;NatMock2 == 0..4"/>
     <intAttribute key="modelVersion" value="20191005"/>
-    <intAttribute key="numberOfWorkers" value="3"/>
+    <intAttribute key="numberOfWorkers" value="2"/>
     <booleanAttribute key="recover" value="false"/>
     <stringAttribute key="result.mail.address" value=""/>
     <intAttribute key="simuAril" value="-1"/>

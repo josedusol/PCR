@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="83"/>
+    <intAttribute key="fpIndex" value="51"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -23,12 +23,12 @@
     <intAttribute key="modelBehaviorSpecType" value="1"/>
     <stringAttribute key="modelBehaviorVars" value="N, cm1, im1"/>
     <stringAttribute key="modelComments" value=""/>
-    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="1TypeInv"/>
-        <listEntry value="1ProducerType"/>
-        <listEntry value="1IteratorType1"/>
-        <listEntry value="1IteratorType2"/>
+        <listEntry value="0ProducerType"/>
+        <listEntry value="0IteratorType1"/>
+        <listEntry value="0IteratorType2"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
@@ -47,8 +47,6 @@
         <listEntry value="InType1;;Input;0;0"/>
         <listEntry value="CtxIdType1;;{&lt;&lt;&gt;&gt;};0;0"/>
         <listEntry value="IndexType1;;0..MaxFN+1;0;0"/>
-        <listEntry value="PCR1!Val;T:;Val(T);0;0"/>
-        <listEntry value="PCR1!Vars;D:S:;[{1} -&gt; Var(D,S[1])];0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
     <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 6&#13;&#10;MaxFN == 13&#13;&#10;Input == 0..MaxN&#13;&#10;Val(T) == [v : T, r : Nat]&#13;&#10;Var(D,T) == [D -&gt; Val(T) \union {Undef}]"/>

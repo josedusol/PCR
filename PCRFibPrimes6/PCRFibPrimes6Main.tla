@@ -136,22 +136,23 @@ subst ==
      IF cm1[I] # Undef                                    \* For any well-defined PCR1 context with index I
      THEN [cm1[I] EXCEPT                                 
        !.v_p= [i \in DOMAIN @ |->                         \* For any producer var v_p[i]
-                 IF /\ @[i] # Undef                       \* If has not been read
-                    /\ @[i].r = 0
-                 THEN IF PCR2!finished(I \o <<i>>)        \*   and C_ret(I \o <i>) holds (PCR2 finished at I\o<i>)
+                 IF /\ @[i] # Undef
+                    /\ ~ PCR3!wellDef(I \o <<i>>)
+                 THEN IF /\ PCR2!wellDef(I \o <<i>>)      \*   and C_ret(I \o <i>) holds (PCR2 finished at I\o<i>)
+                         /\ PCR2!finished(I \o <<i>>)
                       THEN [v |-> PCR2!out(I \o <<i>>),   \*   then producer var gets result computed by PCR2
-                            r |-> 0]                        
-                      ELSE @[i]                           \*   else leave it as is.
-                 ELSE IF /\ @[i] # Undef                  \* else if has been read
-                         /\ @[i].r > 0                    
-                         /\ ~ PCR3!finished(I \o <<i>>)   \*   and C_ret(I \o <i>) does not hold (PCR3 didnt finished at I \o <i>)
-                      THEN [v |-> @[i].v, r |-> 0]        \*   then pretend is still unread.              
-                      ELSE @[i]                           \*   otherwise leave it as is.                                                
+                            r |-> @[i].r]                        
+                      ELSE @[i]
+                 ELSE IF /\ @[i] # Undef            
+                         /\ ~ PCR3!finished(I \o <<i>>)
+                      THEN [v |-> @[i].v, r |-> 0]        \*   else leave it as is.
+                      ELSE @[i]                                                  
               ], 
        !.v_c= [i \in DOMAIN @ |->                         \* For any consumer var v_c[i]
                  IF /\ @[i] = Undef                       \* for which corresponding v_p[i] has been written and read
                     /\ PCR1!written(cm1[I].v_p, i)        \* and C_ret(I \o <i>) holds (PCR2 finished at I \o <i>)
-                    /\ PCR1!read(cm1[I].v_p, i)         
+\*                    /\ PCR1!read(cm1[I].v_p, i)         
+                    /\ PCR3!wellDef(I \o <<i>>)
                     /\ PCR3!finished(I \o <<i>>)         
                  THEN [v |-> PCR3!out(I \o <<i>>),        \* then consumer var gets result computed by PCR3
                        r |-> 0]                 
@@ -166,6 +167,6 @@ PCRFibPrimes1 == INSTANCE PCRFibPrimes1Main
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:55:39 UYT 2020 by josedu
+\* Last modified Mon Dec 14 22:18:51 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

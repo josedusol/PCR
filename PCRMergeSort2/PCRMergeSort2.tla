@@ -6,23 +6,21 @@
    ---------------------------------------------------------------
      fun iterDivide, divide, isBase, base
      
-     fun iterDivide(L,i) = divide(L)[i]
+     fun iterDivide(X,i) = divide(X)[i]
      
-     fun divide(L) = [ L[1..Len(L)/2],
-                       L[(Len(L)/2)+1..Len(L)] ]
+     fun divide(X) = [ X[1..Len(X)/2],
+                       X[(Len(X)/2)+1..Len(X)] ]
      
-     fun subproblem(L,p,i) = if   isBase(L, p, i)
-                             then base(L, p, i)
-                             else MergeSort(L)
+     fun subproblem(X,p,i) = if   isBase(X, p, i)
+                             then base(X, p, i)
+                             else MergeSort2(X)
    
-     dep r(i-1) -> r(i) ???
-   
-     PCR MergeSort(L)
+     PCR MergeSort2(X)
        par
-         p = produce iterDivide L
+         p = produce iterDivide X
          forall p
-           c = consume subproblem L p
-         r = reduce merge [] c           \\ call merge PCR as a function
+           c = consume subproblem X p
+         r = reduce [] merge c           \\ call merge PCR as a function
    ---------------------------------------------------------------  
 *)
 
@@ -48,11 +46,11 @@ merge == INSTANCE PCRMerge WITH
 divide(x) == LET mid == Len(x) \div 2
              IN  << SubSeq(x, 1, mid),  SubSeq(x, mid+1, Len(x)) >>
 
-iterDivide(x, p, i) == divide(x)[i]
+iterDivide(x, p, I, i) == divide(x)[i]
 
-base(x, p, i) == p[i].v
+base(x, p, I, i) == p[i].v
 
-isBase(x, p, i) == Len(p[i].v) <= 1
+isBase(x, p, I, i) == Len(p[i].v) <= 1
 
 ----------------------------------------------------------------------------
 
@@ -76,10 +74,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> <<>>, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> <<>>,
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
                ste |-> "OFF"] 
 
 pre(x) == TRUE
@@ -98,7 +99,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> iterDivide(in(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> iterDivide(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
@@ -108,10 +109,10 @@ C_base(I) ==
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
     /\ ~ written(v_c(I), i)
-    /\ isBase(in(I), v_p(I), i)
+    /\ isBase(in(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
-         ![I].v_c[i]   = [v |-> base(in(I), v_p(I), i), r |-> 0] ]               
+         ![I].v_c[i]   = [v |-> base(in(I), v_p(I), I, i), r |-> 0] ]               
 \*    /\ PrintT("C_base" \o ToString(i) \o " : P" \o ToString(i) 
 \*                       \o " con v=" \o ToString(v_p(I)[i].v))
 
@@ -121,11 +122,11 @@ C_base(I) ==
 C_call(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
-    /\ ~ isBase(in(I), v_p(I), i)
+    /\ ~ wellDef(I \o <<i,2>>)
+    /\ ~ isBase(in(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT 
-         ![I].v_p[i].r = @ + 1,
-         ![I \o <<i>>] = initCtx(v_p(I)[i].v) ]              
+         ![I].v_p[i].r   = @ + 1,
+         ![I \o <<i,2>>] = initCtx(v_p(I)[i].v) ]              
 \*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
 \*                       \o " : in= " \o ToString(v_p(I)[i].v))                                                                                                                                            
 
@@ -134,13 +135,12 @@ C_call(I) ==
 *)
 C_ret(I) == 
   \E i \in iterator(I) :
-    /\ written(v_p(I), i)
-    /\ read(v_p(I), i)       
+    /\ written(v_p(I), i)  
     /\ ~ written(v_c(I), i)
-    /\ wellDef(I \o <<i>>)
-    /\ finished(I \o <<i>>)   
+    /\ wellDef(I \o <<i,2>>)
+    /\ finished(I \o <<i,2>>)   
     /\ cm' = [cm EXCEPT 
-         ![I].v_c[i] = [v |-> out(I \o <<i>>), r |-> 0]]  
+         ![I].v_c[i] = [v |-> out(I \o <<i,2>>), r |-> 0]]  
 \*    /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
 \*                      \o " : in= "  \o ToString(in(I \o <<i>>))    
 \*                      \o " : ret= " \o ToString(Out(I \o <<i>>)))                
@@ -152,30 +152,21 @@ C(I) == \/ C_base(I)
         \/ C_call(I) 
         \/ C_ret(I)
 
-
 (* 
    Reducer call action
 *)
 R_call(I) == 
   \E i \in iterator(I) :
-\*    /\ i > lowerBnd(I) => /\ merge!wellDef(I \o <<i-1>>)       \*  Intento de:  dep r(i-1) -> r(i)
-\*                          /\ merge!finished(I \o <<i-1>>)      \*   No sirve!
-
-\*    /\ i > lowerBnd(I) => /\ written(v_c(I), i-1)                \*  Otro intento de:  dep r(i-1) -> r(i)
-\*                          /\ read(v_c(I), i-1)                   \*  Funciona OK.
-    
-    /\ ~ \E j \in iterator(I) : /\ j # i 
-                                /\ written(v_c(I), j)       \* merge!wellDef(I \o <<j>>) 
-                                /\ ~ read(v_c(I), j)        \*  ~ merge!finished(I \o <<j>>)
-    
-                          
-    /\ written(v_c(I), i)
-    /\ ~ merge!wellDef(I \o <<i>>) 
-\*    /\ ~ read(v_c(I), i)
-\*    /\ cm'  = [cm  EXCEPT 
-\*         ![I].v_c[i].r = @ + 1] 
+    /\ written(v_c(I), i)    
+    /\ ~ merge!wellDef(I \o <<i,3>>)
+    /\ ~ \E j \in iterator(I) : 
+           /\ j # i 
+           /\ merge!wellDef(I \o <<j,3>>)
+           /\ pending(I, j)       
+    /\ cm'  = [cm  EXCEPT 
+         ![I].v_c[i].r = @ + 1] 
     /\ cm2' = [cm2 EXCEPT 
-         ![I \o <<i>>] = merge!initCtx(<<out(I), v_c(I)[i].v>>) ] 
+         ![I \o <<i,3>>] = merge!initCtx(<<out(I), v_c(I)[i].v>>) ] 
 \*    /\ PrintT("R_call" \o ToString(I \o <<i>>) 
 \*                       \o " : in= " \o ToString(merge!in(I \o <<i>>)'))  
   
@@ -183,30 +174,27 @@ R_call(I) ==
    Reducer ret action
 *)
 R_ret(I) == 
-  \E i \in iterator(I) :
-    /\ written(v_c(I), i)
-\*    /\ read(v_c(I), i)
-    /\ merge!wellDef(I \o <<i>>)
-    /\ merge!finished(I \o <<i>>)   
-    /\ LET newRet == merge!out(I \o <<i>>)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+  \E i \in iterator(I) :                         
+    /\ written(v_c(I), i)        
+    /\ merge!wellDef(I \o <<i,3>>)
+    /\ merge!finished(I \o <<i,3>>) 
+    /\ pending(I, i)
+    /\ LET newOut == merge!out(I \o <<i,3>>)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
-             ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                             
 \*          /\ IF endSte
-\*             THEN PrintT("R" \o ToString(I \o <<i>>) 
-\*                             \o " : in= "  \o ToString(in(I))    
-\*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE              
-\*    /\ PrintT("R_ret" \o ToString(I \o <<i>>) 
-\*                      \o " : in= "  \o ToString(merge!in(I \o <<i>>))    
-\*                      \o " : ret= " \o ToString(merge!out(I \o <<i>>)))   
+\*             THEN PrintT("R_ret" \o ToString(I \o <<i>>) 
+\*                                 \o " : in= "  \o ToString(in(I))    
+\*                                 \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE                
 
 (*
-   Consumer action
+   Reducer action
 *)
-R(I) == \/ R_call(I) /\ UNCHANGED cm
+R(I) == \/ R_call(I)
         \/ R_ret(I)  /\ UNCHANGED cm2 
 
 (* 
@@ -224,6 +212,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Fri Nov 20 19:49:09 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:59:51 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

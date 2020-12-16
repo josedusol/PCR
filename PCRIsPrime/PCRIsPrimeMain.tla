@@ -2,9 +2,6 @@
 
 (*
    Main module for PCR IsPrime.
-   
-   This is an experimental alternative version where Undef is handled
-   as a constant of the Spec.   
 *)
 
 EXTENDS PCRIsPrimeTypes, FiniteSets, TLC
@@ -78,5 +75,5 @@ GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:53:58 UYT 2020 by josedu
+\* Last modified Thu Dec 10 17:41:35 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

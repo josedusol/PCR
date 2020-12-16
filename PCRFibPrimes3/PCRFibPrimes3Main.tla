@@ -112,7 +112,8 @@ subst ==
      THEN [cm1[I] EXCEPT                                 
        !.v_p= [i \in DOMAIN @ |->                    \* For any producer var v_p[i]       
                  IF /\ @[i] # Undef                  \* If is written, read and C_ret(I \o <i>) 
-                    /\ @[i].r > 0                    \* does not hold (PCR2 didnt finished at I \o <i>)
+               \*   /\ @[i].r > 0                    \* does not hold (PCR2 didnt finished at I \o <i>)
+                    /\ PCR2!wellDef(I \o <<i>>)
                     /\ ~ PCR2!finished(I \o <<i>>)
                  THEN [v |-> @[i].v, r |-> 0]        \* then we pretend is still unread.
                  ELSE @[i]                           \* else leave it as is.
@@ -120,14 +121,15 @@ subst ==
        !.v_c= [i \in DOMAIN @ |->                    \* For any consumer var v_c[i]  
                  IF /\ @[i] = Undef
                     /\ PCR1!written(cm1[I].v_p, i)
-                    /\ PCR1!read(cm1[I].v_p, i)      \* for which corresponding v_p[i] has been read
+               \*    /\ PCR1!read(cm1[I].v_p, i)      \* for which corresponding v_p[i] has been read
+                    /\ PCR2!wellDef(I \o <<i>>)
                     /\ PCR2!finished(I \o <<i>>)     \* and C_ret(I \o <<i>>) holds (PCR2 finished at I \o <i>)                   
                  THEN [v |-> PCR2!out(I \o <<i>>),   \* then consumer var gets result computed by PCR2
                        r |-> 0]                    
                  ELSE @[i]                           \* else leave it as is.
               ]              
           ]
-     ELSE Undef] 
+     ELSE Undef]
               
 PCRFibPrimes1 == INSTANCE PCRFibPrimes1Main
   WITH cm1 <- subst,
@@ -135,6 +137,6 @@ PCRFibPrimes1 == INSTANCE PCRFibPrimes1Main
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:58:44 UYT 2020 by josedu
+\* Last modified Mon Dec 14 19:22:24 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

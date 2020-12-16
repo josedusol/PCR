@@ -6,7 +6,7 @@
    ---------------------------------------------------------------------
      fun init, until, getLast, nextItem, solve, update  
         
-     fun until(X, y, y_i) = y_i > X.n
+     fun until(X, i, y, y_i) = y_i > X.n
         
      PCR KnapSack01_4(X):
        par
@@ -22,7 +22,7 @@
          p = produce id X S k
          forall p
            c = consume solve X S k p
-         r = reduce update X S c   
+         r = reduce update S X S c   
    ---------------------------------------------------------------------
 *)
 
@@ -45,9 +45,9 @@ KnapSack01Step == INSTANCE PCRKnapSack01_4Step WITH
    Basic functions                 
 *)  
 
-zeroTable(n,m) == [c \in {<<i, j>> : i \in 0..n, j \in 0..m } |-> 0]
+zeroTable(n, m) == [c \in {<<i, j>> : i \in 0..n, j \in 0..m } |-> 0]
 
-init(x, p, i) == zeroTable(x.n, x.C) 
+init(x, p, I, i) == zeroTable(x.n, x.C) 
 
 backtrack(x, c1, I, i_) == 
   LET table == c1[i_].v
@@ -61,10 +61,10 @@ backtrack(x, c1, I, i_) ==
          ELSE <<>>    
   IN f[N,C]
  
-retSol(x, o, c1, c2, i) == [items  |-> c2[i].v, 
-                            profit |-> c1[i].v[<<x.n, x.C>>] ]
+retSol(x, o, c1, c2, I, i) == [items  |-> c2[i].v, 
+                               profit |-> c1[i].v[<<x.n, x.C>>] ]
 
-until(x, y, y_i) == y_i > x.n
+until(x, I, i, y, y_i) == y_i > x.n
 
 ----------------------------------------------------------------------------
 
@@ -101,12 +101,16 @@ ItMap     == [CtxIdType1_1 -> [v : [IndexType1_1 -> VarC1Type1 \union {Undef}],
    Initial conditions        
 *)
 
+r0(x) == [v |-> [items |-> <<>>, profit |-> 0], 
+          r |-> 0]
+
 initCtx(x) == [in   |-> x,
                v_p  |-> [i \in IndexType |-> Undef],
                v_c1 |-> [i \in IndexType |-> Undef],
                v_c2 |-> [i \in IndexType |-> Undef],
-               ret  |-> [items |-> <<>>, profit |-> 0],
-               ste  |-> "OFF"] 
+               v_r  |-> [i \in IndexType |-> r0(x)],             
+               i_r  |-> lowerBnd(x),
+               ste  |-> "OFF"]
 
 pre(x) == Len(x.w) = x.n /\ Len(x.v) = x.n
 
@@ -124,7 +128,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> init(in(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> init(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
@@ -133,7 +137,7 @@ P(I) ==
 C1_start(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
+    /\ ym[I \o <<i>>] = Undef
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1]
     /\ ym' = [ym EXCEPT 
@@ -151,8 +155,8 @@ C1_start(I) ==
 C1_call(I) == 
   \E i \in iterator(I):
     /\ written(v_p(I), i)
-    /\ read(v_p(I), i)
-    /\ ~ until(in(I), y_v(I \o <<i>>), y_i(I \o <<i>>))
+    /\ ym[I \o <<i>>] # Undef
+    /\ ~ until(in(I), I, i, y_v(I \o <<i>>), y_i(I \o <<i>>))
     /\ ~ KnapSack01Step!wellDef(I \o <<i, y_i(I \o <<i>>)>>)
     /\ cm2' = [cm2 EXCEPT 
          ![I \o <<i, y_i(I \o <<i>>)>>] = 
@@ -166,8 +170,8 @@ C1_call(I) ==
 C1_ret(I) == 
   \E i \in iterator(I) :
      /\ written(v_p(I), i)
-     /\ read(v_p(I), i)
-     /\ ~ until(in(I), y_v(I \o <<i>>), y_i(I \o <<i>>))
+     /\ ym[I \o <<i>>] # Undef
+     /\ ~ until(in(I), I, i, y_v(I \o <<i>>), y_i(I \o <<i>>))
      /\ KnapSack01Step!wellDef(I \o <<i, y_i(I \o <<i>>)>>) 
      /\ KnapSack01Step!finished(I \o <<i, y_i(I \o <<i>>)>>)   
      /\ ym' = [ym EXCEPT 
@@ -183,9 +187,9 @@ C1_ret(I) ==
 C1_end(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ read(v_p(I), i)
+    /\ ym[I \o <<i>>] # Undef
     /\ ~ written(v_c1(I), i)
-    /\ until(in(I), y_v(I \o <<i>>), y_i(I \o <<i>>))
+    /\ until(in(I), I, i, y_v(I \o <<i>>), y_i(I \o <<i>>))
     /\ cm' = [cm EXCEPT 
          ![I].v_c1[i] = [v |-> y_last(I \o <<i>>), r |-> 0] ]           
 \*    /\ PrintT("C1_end" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
@@ -217,24 +221,25 @@ C2(I) ==
    
    FXML:  ...
 
-   PCR:   r = reduce conquer [] c
+   PCR:   c = reduce retSol [] c1 c2
 *)
 R(I) == 
   \E i \in iterator(I) :
     /\ written(v_c2(I), i)
-    /\ ~ read(v_c2(I), i)
-    /\ LET newRet == retSol(in(I), out(I), v_c1(I), v_c2(I), i)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ pending(I, i)
+    /\ LET newOut == retSol(in(I), out(I), v_c1(I), v_c2(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret       = newRet,
-             ![I].v_c1[i].r = @ + 1,                         \* ???
+             ![I].v_c1[i].r = @ + 1,   \* ???
              ![I].v_c2[i].r = @ + 1,
-             ![I].ste       = IF endSte THEN "END" ELSE @]   
+             ![I].v_r[i]    = [v |-> newOut, r |-> 1],
+             ![I].i_r       = i,
+             ![I].ste       = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE             
+\*             ELSE TRUE
 
 (* 
    PCR KnapSack01_4 step at index I 
@@ -252,6 +257,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 25 23:36:50 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:58:47 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -2,6 +2,8 @@
 
 (*
    Main module for PCR MergeSort2.
+   
+   Note: using "I o i o k" indexing scheme.
 *)
 
 EXTENDS PCRMergeSort2Types, TLC
@@ -90,6 +92,6 @@ GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 18 14:53:16 UYT 2020 by josedu
+\* Last modified Sun Dec 13 19:34:47 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

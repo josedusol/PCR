@@ -8,14 +8,14 @@
      
      fun iterDivide(X,Y,p,i) = divide(X,Y)[i]
      
-     fun divide(X,Y) = [ [X1,Y2],
-                         [X2,Y2]  ]
+     fun divide(X,Y) = [ [X1,Y1],
+                         [X2,Y2] ]
      
      fun subproblem(X,Y,p,i) = if   isBase(X,Y,p,i)
                                then base(X,Y,p,i)
                                else Merge(X,Y)
    
-     fun conquer(r,z) = r ++ z
+     fun conquer(o, c, i) = c[1] ++ c[2]
      
      dep c -> r(i)
    
@@ -24,7 +24,7 @@
          p = produce iterDivide X Y
          forall p
            c = consume subproblem X Y p
-         r = reduce conquer [] c
+         r = reduce [] conquer c
    ---------------------------------------------------------------  
 *)
 
@@ -51,13 +51,13 @@ binarySearch(seq, e) ==
                                      IN  IF p > -1 THEN p + m ELSE m - p
   IN f[seq] 
 
-isBaseCase(x1, x2) == Len(x1) <= 1
+isBaseCase(x1, x2) == Len(x1) <= 1 /\ Len(x2) <= 1
 
 divide(x1, x2) == 
   LET X == IF Len(x1) >= Len(x2) THEN x1 ELSE x2      \* if necessary, swap to make Len(X) <= Len(Y)
       Y == IF Len(x1) >= Len(x2) THEN x2 ELSE x1      \*
   IN IF isBaseCase(X, Y) 
-     THEN << <<X,Y>>, <<<<>>,<<>>>> >>
+     THEN << <<X,Y>> >>
      ELSE LET X_m == (Len(X) + 1) \div 2                          \* 1. Split X in two parts X1 and X2
               X1  == SubSeq(X, 1, X_m) 
               X2  == SubSeq(X, X_m+1, Len(X)) 
@@ -71,9 +71,9 @@ divide(x1, x2) ==
                        [] OTHER        -> SubSeq(Y, Y_m, Len(Y))   
           IN  << <<X1,Y1>>, <<X2,Y2>> >>                          \* Produce two sub-merges
 
-iterDivide(x1, x2, p, i) == divide(x1, x2)[i]
+iterDivide(x, p, I, i) == divide(x[1], x[2])[i]
 
-base(x1, x2, p, i) == 
+base(x, p, I, i) == 
   LET X == p[i].v[1]  
       Y == p[i].v[2]
   IN IF Len(Y) = 0 
@@ -82,12 +82,12 @@ base(x1, x2, p, i) ==
           THEN <<X[1],Y[1]>>  
           ELSE <<Y[1],X[1]>> 
 
-isBase(x1, x2, p, i) == 
-  IF Len(x1) >= Len(x2) 
-  THEN isBaseCase(x1, x2)
-  ELSE isBaseCase(x2, x1)
+isBase(x, p, I, i) == isBaseCase(p[i].v[1], p[i].v[2])
 
-conquer(r, c, i) == c[1].v \o c[2].v
+conquer(x, o, c, I, i) == 
+  IF isBaseCase(x[1], x[2]) 
+  THEN c[1].v
+  ELSE c[1].v \o c[2].v
 
 ----------------------------------------------------------------------------
 
@@ -111,10 +111,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> <<>>, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> <<>>,
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
                ste |-> "OFF"] 
 
 pre(x) == isOrdered(x[1]) /\ isOrdered(x[2])
@@ -124,16 +127,16 @@ pre(x) == isOrdered(x[1]) /\ isOrdered(x[2])
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(divide(B))
-            p[j] = divide L             
+   FXML:  forall i \in 1..Len(divide(X,Y))
+            p[j] = iterDivide X Y            
    
-   PCR:   p = produce divide L                              
+   PCR:   p = produce iterDivide X Y                              
 *)
 P(I) == 
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> iterDivide(in1(I), in2(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> iterDivide(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
@@ -143,10 +146,10 @@ C_base(I) ==
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
     /\ ~ written(v_c(I), i)
-    /\ isBase(in1(I), in2(I), v_p(I), i)
+    /\ isBase(in(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
-         ![I].v_c[i]   = [v |-> base(in1(I), in2(I), v_p(I), i), r |-> 0] ]               
+         ![I].v_c[i]   = [v |-> base(in(I), v_p(I), I, i), r |-> 0] ]               
 \*    /\ PrintT("C_base" \o ToString(i) \o " : P" \o ToString(i) 
 \*                       \o " con v=" \o ToString(v_p(I)[i].v))
 
@@ -156,11 +159,11 @@ C_base(I) ==
 C_call(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
-    /\ ~ isBase(in1(I), in2(I), v_p(I), i)
+    /\ ~ wellDef(I \o <<i,2>>)
+    /\ ~ isBase(in(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT 
-         ![I].v_p[i].r = @ + 1,
-         ![I \o <<i>>] = initCtx(v_p(I)[i].v) ]              
+         ![I].v_p[i].r   = @ + 1,
+         ![I \o <<i,2>>] = initCtx(v_p(I)[i].v) ]              
 \*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
 \*                       \o " : in= " \o ToString(v_p(I)[i].v))                                                                                                                                            
 
@@ -169,13 +172,12 @@ C_call(I) ==
 *)
 C_ret(I) == 
   \E i \in iterator(I) :
-     /\ written(v_p(I), i)
-     /\ read(v_p(I), i)       
+     /\ written(v_p(I), i)   
      /\ ~ written(v_c(I), i)
-     /\ wellDef(I \o <<i>>)
-     /\ finished(I \o <<i>>)   
+     /\ wellDef(I \o <<i,2>>)
+     /\ finished(I \o <<i,2>>)   
      /\ cm' = [cm EXCEPT 
-          ![I].v_c[i] = [v |-> out(I \o <<i>>), r |-> 0]]  
+          ![I].v_c[i] = [v |-> out(I \o <<i,2>>), r |-> 0]]  
 \*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(in(I \o <<i>>))    
 \*                       \o " : ret= " \o ToString(Out(I \o <<i>>)))                
@@ -185,30 +187,31 @@ C_ret(I) ==
 *)
 C(I) == \/ C_base(I)
         \/ C_call(I) 
-        \/ C_ret(I)
-  
+        \/ C_ret(I)           
+
 (* 
    Reducer action
    
    FXML:  ...
 
-   PCR:   r = reduce conquer [] c
+   PCR:   c = reduce [] conquer c
 *)
 R(I) == 
   \E i \in iterator(I) :
     /\ \A j \in iterator(I) : written(v_c(I), j)         \* dep c -> r(i)
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == conquer(out(I), v_c(I), i)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ pending(I, i)
+    /\ LET newOut == conquer(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
              ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE              
+\*             ELSE TRUE
 
 (* 
    PCR Merge step at index I 
@@ -224,6 +227,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 23 23:35:25 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:59:25 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

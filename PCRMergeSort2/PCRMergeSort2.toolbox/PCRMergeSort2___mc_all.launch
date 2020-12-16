@@ -35,14 +35,14 @@
     <stringAttribute key="modelExpressionEval" value=""/>
     <stringAttribute key="modelParameterActionConstraint" value=""/>
     <listAttribute key="modelParameterConstants">
-        <listEntry value="Elem;;0..3;0;0"/>
+        <listEntry value="Elem;;0..2;0;0"/>
         <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
         <listEntry value="InType1;;UNION {[1..n -&gt; Elem] : n \in 0..3};0;0"/>
         <listEntry value="Nat;;0..4;0;0"/>
-        <listEntry value="CtxIdType1;;UNION {[1..n -&gt; {1,2}] : n \in 0..2};0;0"/>
+        <listEntry value="CtxIdType1;;UNION {[1..n -&gt; {1,2}] : n \in 0..4};0;0"/>
         <listEntry value="IndexType1;;{1,2};0;0"/>
         <listEntry value="CtxIdType2;;UNION {[1..n -&gt; {1,2}] : n \in 0..3};0;0"/>
         <listEntry value="IndexType2;;{1,2};0;0"/>

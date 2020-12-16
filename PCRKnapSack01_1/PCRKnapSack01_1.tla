@@ -6,7 +6,7 @@
    ---------------------------------------------------------------------
      fun init, until, getLast, id, solve, update 
           
-     fun until(X, y, i) = i > X.n
+     fun until(X, i, y, y_i) = y_i > X.n
         
      PCR KnapSack01_1(X):
        par
@@ -44,10 +44,10 @@ KnapSack01Step == INSTANCE PCRKnapSack01_1Step WITH
 *)
 
 init(x, p, I, i) == [j \in 1..x.C+1 |-> 0]
- 
-getLast(x, r, c, I, i) == c[i].v[x.C + 1]   
 
-until(x, y, i) == i > x.n  
+until(x, I, i, y, y_i) == y_i > x.n  
+ 
+getLast(x, o, c, I, i) == c[i].v[x.C + 1]   
 
 ----------------------------------------------------------------------------
 
@@ -84,10 +84,13 @@ ItMap     == [CtxIdType1_1 -> [v : [IndexType1_1 -> VarCType1 \union {Undef}],
    Initial conditions        
 *)
 
+r0(x) == [v |-> 0, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> 0,
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
                ste |-> "OFF"] 
 
 pre(x) == Len(x.w) = x.n /\ Len(x.v) = x.n
@@ -115,7 +118,7 @@ P(I) ==
 C_start(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
+    /\ ym[I \o <<i>>] = Undef
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1]
     /\ ym' = [ym EXCEPT 
@@ -133,8 +136,8 @@ C_start(I) ==
 C_call(I) == 
   \E i \in iterator(I):
     /\ written(v_p(I), i)
-    /\ read(v_p(I), i)
-    /\ ~ until(in(I), y_v(I \o <<i>>), y_i(I \o <<i>>))
+    /\ ym[I \o <<i>>] # Undef
+    /\ ~ until(in(I), I, i, y_v(I \o <<i>>), y_i(I \o <<i>>))
     /\ ~ KnapSack01Step!wellDef(I \o <<i, y_i(I \o <<i>>)>>)
     /\ cm2' = [cm2 EXCEPT 
          ![I \o <<i, y_i(I \o <<i>>)>>] = 
@@ -148,8 +151,8 @@ C_call(I) ==
 C_ret(I) == 
   \E i \in iterator(I) :
      /\ written(v_p(I), i)
-     /\ read(v_p(I), i)
-     /\ ~ until(in(I), y_v(I \o <<i>>), y_i(I \o <<i>>))
+     /\ ym[I \o <<i>>] # Undef
+     /\ ~ until(in(I), I, i, y_v(I \o <<i>>), y_i(I \o <<i>>))
      /\ KnapSack01Step!wellDef(I \o <<i, y_i(I \o <<i>>)>>) 
      /\ KnapSack01Step!finished(I \o <<i, y_i(I \o <<i>>)>>)   
      /\ ym' = [ym EXCEPT 
@@ -165,9 +168,9 @@ C_ret(I) ==
 C_end(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ read(v_p(I), i)
+    /\ ym[I \o <<i>>] # Undef
     /\ ~ written(v_c(I), i)
-    /\ until(in(I), y_v(I \o <<i>>), y_i(I \o <<i>>))
+    /\ until(in(I), I, i, y_v(I \o <<i>>), y_i(I \o <<i>>))
     /\ cm' = [cm EXCEPT 
          ![I].v_c[i] = [v |-> y_last(I \o <<i>>), r |-> 0] ]           
 \*    /\ PrintT("C_end" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
@@ -186,23 +189,24 @@ C(I) == \/ C_start(I) /\ UNCHANGED cm2
    
    FXML:  ...
 
-   PCR:   r = reduce conquer [] c
+   PCR:   c = reduce getLast 0 X c
 *)
 R(I) == 
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == getLast(in(I), out(I), v_c(I), I, i)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ pending(I, i)
+    /\ LET newOut == getLast(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]   
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE             
+\*             ELSE TRUE
 
 (* 
    PCR KnapSack01_1 step at index I 
@@ -219,6 +223,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Nov 24 19:26:19 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:57:25 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

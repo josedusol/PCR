@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="18"/>
+    <intAttribute key="fpIndex" value="128"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="50"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -53,7 +53,7 @@
         <listEntry value="CtxIdType1_1;;{&lt;&lt;0&gt;&gt;};0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="N == 3&#13;&#10;Items == 0..N&#13;&#10;NatMock2 == 0..N&#13;&#10;MaxW == 2&#13;&#10;MaxV == 3&#13;&#10;MaxC == 2&#13;&#10;Weights == 0..MaxW&#13;&#10;Values == 0..MaxV&#13;&#10;Capacity == 0..MaxC&#13;&#10;MaxProfit == N*MaxV&#13;&#10;Profits == 0..MaxProfit"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 2&#13;&#10;Items == 0..N&#13;&#10;NatMock2 == 0..N&#13;&#10;MaxW == 2&#13;&#10;MaxV == 2&#13;&#10;MaxC == 2&#13;&#10;Weights == 0..MaxW&#13;&#10;Values == 0..MaxV&#13;&#10;Capacity == 0..MaxC&#13;&#10;MaxProfit == N*MaxV&#13;&#10;Profits == 0..MaxProfit"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="3"/>
     <booleanAttribute key="recover" value="false"/>

@@ -91,13 +91,13 @@ divide(x) ==
         ELSE <<>> 
   IN F[1]    
 
-elem(x, p, i) == SetToSeq(x)[i]
+elem(x, p, I, i) == SetToSeq(x)[i]
 
 complete(c) == \A r \in DOMAIN c : c[r] # 0
 
-extend(x, p, i) == IF complete(p[i].v) THEN { p[i].v } ELSE ToSet(divide(p[i].v))
+extend(x, p, I, i) == IF complete(p[i].v) THEN { p[i].v } ELSE ToSet(divide(p[i].v))
 
-union(r, z) == r \union z
+union(x, o, c, I, i) == o \union c[i].v
 
 ----------------------------------------------------------------------------
 
@@ -122,10 +122,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> {}, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> { },
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
                ste |-> "OFF"] 
 
 pre(x) == TRUE
@@ -144,7 +147,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> elem(in(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> elem(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (* 
@@ -158,11 +161,10 @@ P(I) ==
 C(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-\*    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1, 
-         ![I].v_c[i]   = [v |-> extend(in(I), v_p(I), i), r |-> 0]]                                          
+         ![I].v_c[i]   = [v |-> extend(in(I), v_p(I), I, i), r |-> 0]]                                          
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))  
   
@@ -171,26 +173,27 @@ C(I) ==
    
    FXML:  ...
 
-   PCR:   r = reduce conquer [] c
+   PCR:   c = reduce eureka union {} c 
 *)
 R(I) == 
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == union(out(I), v_c(I)[i].v)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ pending(I, i)
+    /\ LET newOut == union(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]    
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE             
+\*             ELSE TRUE
 
 (* 
-   PCR NQueensFirstIt step at index I 
+   PCR NQueensFirstITStep step at index I 
 *)
 Next(I) == 
   \/ /\ state(I) = "OFF" 
@@ -203,6 +206,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:27:53 UYT 2020 by josedu
+\* Last modified Tue Dec 15 21:01:14 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

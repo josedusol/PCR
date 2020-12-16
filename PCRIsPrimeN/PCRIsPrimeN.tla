@@ -34,11 +34,11 @@ EXTENDS PCRIsPrimeNTypes, PCRBaseN, TLC
    Basic functions                     
 *)
 
-divisors(x, p, i) == i
+divisors(x, p, I, i) == i
    
-notDivides(x, p, i) == ~ (x % p[i].v = 0)
+notDivides(x, p, I, i) == ~ (x % p[i].v = 0)
 
-and(r, z) == r /\ z 
+and(x, o, c, I, i) == o /\ c[i].v 
 
 ----------------------------------------------------------------------------
 
@@ -61,12 +61,15 @@ INSTANCE PCRIterationSpaceN WITH
 (* 
    Initial conditions        
 *)
-                      
+
+r0(x) == [v |-> x > 1, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> <<[i \in IndexType |-> Undef]>>,
-               ret |-> x > 1,
-               ste |-> "OFF"]                      
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
+               ste |-> "OFF"]                    
      
 pre(x) == TRUE
                 
@@ -84,7 +87,7 @@ P(I) ==
   \E i \in iterator(I) :
     /\ ~ written(v_p(I), i)
     /\ cm' = [cm EXCEPT 
-         ![I].v_p[i] = [v |-> divisors(in(I), v_p(I), i), r |-> 0]]         
+         ![I].v_p[i] = [v |-> divisors(in(I), v_p(I), I, i), r |-> 0]]         
 \*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))  
 
 (* 
@@ -101,7 +104,7 @@ C(I) ==
     /\ ~ written(v_c(1,I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r  = @ + 1,
-         ![I].v_c[1][i] = [v |-> notDivides(in(I), v_p(I), i), r |-> 0] ]               
+         ![I].v_c[1][i] = [v |-> notDivides(in(I), v_p(I), I, i), r |-> 0] ]               
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))       
 
@@ -110,23 +113,24 @@ C(I) ==
    
    FXML:  ...
 
-   PCR:   r = reduce and (N > 1) c
+   PCR:   c = reduce and (N > 1) c
 *)
 R(I) == 
   \E i \in iterator(I) :
-    /\ written(v_c(1,I), i)    
-    /\ ~ read(v_c(1,I), i)   
-    /\ LET newRet == and(out(I), v_c(1,I)[i].v)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ written(v_c(1,I), i)
+    /\ pending(I, i)
+    /\ LET newOut == and(in(I), out(I), v_c(1,I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret         = newRet,
              ![I].v_c[1][i].r = @ + 1,
-             ![I].ste         = IF endSte THEN "END" ELSE @]                                                                               
+             ![I].v_r[i]      = [v |-> newOut, r |-> 1],
+             ![I].i_r         = i,
+             ![I].ste         = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE       
+\*             ELSE TRUE  
 
 (* 
    PCR IsPrime step at index I 
@@ -142,6 +146,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 18 21:02:09 UYT 2020 by josedu
+\* Last modified Tue Dec 15 18:52:15 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

@@ -72,8 +72,10 @@ TypeInv == /\ N \in In1Type1
 Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(N) )
   
 Termination == <> PCR1!finished(<<>>) 
+
+GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
   
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:52:26 UYT 2020 by josedu
+\* Last modified Mon Dec 14 19:28:11 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

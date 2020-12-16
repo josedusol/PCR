@@ -32,9 +32,9 @@ VARIABLES cm2, im
    Basic functions                          
 *)
 
-fib(x, p, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
+fib(x, p, I, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
 
-sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)  
+sum(x, o, c, I, i) == o + (IF c[i].v THEN 1 ELSE 0)  
 
 isPrime == INSTANCE PCRIsPrimeN WITH
   InType    <- InType2,
@@ -67,11 +67,14 @@ INSTANCE PCRIterationSpaceNSeq WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> 0, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> <<[i \in IndexType |-> Undef]>>,
-               ret |-> 0,
-               ste |-> "OFF"]
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
+               ste |-> "OFF"]   
 
 pre(x) == TRUE
 
@@ -88,7 +91,7 @@ pre(x) == TRUE
 P(I) == 
   /\ i_p(I) \in iterator(I)
   /\ cm' = [cm EXCEPT 
-       ![I].v_p[i_p(I)] = [v |-> fib(in(I), v_p(I), i_p(I)), r |-> 0] ]
+       ![I].v_p[i_p(I)] = [v |-> fib(in(I), v_p(I), I, i_p(I)), r |-> 0] ]
   /\ im' = [im EXCEPT 
        ![I] = step(i_p(I))]   
 \*  /\ PrintT("P" \o ToString(I \o <<i_p(I)>>) \o " : " \o ToString(v_p(I)[i_p(I)].v'))
@@ -99,7 +102,7 @@ P(I) ==
 C_call(I) == 
   \E i \in iterator(I):
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
+    /\ ~ isPrime!wellDef(I \o <<i>>)
     /\ cm'  = [cm  EXCEPT 
          ![I].v_p[i].r = @ + 1] 
     /\ cm2' = [cm2 EXCEPT 
@@ -112,8 +115,7 @@ C_call(I) ==
 *)
 C_ret(I) == 
   \E i \in iterator(I) :
-    /\ written(v_p(I), i)
-    /\ read(v_p(I), i)       
+    /\ written(v_p(I), i)    
     /\ ~ written(v_c(1,I), i)
     /\ isPrime!wellDef(I \o <<i>>) 
     /\ isPrime!finished(I \o <<i>>)   
@@ -132,28 +134,29 @@ C(I) == \/ C_call(I) /\ UNCHANGED im
 (* 
    Reducer action
    
-   FXML:  ... 
+   FXML:  ...
 
-   PCR:   r = reduce sum 0 c
+   PCR:   c = reduce sum 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
-    /\ written(v_c(1,I), i)  
-    /\ ~ read(v_c(1,I), i)
-    /\ LET newRet == sum(out(I), v_c(1,I)[i].v)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ written(v_c(1,I), i)
+    /\ pending(I, i)
+    /\ LET newOut == sum(in(I), out(I), v_c(1,I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret         = newRet,
              ![I].v_c[1][i].r = @ + 1,
-             ![I].ste         = IF endSte THEN "END" ELSE @] 
+             ![I].v_r[i]      = [v |-> newOut, r |-> 1],
+             ![I].i_r         = i,
+             ![I].ste         = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
-\*             THEN PrintT("FP2 R" \o ToString(I \o <<i>>) 
-\*                                 \o " : in= "  \o ToString(in(I))    
-\*                                 \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE 
+\*             THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                             \o " : in= "  \o ToString(in(I))    
+\*                             \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE  
 
 (* 
-   PCR FibPrimes2 step at index I 
+   PCR FibPrimes2N step at index I 
 *)
 Next(I) == 
   \/ /\ state(I) = "OFF" 
@@ -167,6 +170,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 18 21:08:34 UYT 2020 by josedu
+\* Last modified Tue Dec 15 19:01:05 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

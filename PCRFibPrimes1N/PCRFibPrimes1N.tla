@@ -45,7 +45,7 @@ isPrime(x, p, i) ==
         ELSE ~ (n % d = 0) /\ f[d-1]
   IN f[Sqrt(n)]
 
-sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)   
+sum(x, o, c, I, i) == o + (IF c[i].v THEN 1 ELSE 0)   
 
 ----------------------------------------------------------------------------         
 
@@ -69,11 +69,14 @@ INSTANCE PCRIterationSpaceNSeq WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> 0, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> <<[i \in IndexType |-> Undef]>>,
-               ret |-> 0,
-               ste |-> "OFF"]
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
+               ste |-> "OFF"] 
 
 pre(x) == TRUE 
 
@@ -112,30 +115,31 @@ C(I) ==
          ![I].v_p[i].r  = @ + 1, 
          ![I].v_c[1][i] = [v |-> isPrime(in(I), v_p(I), i), r |-> 0] ]                                            
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
-\*                  \o " con v=" \o ToString(v_p(I)[i].v))    
- 
+\*                  \o " con v=" \o ToString(v_p(I)[i].v))       
+
 (* 
    Reducer action
    
    FXML:  ...
-   
-   PCR:   r = reduce sum 0 c
+
+   PCR:   c = reduce sum 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
     /\ written(v_c(1, I), i)
-    /\ ~ read(v_c(1, I), i)
-    /\ LET newRet == sum(out(I), v_c(1, I)[i].v)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ pending(I, i)
+    /\ LET newOut == sum(in(I), out(I), v_c(1, I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret         = newRet,
              ![I].v_c[1][i].r = @ + 1,
+             ![I].v_r[i]      = [v |-> newOut, r |-> 1],
+             ![I].i_r         = i,
              ![I].ste         = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
-\*             THEN PrintT("FP1 R" \o ToString(I \o <<i>>) 
-\*                                 \o " : in= "  \o ToString(in(I))    
-\*                                 \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE     
+\*             THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                             \o " : in= "  \o ToString(in(I))    
+\*                             \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE 
 
 (* 
    PCR FibPrimes1N step at index I 
@@ -152,6 +156,6 @@ Next(I) ==
         
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 18 18:55:17 UYT 2020 by josedu
+\* Last modified Tue Dec 15 18:44:10 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

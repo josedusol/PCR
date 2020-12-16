@@ -48,9 +48,9 @@ NQueensStep == INSTANCE PCRNQueensFirstITStep WITH
    Basic functions                 
 *)
 
-id(x, p, i) == x
+id(x, p, I, i) == x
 
-ret(r, z) == z
+ret(x, o, c, I, i) == c[i].v
 
 \* complete(x) == \A r \in DOMAIN x : x[r] # 0
 \* found(y, i) == y[i] = {} \/ \E c \in y[i] : complete(c)
@@ -91,10 +91,13 @@ ItMap     == [CtxIdType1_1 -> [v : [IndexType1_1 -> VarCType1 \union {Undef}],
    Initial conditions        
 *)
 
+r0(x) == [v |-> {}, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> { },
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
                ste |-> "OFF"] 
 
 pre(x) == \A r \in DOMAIN x : x[r] = 0
@@ -113,7 +116,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> id(in(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> id(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
@@ -122,7 +125,7 @@ P(I) ==
 C_start(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
+    /\ ym[I \o <<i>>] = Undef
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1]
     /\ ym' = [ym EXCEPT 
@@ -140,7 +143,7 @@ C_start(I) ==
 C_call(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ read(v_p(I), i)
+    /\ ym[I \o <<i>>] # Undef
     /\ ~ found(y_v(I \o <<i>>), y_i(I \o <<i>>))
     /\ ~ NQueensStep!wellDef(I \o <<i, y_i(I \o <<i>>)>>)
     /\ cm2' = [cm2 EXCEPT 
@@ -155,7 +158,7 @@ C_call(I) ==
 C_ret(I) == 
   \E i \in iterator(I) :
      /\ written(v_p(I), i)
-     /\ read(v_p(I), i)     
+     /\ ym[I \o <<i>>] # Undef    
      /\ ~ found(y_v(I \o <<i>>), y_i(I \o <<i>>))
      /\ NQueensStep!wellDef(I \o <<i, y_i(I \o <<i>>)>>) 
      /\ NQueensStep!finished(I \o <<i, y_i(I \o <<i>>)>>)   
@@ -172,8 +175,8 @@ C_ret(I) ==
 C_end(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
+    /\ ym[I \o <<i>>] # Undef  
     /\ found(y_v(I \o <<i>>), y_i(I \o <<i>>))
     /\ cm' = [cm EXCEPT 
          ![I].v_c[i] = [v |-> y_last(I \o <<i>>), r |-> 0] ]               
@@ -193,26 +196,27 @@ C(I) == \/ C_start(I) /\ UNCHANGED cm2
    
    FXML:  ...
 
-   PCR:   r = reduce conquer [] c
+   PCR:   c = reduce ret {} c
 *)
 R(I) == 
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == ret(out(I), v_c(I)[i].v)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ pending(I, i)
+    /\ LET newOut == ret(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]     
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE             
+\*             ELSE TRUE
 
 (* 
-   PCR NQueensFirstIt step at index I 
+   PCR NQueensFirstIT step at index I 
 *)
 Next(I) == 
   \/ /\ state(I) = "OFF" 
@@ -226,6 +230,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 11 18:36:09 UYT 2020 by josedu
+\* Last modified Tue Dec 15 21:01:06 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

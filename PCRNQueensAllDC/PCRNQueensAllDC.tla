@@ -1,7 +1,7 @@
 ------------------------- MODULE PCRNQueensAllDC ---------------------------
 
 (*
-   PCR NQueensAll 
+   PCR NQueensAllDC 
    
    ---------------------------------------------------------------------
      fun divide, isBase, base, conquer, complete, abs, canAddQueenInRow, 
@@ -17,13 +17,13 @@
      
      fun subproblem(B,p,i) = if   isBase(B, p, i)
                              then base(B, p, i)
-                             else NQueensAll(B)
+                             else NQueensAllDC(B)
    
-     fun conquer(r1,r2) = r1 union r2
+     fun conquer(o,c,i) = o \union c[i]
    
-     pre NQueensAll = \forall r \in 1..Len(B) : B[r] == 0
+     pre NQueensAllDC = \forall r \in 1..Len(B) : B[r] == 0
    
-     PCR NQueensAll(B):
+     PCR NQueensAllDC(B):
        par
          p = produce iterDivide B
          forall p
@@ -94,15 +94,15 @@ divide(x) ==
         ELSE <<>> 
   IN F[1]    
 
-iterDivide(x, p, i) == divide(x)[i]
+iterDivide(x, p, I, i) == divide(x)[i]
 
 complete(x) == \A r \in DOMAIN x : x[r] # 0
 
-base(x, p, i) == IF complete(p[i].v) THEN { p[i].v } ELSE {}
+base(x, p, I, i) == IF complete(p[i].v) THEN { p[i].v } ELSE {}
 
-isBase(x, p, i) == complete(p[i].v) \/ ~ canAddQueens(p[i].v) 
+isBase(x, p, I, i) == complete(p[i].v) \/ ~ canAddQueens(p[i].v) 
  
-conquer(r1, r2) == r1 \union r2
+conquer(x, o, c, I, i) == o \union c[i].v
 
 ----------------------------------------------------------------------------
 
@@ -126,10 +126,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> {}, r |-> 0]
+
 initCtx(x) == [in  |-> x,
-               v_p |-> [n \in IndexType |-> Undef],
-               v_c |-> [n \in IndexType |-> Undef],
-               ret |-> {},
+               v_p |-> [i \in IndexType |-> Undef],
+               v_c |-> [i \in IndexType |-> Undef],
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
                ste |-> "OFF"] 
 
 pre(x) == \A r \in DOMAIN x : x[r] = 0
@@ -148,7 +151,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> iterDivide(in(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> iterDivide(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
@@ -157,12 +160,11 @@ P(I) ==
 C_base(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-\*    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
-    /\ isBase(in(I), v_p(I), i)
+    /\ isBase(in(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
-         ![I].v_c[i]   = [v |-> base(in(I), v_p(I), i), r |-> 0] ]               
+         ![I].v_c[i]   = [v |-> base(in(I), v_p(I), I, i), r |-> 0] ]               
 \*    /\ PrintT("C_base" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                       \o " con v=" \o ToString(base(in(I), v_p(I), i)))
 
@@ -172,8 +174,8 @@ C_base(I) ==
 C_call(I) == 
   \E i \in iterator(I):
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
-    /\ ~ isBase(in(I), v_p(I), i)
+    /\ ~ wellDef(I \o <<i>>)
+    /\ ~ isBase(in(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
          ![I \o <<i>>] = initCtx(v_p(I)[i].v) ]    
@@ -185,8 +187,7 @@ C_call(I) ==
 *)
 C_ret(I) == 
   \E i \in iterator(I) :
-     /\ written(v_p(I), i)
-     /\ read(v_p(I), i)       
+     /\ written(v_p(I), i)      
      /\ ~ written(v_c(I), i)
      /\ wellDef(I \o <<i>>)
      /\ finished(I \o <<i>>)   
@@ -202,32 +203,33 @@ C_ret(I) ==
 C(I) == \/ C_base(I)
         \/ C_call(I) 
         \/ C_ret(I)
-  
+
 (* 
    Reducer action
    
    FXML:  ...
 
-   PCR:   r = reduce conquer [] c
+   PCR:   c = reduce [] conquer c
 *)
 R(I) == 
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == conquer(out(I), v_c(I)[i].v)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ pending(I, i)
+    /\ LET newOut == conquer(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                                    
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE             
+\*             ELSE TRUE
 
 (* 
-   PCR NQueensAll step at index I 
+   PCR NQueensAllDC step at index I 
 *)
 Next(I) == 
   \/ /\ state(I) = "OFF" 
@@ -240,6 +242,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Oct 28 22:43:23 UYT 2020 by josedu
+\* Last modified Tue Dec 15 21:00:20 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

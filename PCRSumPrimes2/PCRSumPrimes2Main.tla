@@ -90,7 +90,7 @@ Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(L) )
 
 Termination == <> PCR1!finished(<<>>)
 
-GTermination == [][ PCR1!finished(<<>>) => Done ]_vars
+GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
 
 \* This Spec is an implementation of PCRSumPrimes1!Spec.
 \* The following def provides a refinement mapping to prove this fact.
@@ -109,7 +109,7 @@ subst ==
                  IF /\ @[i] = Undef
                     /\ PCR1!written(cm1[I].v_p, i)
                     /\ PCR1!read(cm1[I].v_p, i)                  \* for which corresponding v_p[i] has been read
-                    /\ PCR1!isBase(PCR1!in(I), PCR1!v_p(I), i)
+                    /\ PCR1!isBase(PCR1!in(I), PCR1!v_p(I), I, i)
                     /\ PCR1!v_p(I)[i].v # << >>
                     /\ PCR2!finished(I \o <<i>>)                 \* and C_ret(I \o <<i>>) holds (PCR2 finished at I \o <i>)                                      
                  THEN IF PCR2!out(I \o <<i>>)
@@ -127,6 +127,6 @@ PCRSumPrimes1 == INSTANCE PCRSumPrimes1Main
        
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:40:50 UYT 2020 by josedu
+\* Last modified Tue Dec 15 17:57:17 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

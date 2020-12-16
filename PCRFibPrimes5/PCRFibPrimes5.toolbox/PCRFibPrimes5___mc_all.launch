@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="0"/>
+    <intAttribute key="fpIndex" value="40"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="35"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -23,13 +23,13 @@
     <intAttribute key="modelBehaviorSpecType" value="1"/>
     <stringAttribute key="modelBehaviorVars" value="N, cm1, cm2"/>
     <stringAttribute key="modelComments" value=""/>
-    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="1TypeInv"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="0Correctness"/>
+        <listEntry value="1Correctness"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
@@ -47,7 +47,7 @@
         <listEntry value="CtxIdType1;;{&lt;&lt;&gt;&gt;};0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 2&#13;&#10;MaxFN == 2&#13;&#10;Input == 0..MaxN&#13;&#10;NatMock1 == 0..MaxFN&#13;&#10;IndexMock1 == 0..N+1&#13;&#10;IndexMock2 == 0..1"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 3&#13;&#10;MaxFN == 3&#13;&#10;Input == 0..MaxN&#13;&#10;NatMock1 == 0..MaxFN&#13;&#10;IndexMock1 == 0..N+1&#13;&#10;IndexMock2 == 0..1"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <booleanAttribute key="recover" value="false"/>

@@ -27,9 +27,9 @@ EXTENDS PCRCountWords1Types, PCRBase, TLC
    Basic functions                 
 *)
 
-lines(x, p, i) == x[1][i]
+lines(x, p, I, i) == x[1][i]
 
-countWordsInLine(x, p, i) == 
+countWordsInLine(x, p, I, i) == 
   LET words == x[2]
       line  == p[i].v
   IN Fold([w \in DOMAIN words |-> 
@@ -40,7 +40,7 @@ countWordsInLine(x, p, i) ==
           EmptyBag,
           LAMBDA b1,b2 : b1 (+) b2)
   
-joinCounts(old, new) == old (+) new   
+joinCounts(x, o, c, I, i) == o (+) c[i].v   
 
 ----------------------------------------------------------------------------
 
@@ -64,11 +64,14 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> EmptyBag, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> EmptyBag,
-               ste |-> "OFF"]
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
+               ste |-> "OFF"] 
 
 pre(x) == TRUE
 
@@ -86,7 +89,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT
-         ![I].v_p[i] = [v |-> lines(in(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> lines(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (* 
@@ -103,7 +106,7 @@ C(I) ==
     /\ ~ written(v_c(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1, 
-         ![I].v_c[i]   = [v |-> countWordsInLine(in(I), v_p(I), i), r |-> 0] ]                  
+         ![I].v_c[i]   = [v |-> countWordsInLine(in(I), v_p(I), I, i), r |-> 0] ]                  
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))    
   
@@ -112,24 +115,24 @@ C(I) ==
    
    FXML:  ...
 
-   PCR:   r = reduce joinCounts {} c
+   PCR:   c = reduce joinCounts {} c
 *)
 R(I) == 
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == joinCounts(out(I), v_c(I)[i].v)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ pending(I, i)
+    /\ LET newOut == joinCounts(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
-\*             THEN PrintT("CW1 R" \o ToString(I \o <<i>>) 
-\*                                 \o " : in1= " \o ToString(in1(I))    
-\*                                 \o " : in2= " \o ToString(in2(I))
-\*                                 \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE
+\*             THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                             \o " : in= "  \o ToString(in(I))    
+\*                             \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE  
 
 (* 
    PCR CountWords1 step at index I 
@@ -145,6 +148,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 22:03:24 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:52:14 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

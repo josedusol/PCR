@@ -4,7 +4,7 @@
    PCR FirstEven
    
    ----------------------------------------------------------
-     fun id, checkEven, reducer
+     fun id, checkEven, ret
      
      lbnd projectProd = lambda x. 0 
      ubnd projectProd = lambda x. x
@@ -13,18 +13,16 @@
      fun checkEven(N,p,i) = if (p[i] % 2 == 0) 
                             then p[i] 
                             else null
-     fun reducer(r1,r2) = if not (r2 == null)
-                          then r2
-                          else r1  
+     fun ret(X,o,c,i) = c[i] 
                           
-     cnd terminate(r) = not (r == null) and r % 2 == 0
+     cnd terminate(o) = not (o == null) and o % 2 == 0
                           
      PCR FirstEven(N):
        par
          p = produce id N
          forall p
            c = consume checkEven N p
-         r = reduce terminate reducer 0 c
+         r = reduce terminate ret null c
    ----------------------------------------------------------
 *)
 
@@ -36,11 +34,11 @@ EXTENDS PCRFirstEvenTypes, PCRBase, TLC
    Basic functions                     
 *)
 
-id(x, p, i) == i
+id(x, p, I, i) == i
 
-checkEven(x, p, i) == IF p[i].v % 2 = 0 THEN p[i].v ELSE Null
+checkEven(x, p, I, i) == IF p[i].v % 2 = 0 THEN p[i].v ELSE Null
 
-reducer(r1, r2) == IF r2 # Null THEN r2 ELSE r1
+ret(x, o, c, I, i) == c[i].v
 
 ----------------------------------------------------------------------------
 
@@ -64,12 +62,15 @@ INSTANCE PCRIterationSpace WITH
 (* 
    Initial conditions        
 *)
-                      
+
+r0(x) == [v |-> Null, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> Null,
-               ste |-> "OFF"]  
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
+               ste |-> "OFF"] 
 
 pre(x) == TRUE
 
@@ -87,7 +88,7 @@ P(I) ==
   \E i \in iterator(I) :
     /\ ~ written(v_p(I), i)
     /\ cm' = [cm EXCEPT 
-         ![I].v_p[i] = [v |-> id(in(I), v_p(I), i), r |-> 0]]         
+         ![I].v_p[i] = [v |-> id(in(I), v_p(I), I, i), r |-> 0]]         
 \*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))
                                           
 (* 
@@ -104,32 +105,33 @@ C(I) ==
     /\ ~ written(v_c(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1, 
-         ![I].v_c[i]   = [v |-> checkEven(in(I), v_p(I), i), r |-> 0]]                         
+         ![I].v_c[i]   = [v |-> checkEven(in(I), v_p(I), I, i), r |-> 0]]                         
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))  
-
+   
 (* 
    Reducer action
    
    FXML:  ...
 
-   PCR:   r = reduce reducer 0 c
+   PCR:   c = reduce reducer 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
-    /\ written(v_c(I), i)    
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == reducer(out(I), v_c(I)[i].v)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ written(v_c(I), i)
+    /\ pending(I, i)
+    /\ LET newOut == ret(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE    
+\*             ELSE TRUE  
 
 (* 
    PCR FirstEven step at index I 
@@ -145,6 +147,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:54:24 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:55:22 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

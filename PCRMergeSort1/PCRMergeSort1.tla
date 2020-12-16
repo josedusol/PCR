@@ -1,19 +1,19 @@
 -------------------------- MODULE PCRMergeSort1 ----------------------------
 
 (*
-   PCR MergeSort 
+   PCR MergeSort1 
    
    ---------------------------------------------------------------
      fun iterDivide, divide, isBase, base, conquer, merge
      
-     fun iterDivide(L,i) = divide(L)[i]
+     fun iterDivide(X,i) = divide(X)[i]
      
-     fun divide(L) = [ L[1..Len(L)/2],
-                       L[(Len(L)/2)+1..Len(L)] ]
+     fun divide(X) = [ X[1..Len(X)/2],
+                       X[(Len(X)/2)+1..Len(X)] ]
      
-     fun subproblem(L,p,i) = if   isBase(L, p, i)
-                             then base(L, p, i)
-                             else MergeSort(L)
+     fun subproblem(X,p,i) = if   isBase(X, p, i)
+                             then base(X, p, i)
+                             else MergeSort1(X)
    
      fun merge(l1,l2)
        if  l1 == []
@@ -24,14 +24,14 @@
                 then [head l1] ++ merge(tail s1, s2)  
                 else [head l2] ++ merge(s1, tail s2)
    
-     fun conquer(r1,r2) = merge(r1,r2)
+     fun conquer(o,c,i) = merge(o,c[i])
    
-     PCR MergeSort(L)
+     PCR MergeSort1(X)
        par
-         p = produce iterDivide L
+         p = produce iterDivide X
          forall p
-           c = consume subproblem L p
-         r = reduce conquer [] c
+           c = consume subproblem X p
+         r = reduce [] conquer c
    ---------------------------------------------------------------  
 *)
 
@@ -46,11 +46,11 @@ EXTENDS PCRMergeSort1Types, PCRBase, TLC
 divide(x) == LET mid == Len(x) \div 2
              IN  << SubSeq(x, 1, mid),  SubSeq(x, mid+1, Len(x)) >>
 
-iterDivide(x, p, i) == divide(x)[i]
+iterDivide(x, p, I, i) == divide(x)[i]
 
-base(x, p, i) == p[i].v
+base(x, p, I, i) == p[i].v
 
-isBase(x, p, i) == Len(p[i].v) <= 1
+isBase(x, p, I, i) == Len(p[i].v) <= 1
 
 merge(seq1, seq2) ==
   LET F[s1, s2 \in Seq(Elem)] ==
@@ -62,7 +62,7 @@ merge(seq1, seq2) ==
                     [] Head(s1) > Head(s2)  -> <<Head(s2)>> \o F[s1, Tail(s2)]
   IN F[seq1, seq2] 
  
-conquer(r, z) == merge(r, z)
+conquer(x, o, c, I, i) == merge(o, c[i].v)
 
 ----------------------------------------------------------------------------
 
@@ -86,10 +86,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> <<>>, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> <<>>,
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
                ste |-> "OFF"] 
 
 pre(x) == TRUE
@@ -99,16 +102,16 @@ pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(divide(B))
-            p[j] = divide L             
+   FXML:  forall i \in 1..Len(divide(X))
+            p[j] = divide X             
    
-   PCR:   p = produce divide L                              
+   PCR:   p = produce divide X                              
 *)
 P(I) == 
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> iterDivide(in(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> iterDivide(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
@@ -117,12 +120,11 @@ P(I) ==
 C_base(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-\*    /\ ~ read(v_p(I), i)
     /\ ~ written(v_c(I), i)
-    /\ isBase(in(I), v_p(I), i)
+    /\ isBase(in(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
-         ![I].v_c[i]   = [v |-> base(in(I), v_p(I), i), r |-> 0] ]               
+         ![I].v_c[i]   = [v |-> base(in(I), v_p(I), I, i), r |-> 0] ]               
 \*    /\ PrintT("C_base" \o ToString(i) \o " : P" \o ToString(i) 
 \*                       \o " con v=" \o ToString(v_p(I)[i].v))
 
@@ -132,8 +134,8 @@ C_base(I) ==
 C_call(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
-    /\ ~ isBase(in(I), v_p(I), i)
+    /\ ~ wellDef(I \o <<i>>)
+    /\ ~ isBase(in(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
          ![I \o <<i>>] = initCtx(v_p(I)[i].v) ]              
@@ -145,8 +147,7 @@ C_call(I) ==
 *)
 C_ret(I) == 
   \E i \in iterator(I) :
-     /\ written(v_p(I), i)
-     /\ read(v_p(I), i)       
+     /\ written(v_p(I), i) 
      /\ ~ written(v_c(I), i)
      /\ wellDef(I \o <<i>>)
      /\ finished(I \o <<i>>)   
@@ -168,26 +169,27 @@ C(I) == \/ C_base(I)
    
    FXML:  ...
 
-   PCR:   r = reduce conquer [] c
+   PCR:   c = reduce [] conquer c
 *)
 R(I) == 
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == conquer(out(I), v_c(I)[i].v)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ pending(I, i)
+    /\ LET newOut == conquer(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
              ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE              
+\*             ELSE TRUE
 
 (* 
-   PCR MergeSort step at index I 
+   PCR MergeSort1 step at index I 
 *)
 Next(I) == 
   \/ /\ state(I) = "OFF" 
@@ -200,6 +202,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 02:44:24 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:59:40 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

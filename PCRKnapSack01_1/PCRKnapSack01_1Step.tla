@@ -34,19 +34,19 @@ EXTENDS PCRKnapSack01_1Types, PCRBase, TLC
 
 max(x, y) == IF x >= y THEN x ELSE y
 
-id(x1, x2, x3, p, I, j) == j
+id(x, p, I, j) == j
 
-solve(x1, x2, x3, p, I, j) ==     \* capacity j where 0 <= j <= C
-  LET v   == x1.v                 \* item values 
-      w   == x1.w                 \* item weights 
-      row == x2                   \* profit row for i-1
-      i   == x3                   \* current item
+solve(x, p, I, j) ==                \* capacity j where 0 <= j <= C
+  LET v   == x[1].v                 \* item values 
+      w   == x[1].w                 \* item weights 
+      row == x[2]                   \* profit row for i-1
+      i   == x[3]                   \* current item
   IN  CASE  i = 0      ->  0                              \* never happen
         []  w[i] >  j  ->  row[j+1] 
         []  w[i] <= j  ->  max(row[j+1],  
                                row[(j+1)-w[i]] + v[i])
                        
-update(x1, x2, x3, r, c, I, j) == [r EXCEPT ![j+1] = c[j].v] 
+update(x, o, c, I, j) == [o EXCEPT ![j+1] = c[j].v] 
 
 ----------------------------------------------------------------------------
 
@@ -70,10 +70,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> x[2], r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> x[2],
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
                ste |-> "OFF"] 
 
 pre(x) == TRUE
@@ -92,7 +95,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> id(in1(I), in2(I), in3(I), v_p(I), I, i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> id(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (* 
@@ -109,32 +112,33 @@ C(I) ==
     /\ ~ written(v_c(I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1, 
-         ![I].v_c[i]   = [v |-> solve(in1(I), in2(I), in3(I), v_p(I), I, i), r |-> 0]]                                          
+         ![I].v_c[i]   = [v |-> solve(in(I), v_p(I), I, i), r |-> 0]]                                          
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
-\*                  \o " con v=" \o ToString(v_p(I)[i].v))  
-  
+\*                  \o " con v=" \o ToString(v_p(I)[i].v))           
+
 (* 
    Reducer action
    
    FXML:  ...
 
-   PCR:   r = reduce conquer [] c
+   PCR:   c = reduce update row X row k c
 *)
 R(I) == 
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == update(in1(I), in2(I), in3(I), out(I), v_c(I), I, i)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ pending(I, i)
+    /\ LET newOut == update(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE             
+\*             ELSE TRUE
 
 (* 
    PCR KnapSack01_1Step step at index I 
@@ -150,6 +154,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Sat Nov 21 00:20:05 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:57:32 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

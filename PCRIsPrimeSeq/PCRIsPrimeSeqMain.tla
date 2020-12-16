@@ -72,9 +72,9 @@ TypeInv == /\ N \in InType1
            /\ cm1 \in PCR1!CtxMap
            /\ im1 \in PCR1!IndexMap
 
-Correctness == []( PCR1!finished(<< >>) => PCR1!out(<< >>) = Solution(N) )
+Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(N) )
   
-Termination == <> PCR1!finished(<< >>) 
+Termination == <> PCR1!finished(<<>>) 
 
 \* This Spec is an implementation of PCRIsPrime!Spec. 
               
@@ -83,5 +83,5 @@ PCRIsPrime == INSTANCE PCRIsPrimeMain
   
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:51:56 UYT 2020 by josedu
+\* Last modified Mon Dec 14 23:09:33 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

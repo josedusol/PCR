@@ -72,11 +72,11 @@ divide(x) ==
        IN << partitionLeft(Tail(x), piv), 
              partitionRight(Tail(x), piv) >>               
 
-iterDivide(x, p, i) == divide(x)[i]
+iterDivide(x, p, I, i) == divide(x)[i]
 
-base(x, p, i) == p[i].v
+base(x, p, I, i) == p[i].v
 
-isBase(x, p, i) == isBaseCase(p[i].v)
+isBase(x, p, I, i) == isBaseCase(p[i].v)
 
 conquer(x, o, c, I, i) == 
   IF isBaseCase(x)
@@ -105,12 +105,15 @@ INSTANCE PCRIterationSpace WITH
 (* 
    Initial conditions        
 *)
+        
+r0(x) == [v |-> <<>>, r |-> 0]
 
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> <<>>,
-               ste |-> "OFF"] 
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
+               ste |-> "OFF"]                 
 
 pre(x) == TRUE
 
@@ -128,7 +131,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> iterDivide(in(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> iterDivide(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
@@ -138,10 +141,10 @@ C_base(I) ==
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
     /\ ~ written(v_c(I), i)
-    /\ isBase(in(I), v_p(I), i)
+    /\ isBase(in(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
-         ![I].v_c[i]   = [v |-> base(in(I), v_p(I), i), r |-> 0] ]               
+         ![I].v_c[i]   = [v |-> base(in(I), v_p(I), I, i), r |-> 0] ]               
 \*    /\ PrintT("C_base" \o ToString(i) \o " : P" \o ToString(i) 
 \*                       \o " con v=" \o ToString(v_p(I)[i].v))
 
@@ -151,8 +154,8 @@ C_base(I) ==
 C_call(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
-    /\ ~ isBase(in(I), v_p(I), i)
+    /\ ~ wellDef(I \o <<i>>)
+    /\ ~ isBase(in(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r = @ + 1,
          ![I \o <<i>>] = initCtx(v_p(I)[i].v) ]              
@@ -165,7 +168,6 @@ C_call(I) ==
 C_ret(I) == 
   \E i \in iterator(I) :
      /\ written(v_p(I), i)
-     /\ read(v_p(I), i)       
      /\ ~ written(v_c(I), i)
      /\ wellDef(I \o <<i>>)
      /\ finished(I \o <<i>>)   
@@ -173,7 +175,7 @@ C_ret(I) ==
           ![I].v_c[i] = [v |-> out(I \o <<i>>), r |-> 0]]  
 \*     /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
 \*                       \o " : in= "  \o ToString(in(I \o <<i>>))    
-\*                       \o " : ret= " \o ToString(Out(I \o <<i>>)))                
+\*                       \o " : ret= " \o ToString(out(I \o <<i>>)))                
 
 (*
    Consumer action
@@ -181,30 +183,30 @@ C_ret(I) ==
 C(I) == \/ C_base(I)
         \/ C_call(I) 
         \/ C_ret(I)   
-          
+         
 (* 
    Reducer action
    
    FXML:  ...
 
-   PCR:   r = reduce conquer [] c
+   PCR:   c = reduce [] conquer c
 *)
 R(I) == 
   \E i \in iterator(I) :
-    /\ written(v_c(I), i)
-    /\ \A j \in iterator(I) : written(v_c(I), j)           \* dep c -> r(i)    
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == conquer(in(I), out(I), v_c(I), i)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ \A j \in iterator(I) : written(v_c(I), j)           \* dep c -> r(i)
+    /\ pending(I, i)
+    /\ LET newOut == conquer(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
              ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE              
+\*             ELSE TRUE
 
 (* 
    PCR QuickSort step at index I 
@@ -220,6 +222,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Fri Dec 04 17:20:40 UYT 2020 by josedu
+\* Last modified Tue Dec 15 21:01:25 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

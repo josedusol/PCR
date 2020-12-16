@@ -6,7 +6,7 @@
    ---------------------------------------------------------------------
      fun init, until, getLast, nextItem, solve, update  
         
-     fun until(X, y, y_i) = y_i > X.n
+     fun until(X, i, y, y_i) = y_i > X.n
         
      PCR KnapSack01_4(X):
        par
@@ -22,7 +22,7 @@
          p = produce id X S k
          forall p
            c = consume solve X S k p
-         r = reduce update X S c  
+         r = reduce update S X S c 
    ---------------------------------------------------------------------
 *)
 
@@ -49,8 +49,6 @@ solve(x, p, I, j) ==              \* capacity j where 0 <= j <= C
                [] w[i] <= j  ->  max(table[<<i-1, j>>], 
                                      table[<<i-1, j - w[i]>>] + v[i]) ]
                        
-\*update(r, z) == [r EXCEPT !.table[z.c] = z.v]   
-
 update(x, o, c, I, i) == [o EXCEPT ![c[i].v.c] = c[i].v.v] 
 
 ----------------------------------------------------------------------------
@@ -75,11 +73,15 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> x[2], 
+          r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> x[2],
-               ste |-> "OFF"] 
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
+               ste |-> "OFF"]
 
 pre(x) == TRUE
 
@@ -117,29 +119,30 @@ C(I) ==
          ![I].v_c[i]   = [v |-> solve(in(I), v_p(I), I, i), r |-> 0]]                                          
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))  
-  
+
 (* 
    Reducer action
    
    FXML:  ...
 
-   PCR:   r = reduce conquer [] c
+   PCR:   c = reduce update S X S c 
 *)
 R(I) == 
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == update(in(I), out(I), v_c(I), I, i)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ pending(I, i)
+    /\ LET newOut == update(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE             
+\*             ELSE TRUE
 
 (* 
    PCR KnapSack01Step step at index I 
@@ -155,6 +158,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 25 17:02:18 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:58:56 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

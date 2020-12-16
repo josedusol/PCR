@@ -39,7 +39,7 @@
     </listAttribute>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="IndexType1;;1..X1;0;0"/>
+        <listEntry value="IndexType1;;IF X1 = 0 THEN {1} ELSE 1..X1;0;0"/>
         <listEntry value="CtxIdType1;;{&lt;&lt;&gt;&gt;};0;0"/>
         <listEntry value="Nat;;0..3;0;0"/>
         <listEntry value="IndexType1_1;;0..X1;0;0"/>

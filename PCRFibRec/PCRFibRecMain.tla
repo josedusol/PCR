@@ -40,8 +40,8 @@ Next1(I) == /\ cm1[I] # Undef
 
 Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ UNCHANGED vars
-\*        /\ PrintT("Done: In = " \o ToString(PCR1!in(<<>>))
-\*                 \o " - Out = " \o ToString(PCR1!out(<<>>)))
+        /\ PrintT("Done: In = " \o ToString(PCR1!in(<<>>))
+                 \o " - Out = " \o ToString(PCR1!out(<<>>)))
 
 Next == \/ \E I \in CtxIdType1 : Next1(I)
         \/ Done
@@ -73,5 +73,5 @@ Termination == <> PCR1!finished(<<>>)
   
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:54:40 UYT 2020 by josedu
+\* Last modified Sun Dec 13 16:34:20 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

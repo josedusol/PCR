@@ -31,7 +31,7 @@ VARIABLES cm2, cm3, im, im2
    Basic functions                          
 *)
 
-sum(r1, r2) == r1 + (IF r2 THEN 1 ELSE 0)  
+sum(x, o, c, I, i) == o + (IF c[i].v THEN 1 ELSE 0)  
 
 fib == INSTANCE PCRFib WITH
   InType    <- InType2,
@@ -74,10 +74,13 @@ INSTANCE PCRIterationSpaceSeq WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> 0, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> 0,
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
                ste |-> "OFF"]
 
 pre(x) == TRUE
@@ -124,7 +127,7 @@ P(I) == \/ P_call(I) /\ UNCHANGED <<cm,cm3,im>>
 C_call(I) == 
   \E i \in iterator(I):
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
+    /\ ~ isPrime!wellDef(I \o <<i>>)
     /\ cm'  = [cm  EXCEPT 
          ![I].v_p[i].r = @ + 1] 
     /\ cm3' = [cm3 EXCEPT 
@@ -137,8 +140,7 @@ C_call(I) ==
 *)
 C_ret(I) == 
   \E i \in iterator(I) :
-     /\ written(v_p(I), i)  
-     /\ read(v_p(I), i)       
+     /\ written(v_p(I), i)      
      /\ ~ written(v_c(I), i)
      /\ isPrime!wellDef(I \o <<i>>)
      /\ isPrime!finished(I \o <<i>>)   
@@ -157,25 +159,26 @@ C(I) == \/ C_call(I) /\ UNCHANGED <<cm2,im,im2>>
 (* 
    Reducer action
    
-   FXML:  ... 
+   FXML:  ...
 
-   PCR:   r = reduce sum 0 c
+   PCR:   c = reduce sum 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
-    /\ written(v_c(I), i)  
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == sum(out(I), v_c(I)[i].v)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ written(v_c(I), i)
+    /\ pending(I, i)
+    /\ LET newOut == sum(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @] 
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
-\*             THEN PrintT("FP6 R" \o ToString(I \o <<i>>) 
-\*                                 \o " : in= "  \o ToString(in(I))    
-\*                                 \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE 
+\*             THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                             \o " : in= "  \o ToString(in(I))    
+\*                             \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE
 
 (* 
    PCR FibPrimes6 step at index I 
@@ -192,6 +195,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Nov 10 23:31:18 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:54:50 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

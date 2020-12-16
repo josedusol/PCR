@@ -14,13 +14,13 @@
      
      fun subproblem(X,Y,p,i) = if   isBase(X,Y,p,i)
                                then base(X,Y,p,i)
-                               else Karatsuba(X,Y)
+                               else Karatsuba1(X,Y)
    
      fun conquer(X,Y,o,c,i) = (z2*10^(2*m)) + ((z1-z2-z0)*10^m) + z0   
    
      dep c -> r(i)                \\same effect as: dep c(..i) -> r(i)
                                   \\                dep c(i..) -> r(i)       
-     PCR Karatsuba(X, Y)
+     PCR Karatsuba1(X, Y)
        par
          p = produce iterDivide X Y
          forall p
@@ -29,7 +29,7 @@
    ---------------------------------------------------------------  
 *)
 
-EXTENDS PCRKaratsuba1Types, PCRBase1R, TLC
+EXTENDS PCRKaratsuba1Types, PCRBase, TLC
 
 ----------------------------------------------------------------------------
 
@@ -57,9 +57,9 @@ divide(x, y) ==
                                     
 iterDivide(x, p, I, i) == divide(x[1], x[2])[i]
 
-base(x, p, I, i) == x[1] * x[2]
+base(x, p, I, i) == p[i].v[1] * p[i].v[2]
 
-isBase(x, p, I, i) == isBaseCase(x[1], x[2])
+isBase(x, p, I, i) == isBaseCase(p[i].v[1], p[i].v[2])
 
 conquer(x, o, c, I, i) == 
   IF isBaseCase(x[1], x[2])
@@ -82,7 +82,7 @@ upperBnd(x) == Len(divide(x[1], x[2]))
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpace1R WITH
+INSTANCE PCRIterationSpace WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
@@ -141,7 +141,7 @@ C_base(I) ==
 C_call(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
+    /\ ~ wellDef(I \o <<i>>)
     /\ ~ isBase(in(I), v_p(I), I, i)
     /\ cm' = [cm EXCEPT
          ![I].v_p[i].r = @ + 1,
@@ -154,8 +154,7 @@ C_call(I) ==
 *)
 C_ret(I) == 
   \E i \in iterator(I) :
-     /\ written(v_p(I), i)
-     /\ read(v_p(I), i)       
+     /\ written(v_p(I), i)    
      /\ ~ written(v_c(I), i)
      /\ wellDef(I \o <<i>>)
      /\ finished(I \o <<i>>)   
@@ -181,7 +180,6 @@ C(I) == \/ C_base(I)
 *)
 R(I) == 
   \E i \in iterator(I) :
-    /\ written(v_c(I), i)
 \*    /\ \A j \in iterator(I) : j <= i => written(v_c(I), j)       \* dep c1(..i) -> c2(i)
 \*    /\ \A j \in iterator(I) : j >= i => written(v_c(I), j)       \* dep c1(i..) -> c2(i)
     /\ \A j \in iterator(I) : written(v_c(I), j)                   \* dep c -> r(i)
@@ -213,6 +211,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Thu Nov 26 00:30:15 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:56:41 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

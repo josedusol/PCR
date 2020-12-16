@@ -27,10 +27,10 @@ PCR1 == INSTANCE PCRIsPrimeNaive WITH
 vars == <<N,cm1>>
 
 Init == /\ N \in InType1
-        /\ PCR1!Pre(N)
+        /\ PCR1!pre(N)
         /\ cm1 = [I \in CtxIdType1 |-> 
                       IF   I = <<>> 
-                      THEN PCR1!InitCtx(N)
+                      THEN PCR1!initCtx(N)
                       ELSE Undef]                  
 
 (* 
@@ -73,5 +73,5 @@ Termination == <> PCR1!finished(<<>>)
   
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 21:53:17 UYT 2020 by josedu
+\* Last modified Mon Dec 14 23:00:28 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

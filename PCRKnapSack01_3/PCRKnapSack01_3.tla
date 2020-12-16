@@ -38,7 +38,7 @@
          p = produceSeq apply X R
          forall p
            c = consume pass X R p    
-         r = reduce retLast X R c           \\ we just want the last value of c       
+         r = reduce retLast R X R c         \\ we just want the last value of c       
 
      lbnd id = lambda x. 0 
      ubnd id = lambda x. Len(x[1].C)        \\ solve in paralell for all weights <= C
@@ -49,7 +49,7 @@
          p = produce id X R k
          forall p
            c = consume solve X R k p
-         r = reduce update X R k c          
+         r = reduce update R X R k c          
    ---------------------------------------------------------------------
 *)
 
@@ -74,7 +74,7 @@ KnapSack01_3Iterate == INSTANCE PCRKnapSack01_3Iterate WITH
    Basic functions                 
 *)
 
-init(x, p, i) == [j \in 1..x.C+1 |-> 0]    
+init(x, p, I, i) == [j \in 1..x.C+1 |-> 0]    
  
 getLast(x, o, c, I, i) == c[i].v[x.C + 1]
 
@@ -100,10 +100,13 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> 0, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> 0,
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
                ste |-> "OFF"] 
 
 pre(x) == Len(x.w) = x.n /\ Len(x.v) = x.n
@@ -122,7 +125,7 @@ P(I) ==
   \E i \in iterator(I) : 
     /\ ~ written(v_p(I), i)         
     /\ cm' = [cm EXCEPT  
-         ![I].v_p[i] = [v |-> init(in(I), v_p(I), i), r |-> 0] ]             
+         ![I].v_p[i] = [v |-> init(in(I), v_p(I), I, i), r |-> 0] ]             
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))                  
 
 (*
@@ -131,7 +134,7 @@ P(I) ==
 C_call(I) == 
   \E i \in iterator(I):
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
+    /\ ~ KnapSack01_3Iterate!wellDef(I \o <<i>>)
     /\ cm'  = [cm  EXCEPT 
          ![I].v_p[i].r = @ + 1] 
     /\ cm2' = [cm2 EXCEPT 
@@ -146,8 +149,7 @@ C_call(I) ==
 *)
 C_ret(I) == 
   \E i \in iterator(I) :
-    /\ written(v_p(I), i)
-    /\ read(v_p(I), i)       
+    /\ written(v_p(I), i)  
     /\ ~ written(v_c(I), i)
     /\ KnapSack01_3Iterate!wellDef(I \o <<i>>) 
     /\ KnapSack01_3Iterate!finished(I \o <<i>>)   
@@ -161,30 +163,31 @@ C_ret(I) ==
    Consumer action
 *)
 C(I) == \/ C_call(I) /\ UNCHANGED cm3
-        \/ C_ret(I)  /\ UNCHANGED <<cm2,cm3,im2>>
-  
+        \/ C_ret(I)  /\ UNCHANGED <<cm2,cm3,im2>>          
+
 (* 
    Reducer action
    
    FXML:  ...
 
-   PCR:   r = reduce conquer [] c
+   PCR:   c = reduce getLast 0 X c
 *)
 R(I) == 
   \E i \in iterator(I) :
     /\ written(v_c(I), i)
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == getLast(in(I), out(I), v_c(I), I, i)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ pending(I, i)
+    /\ LET newOut == getLast(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]   
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE             
+\*             ELSE TRUE
 
 (* 
    PCR KnapSack01_3 step at index I 
@@ -201,6 +204,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 25 15:44:03 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:58:18 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

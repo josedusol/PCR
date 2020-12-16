@@ -37,7 +37,7 @@
          p = produceSeq apply X R
          forall p
            c = consume consumeLast X R p    \\ we just want the last value
-         r = reduce ret X R c                 
+         r = reduce ret R X R c                 
 
      lbnd id = lambda x. 0 
      ubnd id = lambda x. Len(x[1].C)        \\ solve in paralell for all weights <= C
@@ -48,7 +48,7 @@
          p = produce id X R k
          forall p
            c = consume solve X R k p
-         r = reduce update X R k c   
+         r = reduce update R X R k c   
    ---------------------------------------------------------------------
 *)
 
@@ -87,10 +87,13 @@ INSTANCE PCRIterationSpaceSeq WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> x[2], r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> x[2],
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
                ste |-> "OFF"] 
 
 pre(x) == TRUE
@@ -180,23 +183,24 @@ C(I) ==
    
    FXML:  ...
 
-   PCR:   r = reduce conquer [] c
+   PCR:   c = reduce ret X R c
 *)
 R(I) == 
   \E i \in iterator(I) :
-    /\ written(v_c(I), i)   
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == ret(in(I), out(I), v_c(I), I, i)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ written(v_c(I), i)
+    /\ pending(I, i)
+    /\ LET newOut == ret(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
 \*             THEN PrintT("R" \o ToString(I \o <<i>>) 
 \*                             \o " : in= "  \o ToString(in(I))    
 \*                             \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE             
+\*             ELSE TRUE
 
 (* 
    PCR KnapSack01_2Iterate step at index I 
@@ -213,6 +217,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Wed Nov 25 14:45:16 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:57:57 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

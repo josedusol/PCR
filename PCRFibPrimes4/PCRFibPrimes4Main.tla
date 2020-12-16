@@ -110,10 +110,11 @@ subst ==
      THEN [cm1[I] EXCEPT          
        !.v_p= [i \in DOMAIN @ |->          
                  IF /\ @[i] # Undef                 \* For any non-read producer var v_p[i]
-                    /\ @[i].r = 0                   \* for which P_ret(I \o <i>) holds (PCR2 finished at I \o <i>)                   
+\*                    /\ @[i].r = 0                   \* for which P_ret(I \o <i>) holds (PCR2 finished at I \o <i>)                   
+                    /\ PCR2!wellDef(I \o <<i>>)
                     /\ PCR2!finished(I \o <<i>>)       
                  THEN [v |-> PCR2!out(I \o <<i>>),  \* then producer var gets result computed by PCR2
-                       r |-> 0]                        
+                       r |-> @[i].r]                        
                  ELSE @[i]                          \* else leave it as is.                     
               ]                                     
           ]
@@ -125,6 +126,6 @@ PCRFibPrimes1 == INSTANCE PCRFibPrimes1Main
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 00:44:39 UYT 2020 by josedu
+\* Last modified Mon Dec 14 19:52:43 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

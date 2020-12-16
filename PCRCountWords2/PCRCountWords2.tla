@@ -29,9 +29,9 @@ VARIABLES cm2
    Basic functions                         
 *)
 
-lines(x, p, i) == x[1][i]
+lines(x, p, I, i) == x[1][i]
 
-joinCounts(r1, r2) == r1 (+) r2  
+joinCounts(x, o, c, I, i) == o (+) c[i].v  
  
 countWordsInLine == INSTANCE PCRCountWordsInLine WITH
   InType    <- InType2,
@@ -64,13 +64,18 @@ INSTANCE PCRIterationSpace WITH
    Initial conditions        
 *)
 
+r0(x) == [v |-> EmptyBag, r |-> 0]
+
 initCtx(x) == [in  |-> x,
                v_p |-> [i \in IndexType |-> Undef],
                v_c |-> [i \in IndexType |-> Undef],
-               ret |-> EmptyBag,
-               ste |-> "OFF"]
+               v_r |-> [i \in IndexType |-> r0(x)],             
+               i_r |-> lowerBnd(x),
+               ste |-> "OFF"] 
 
-pre(x) == TRUE
+pre(x) == \A w1 \in DOMAIN x[2] : 
+              ~ \E w2 \in DOMAIN x[2] : 
+                  x[2][w1] = x[2][w2] 
 
 ----------------------------------------------------------------------------
 
@@ -86,7 +91,7 @@ P(I) ==
   \E i \in iterator(I) :
     /\ ~ written(v_p(I), i)             
     /\ cm' = [cm EXCEPT
-         ![I].v_p[i] = [v |-> lines(in(I), v_p(I), i), r |-> 0] ]          
+         ![I].v_p[i] = [v |-> lines(in(I), v_p(I), I, i), r |-> 0] ]          
 \*    /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))   
 
 (* 
@@ -95,11 +100,11 @@ P(I) ==
 C_call(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ ~ read(v_p(I), i)
+    /\ ~ countWordsInLine!wellDef(I \o <<i>>)
     /\ cm'  = [cm  EXCEPT 
          ![I].v_p[i].r = @ + 1] 
     /\ cm2' = [cm2 EXCEPT 
-         ![I \o <<i>>] = countWordsInLine!initCtx(<<v_p(I)[i].v, in2(I)>>)]            
+         ![I \o <<i>>] = countWordsInLine!initCtx(<<v_p(I)[i].v, in(I)[2]>>)]            
 \*    /\ PrintT("C_call" \o ToString(I \o <<i>>) 
 \*                       \o " : in= " \o ToString(v_p(I)[i].v))                                                                                                                                            
 
@@ -109,14 +114,14 @@ C_call(I) ==
 C_ret(I) == 
   \E i \in iterator(I) :
     /\ written(v_p(I), i)
-    /\ read(v_p(I), i)       
     /\ ~ written(v_c(I), i)
-    /\ countWordsInLine!finished(I \o <<i>>)   
+    /\ countWordsInLine!wellDef(I \o <<i>>) 
+    /\ countWordsInLine!finished(I \o <<i>>)    
     /\ cm' = [cm EXCEPT 
          ![I].v_c[i] = [v |-> countWordsInLine!out(I \o <<i>>), r |-> 0] ]  
 \*    /\ PrintT("C_ret" \o ToString(I \o <<i>>) 
 \*                      \o " : in= "  \o ToString(countWordsInLine!in(I \o <<i>>))    
-\*                      \o " : ret= " \o ToString(countWordsInLine!Out(I \o <<i>>)))
+\*                      \o " : ret= " \o ToString(countWordsInLine!out(I \o <<i>>)))
 (* 
   Consumer action 
 *)
@@ -126,26 +131,26 @@ C(I) == \/ C_call(I)
 (* 
    Reducer action
    
-   FXML:  ... 
+   FXML:  ...
 
-   PCR:   r = reduce joinCounts {} c
+   PCR:   c = reduce joinCounts {} c
 *)
 R(I) == 
   \E i \in iterator(I) :
-    /\ written(v_c(I), i)  
-    /\ ~ read(v_c(I), i)
-    /\ LET newRet == joinCounts(out(I), v_c(I)[i].v)
-           endSte == cDone(I, i) \/ eCnd(newRet)
+    /\ written(v_c(I), i)
+    /\ pending(I, i)
+    /\ LET newOut == joinCounts(in(I), out(I), v_c(I), I, i)
+           endSte == rDone(I, i) \/ eCnd(newOut)
        IN  cm' = [cm EXCEPT 
-             ![I].ret      = newRet,
              ![I].v_c[i].r = @ + 1,
-             ![I].ste      = IF endSte THEN "END" ELSE @]
+             ![I].v_r[i]   = [v |-> newOut, r |-> 1],
+             ![I].i_r      = i,
+             ![I].ste      = IF endSte THEN "END" ELSE @]                                                                            
 \*          /\ IF endSte
-\*             THEN PrintT("CW2 R" \o ToString(I \o <<i>>) 
-\*                                 \o " : in1= " \o ToString(in1(I))    
-\*                                 \o " : in2= " \o ToString(in2(I))
-\*                                 \o " : ret= " \o ToString(out(I)')) 
-\*             ELSE TRUE 
+\*             THEN PrintT("R" \o ToString(I \o <<i>>) 
+\*                             \o " : in= "  \o ToString(in(I))    
+\*                             \o " : ret= " \o ToString(out(I)')) 
+\*             ELSE TRUE  
 
 (* 
    PCR CountWords2 step at index I 
@@ -162,6 +167,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 02:50:53 UYT 2020 by josedu
+\* Last modified Tue Dec 15 20:52:29 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

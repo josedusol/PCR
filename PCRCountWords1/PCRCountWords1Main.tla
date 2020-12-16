@@ -78,10 +78,10 @@ Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(T,W) )
 
 Termination == <> PCR1!finished(<<>>)
 
-GTermination == [][ PCR1!finished(<<>>) => Done ]_vars
+GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 22:03:13 UYT 2020 by josedu
+\* Last modified Sat Dec 12 17:36:12 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

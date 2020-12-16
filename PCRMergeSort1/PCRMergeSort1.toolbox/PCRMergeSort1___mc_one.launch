@@ -4,7 +4,7 @@
     <intAttribute key="collectCoverage" value="0"/>
     <stringAttribute key="configurationName" value="mc_one"/>
     <booleanAttribute key="deferLiveness" value="false"/>
-    <intAttribute key="dfidDepth" value="100"/>
+    <intAttribute key="dfidDepth" value="1000"/>
     <booleanAttribute key="dfidMode" value="false"/>
     <intAttribute key="distributedFPSetCount" value="0"/>
     <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="12"/>
+    <intAttribute key="fpIndex" value="17"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -23,7 +23,7 @@
     <intAttribute key="modelBehaviorSpecType" value="1"/>
     <stringAttribute key="modelBehaviorVars" value="X, cm1"/>
     <stringAttribute key="modelComments" value=""/>
-    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="1TypeInv"/>
     </listAttribute>
@@ -38,11 +38,11 @@
         <listEntry value="Elem;;0..3;0;0"/>
         <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
-    <stringAttribute key="modelParameterContraint" value="X = &lt;&lt; 3, 1, 0, 2 &gt;&gt;"/>
+    <stringAttribute key="modelParameterContraint" value="X = &lt;&lt; 3, 1, 2 &gt;&gt;"/>
     <listAttribute key="modelParameterDefinitions">
         <listEntry value="InType1;;UNION {[1..n -&gt; Elem] : n \in 0..4};0;0"/>
         <listEntry value="Nat;;0..4;0;0"/>
-        <listEntry value="CtxIdType1;;UNION {[1..n -&gt; {1,2}] : n \in 0..2};0;0"/>
+        <listEntry value="CtxIdType1;;UNION {[1..n -&gt; {1,2}] : n \in 0..4};0;0"/>
         <listEntry value="IndexType1;;{1,2};0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
@@ -52,7 +52,7 @@
     <booleanAttribute key="recover" value="false"/>
     <stringAttribute key="result.mail.address" value=""/>
     <intAttribute key="simuAril" value="-1"/>
-    <intAttribute key="simuDepth" value="100"/>
+    <intAttribute key="simuDepth" value="1000"/>
     <intAttribute key="simuSeed" value="-1"/>
     <stringAttribute key="specName" value="PCRMergeSort1"/>
     <stringAttribute key="tlcResourcesProfile" value="local custom"/>
