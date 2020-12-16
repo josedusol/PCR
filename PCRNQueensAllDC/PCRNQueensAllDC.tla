@@ -7,27 +7,27 @@
      fun divide, isBase, base, conquer, complete, abs, canAddQueenInRow, 
          canAddQueenInCell, canAddQueens, addQueenInRow, addQueen
      
-     fun iterDivide(B,p,i) = divide(B)[i]
+     fun iterDivide(X,p,i) = divide(X)[i]
      
-     fun divide(B) = 
+     fun divide(X) = 
        cs = []
-       for i in 1..Len(B)
-         if canAddQueenInRow(B, i) then cs += [addQueenInRow(B, i)]
+       for i in 1..Len(X)
+         if canAddQueenInRow(X, i) then cs += [addQueenInRow(X, i)]
        return cs
      
-     fun subproblem(B,p,i) = if   isBase(B, p, i)
-                             then base(B, p, i)
-                             else NQueensAllDC(B)
+     fun subproblem(X,p,i) = if   isBase(X, p, i)
+                             then base(X, p, i)
+                             else NQueensAllDC(X)
    
      fun conquer(o,c,i) = o \union c[i]
    
-     pre NQueensAllDC = \forall r \in 1..Len(B) : B[r] == 0
+     pre NQueensAllDC = \forall r \in 1..Len(X) : X[r] == 0
    
-     PCR NQueensAllDC(B):
+     PCR NQueensAllDC(X):
        par
-         p = produce iterDivide B
+         p = produce iterDivide X
          forall p
-           c = consume subproblem B p
+           c = consume subproblem X p
          r = reduce conquer [] c
    ---------------------------------------------------------------------
 *)
@@ -142,10 +142,7 @@ pre(x) == \A r \in DOMAIN x : x[r] = 0
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(divide(B))
-            p[i] = divide B             
-   
-   PCR:   p = produce divide B                            
+   PCR:  p = produce iterDivide X                            
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -199,6 +196,8 @@ C_ret(I) ==
 
 (*
    Consumer action
+   
+   PCR:  c = consume subproblem X p
 *)
 C(I) == \/ C_base(I)
         \/ C_call(I) 
@@ -207,9 +206,7 @@ C(I) == \/ C_base(I)
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce [] conquer c
+   PCR:  c = reduce [] conquer c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -242,6 +239,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 21:00:20 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:14:32 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

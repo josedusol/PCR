@@ -30,12 +30,13 @@
      ubnd apply = lambda x. Len(x[1].n)     \\ iterate sequentially on number of items to consider
      step apply = lambda i. i + 1   
      
-     dep c(i-1) -> c(i)                     \\ consumers should also be sequential
+     dep p(i-1) -> p(i)                     \\ producer is sequential
+     dep c(i-1) -> c(i)                     \\ consumer should also be sequential
      dep c(i..) -> r(i)                     \\ reducer should wait for consumer future
          
      PCR KnapSack01_3Iterate(X, R):         \\ auxiliary PCR to simulate "iterate" construct
        par
-         p = produceSeq apply X R
+         p = produce apply X R
          forall p
            c = consume pass X R p    
          r = reduce retLast R X R c         \\ we just want the last value of c       
@@ -183,6 +184,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:58:34 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:56:38 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

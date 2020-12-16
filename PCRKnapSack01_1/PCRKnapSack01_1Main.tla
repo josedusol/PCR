@@ -79,11 +79,11 @@ FairSpec == /\ Spec
 *)
 
 Sum(seq) ==
-  LET F[s \in Seq(Nat)] ==
+  LET f[s \in Seq(Nat)] ==
     IF   s = <<>> 
     THEN 0
-    ELSE Head(s) + F[Tail(s)]
-  IN F[seq]       
+    ELSE Head(s) + f[Tail(s)]
+  IN f[seq]       
              
 Solution(in) == 
   LET allPicks == { s \in Seq({0,1}) : Len(s) = Len(in.w) }
@@ -107,6 +107,6 @@ GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Dec 14 23:21:15 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:00:06 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

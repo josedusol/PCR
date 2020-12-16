@@ -6,23 +6,23 @@
    ---------------------------------------------------------------------
      fun divide, isBase, base, conquer, isPrime
      
-     fun iterDivide(L,p,i) = divide(L)[i]
+     fun iterDivide(X,p,i) = divide(X)[i]
      
-     fun divide(L) = [ L[1..Len(L)/2],
-                       L[(Len(L)/2)+1..Len(L)] ]
+     fun divide(X) = [ X[1..Len(X)/2],
+                       X[(Len(X)/2)+1..Len(X)] ]
      
-     fun subproblem(L,p,i) = if   isBase(L, p, i)
-                             then base(L, p, i)
-                             else SumPrimes1(L)
+     fun subproblem(X,p,i) = if   isBase(X, p, i)
+                             then base(X, p, i)
+                             else SumPrimes1(X)
    
      fun conquer(o, c, i) = o + c[i]
       
-     PCR SumPrimes1(L):
+     PCR SumPrimes1(X):
        par
-         p = produce iterDivide L
+         p = produce iterDivide X
          forall p
-           c = consume subproblem L p
-         r = reduce conquer [] c
+           c = consume subproblem X p
+         r = reduce conquer 0 c
    ---------------------------------------------------------------------
 *)
 
@@ -90,10 +90,7 @@ pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(divide(B))
-            p[i] = divide B             
-   
-   PCR:   p = produce divide B                            
+   PCR:  p = produce iterDivide X                          
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -147,6 +144,8 @@ C_ret(I) ==
 
 (*
    Consumer action
+   
+   PCR:  c = consume subproblem X p
 *)
 C(I) == \/ C_base(I)
         \/ C_call(I)
@@ -154,10 +153,8 @@ C(I) == \/ C_base(I)
   
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce [] conquer c
+   PCR:  c = reduce conquer 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -190,6 +187,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 21:01:38 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:29:04 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

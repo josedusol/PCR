@@ -6,28 +6,28 @@
    ---------------------------------------------------------------------
      fun divide, isBase, base, conquer
      
-     fun iterDivide(L,p,i) = divide(L)[i]
+     fun iterDivide(X,p,i) = divide(X)[i]
      
-     fun divide(L) = [ L[1..Len(L)/2],
-                       L[(Len(L)/2)+1..Len(L)] ]
+     fun divide(X) = [ X[1..Len(X)/2],
+                       X[(Len(X)/2)+1..Len(X)] ]
      
-     fun isBase(L,p,i) = Len p[i] <= 1
+     fun isBase(X,p,i) = Len p[i] <= 1
      
-     fun base(L,p,i) = if p[i] != [] and IsPrime(p[i][1])
+     fun base(X,p,i) = if p[i] != [] and IsPrime(p[i][1])
                        then p[i][1]
                        else 0
      
-     fun subproblem(L,p,i) = if   isBase(L, p, i)
-                             then base(L, p, i)
-                             else SumPrimes2(L)
+     fun subproblem(X,p,i) = if   isBase(X, p, i)
+                             then base(X, p, i)
+                             else SumPrimes2(X)
    
      fun conquer(r1,r2) = r1 + r2
       
-     PCR SumPrimes2(L):
+     PCR SumPrimes2(X):
        par
-         p = produce iterDivide L
+         p = produce iterDivide X
          forall p
-           c = consume subproblem L p
+           c = consume subproblem X p
          r = reduce conquer 0 c
          
      PCR IsPrime(N):
@@ -106,10 +106,7 @@ pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(divide(B))
-            p[i] = divide B             
-   
-   PCR:   p = produce divide B                            
+   PCR:  p = produce iterDivide X               
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -213,6 +210,8 @@ C_noBase_ret(I) ==
 
 (*
    Consumer action
+   
+   PCR:  c = consume subproblem X p
 *)
 C(I) == \/ C_isBase_1(I)     /\ UNCHANGED cm2
         \/ C_isBase_call(I)
@@ -224,9 +223,7 @@ C(I) == \/ C_isBase_1(I)     /\ UNCHANGED cm2
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce [] conquer c
+   PCR:   c = reduce conquer 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -260,6 +257,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 21:01:51 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:31:44 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

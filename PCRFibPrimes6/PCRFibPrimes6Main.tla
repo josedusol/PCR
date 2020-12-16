@@ -8,7 +8,7 @@ EXTENDS PCRFibPrimes6Types, FiniteSets, TLC
 
 CONSTANT Undef
 
-VARIABLES N, cm1, cm2, cm3, im1, im2
+VARIABLES N, cm1, cm2, cm3
 
 ----------------------------------------------------------------------------
                                      
@@ -22,9 +22,7 @@ PCR1 == INSTANCE PCRFibPrimes6 WITH
   VarRType  <- VarRType1,  
   cm        <- cm1,
   cm2       <- cm2,
-  cm3       <- cm3,
-  im        <- im1,
-  im2       <- im2
+  cm3       <- cm3
 
 \* Instanciate second PCR with appropiate types  
 PCR2 == INSTANCE PCRFib WITH
@@ -34,8 +32,7 @@ PCR2 == INSTANCE PCRFib WITH
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
-  cm        <- cm2,
-  im        <- im2
+  cm        <- cm2
 
 \* Instanciate third PCR with appropiate types   
 PCR3 == INSTANCE PCRIsPrime WITH
@@ -49,7 +46,7 @@ PCR3 == INSTANCE PCRIsPrime WITH
  
 ----------------------------------------------------------------------------
 
-vars == <<N,cm1,cm2,cm3,im1,im2>>
+vars == <<N,cm1,cm2,cm3>>
 
 Init == /\ N \in InType1
         /\ PCR1!pre(N)
@@ -57,12 +54,7 @@ Init == /\ N \in InType1
                      IF   I = <<>> 
                      THEN PCR1!initCtx(N)
                      ELSE Undef]
-        /\ im1 = [I \in CtxIdType1 |-> 
-                     IF   I = <<>> 
-                     THEN PCR1!lowerBnd(N)
-                     ELSE Undef] 
         /\ cm2 = [I \in CtxIdType2 |-> Undef]            
-        /\ im2 = [I \in CtxIdType2 |-> Undef]
         /\ cm3 = [I \in CtxIdType3 |-> Undef]
 
 (* PCR1 step at index I *)              
@@ -73,12 +65,12 @@ Next1(I) == /\ cm1[I] # Undef
 (* PCR2 step at index I *) 
 Next2(I) == /\ cm2[I] # Undef
             /\ PCR2!Next(I)
-            /\ UNCHANGED <<N,cm1,cm3,im1>> 
+            /\ UNCHANGED <<N,cm1,cm3>> 
             
 (* PCR3 step at index I *)
 Next3(I) == /\ cm3[I] # Undef
             /\ PCR3!Next(I)
-            /\ UNCHANGED <<N,cm1,cm2,im1,im2>>             
+            /\ UNCHANGED <<N,cm1,cm2>>             
 
 Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ \A I \in PCR2!CtxIndex : PCR2!finished(I)
@@ -120,8 +112,6 @@ TypeInv == /\ N \in InType1
            /\ cm1 \in PCR1!CtxMap
            /\ cm2 \in PCR2!CtxMap
            /\ cm3 \in PCR3!CtxMap
-           /\ im1 \in PCR1!IndexMap
-           /\ im2 \in PCR2!IndexMap
 
 Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(N) )
   
@@ -162,11 +152,10 @@ subst ==
      ELSE Undef]     
               
 PCRFibPrimes1 == INSTANCE PCRFibPrimes1Main 
-  WITH cm1 <- subst,
-       im1 <- im1
+  WITH cm1 <- subst
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Dec 14 22:18:51 UYT 2020 by josedu
+\* Last modified Wed Dec 16 14:46:07 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

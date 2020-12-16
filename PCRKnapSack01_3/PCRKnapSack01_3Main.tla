@@ -12,9 +12,7 @@ EXTENDS PCRKnapSack01_3Types, Functions, FiniteSets, TLC
 
 CONSTANT Undef
 
-VARIABLES X, cm1, 
-             cm2, im2,
-             cm3   
+VARIABLES X, cm1, cm2, cm3
 
 ----------------------------------------------------------------------------
          
@@ -28,8 +26,7 @@ PCR1 == INSTANCE PCRKnapSack01_3 WITH
   VarRType  <- VarRType1,  
   cm        <- cm1,
   cm2       <- cm2,
-  cm3       <- cm3,
-  im2       <- im2                     
+  cm3       <- cm3                
 
 PCR2 == INSTANCE PCRKnapSack01_3Iterate WITH 
   InType    <- InType2,
@@ -39,8 +36,7 @@ PCR2 == INSTANCE PCRKnapSack01_3Iterate WITH
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,  
   cm        <- cm2,
-  cm3       <- cm3,
-  im        <- im2 
+  cm3       <- cm3
 
 PCR3 == INSTANCE PCRKnapSack01_3Step WITH 
   InType    <- InType3,
@@ -53,7 +49,7 @@ PCR3 == INSTANCE PCRKnapSack01_3Step WITH
            
 ----------------------------------------------------------------------------
 
-vars == <<X,cm1,cm2,cm3,im2>>
+vars == <<X,cm1,cm2,cm3>>
 
 Init == /\ X \in InType1
         /\ PCR1!pre(X)
@@ -62,8 +58,7 @@ Init == /\ X \in InType1
                      THEN PCR1!initCtx(X)
                      ELSE Undef]    
         /\ cm2 = [I \in CtxIdType2 |-> Undef]     
-        /\ cm3 = [I \in CtxIdType3 |-> Undef]
-        /\ im2 = [I \in CtxIdType2 |-> Undef]                                                      
+        /\ cm3 = [I \in CtxIdType3 |-> Undef]                                                    
 
 (* PCR1 step at index I  *)                                                  
 Next1(I) == /\ cm1[I] # Undef
@@ -78,7 +73,7 @@ Next2(I) == /\ cm2[I] # Undef
 (* PCR2 step at index I  *)                                                  
 Next3(I) == /\ cm3[I] # Undef
             /\ PCR3!Next(I)
-            /\ UNCHANGED <<X,cm1,cm2,im2>>                           
+            /\ UNCHANGED <<X,cm1,cm2>>                           
 
 Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ \A I \in PCR2!CtxIndex : PCR2!finished(I)
@@ -106,11 +101,11 @@ FairSpec == /\ Spec
 *)
 
 Sum(seq) ==
-  LET F[s \in Seq(Nat)] ==
+  LET f[s \in Seq(Nat)] ==
     IF   s = <<>> 
     THEN 0
-    ELSE Head(s) + F[Tail(s)]
-  IN F[seq]       
+    ELSE Head(s) + f[Tail(s)]
+  IN f[seq]       
              
 Solution(in) == 
   LET allPicks == { s \in Seq({0,1}) : Len(s) = Len(in.w) }
@@ -125,16 +120,15 @@ TypeInv == /\ X \in InType1
            /\ cm1 \in PCR1!CtxMap
            /\ cm2 \in PCR2!CtxMap
            /\ cm3 \in PCR3!CtxMap
-           /\ im2 \in PCR2!IndexMap
            
 Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(X) )
 
 Termination == <> PCR1!finished(<<>>)
 
-GTermination == [][ PCR1!finished(<<>>) => Done ]_vars
+GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Fri Nov 13 22:10:47 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:57:51 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

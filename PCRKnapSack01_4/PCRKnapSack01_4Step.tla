@@ -89,11 +89,8 @@ pre(x) == TRUE
             
 (* 
    Producer action
-   
-   FXML:  forall i \in 1..Len(B)
-            c[i] = init B[i]             
-   
-   PCR:   c = produce elem B                            
+
+   PCR:  c = produce id X S k                          
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -105,10 +102,7 @@ P(I) ==
 (* 
    Consumer action
    
-   FXML:  forall i \in Dom(p)
-            cs[i] = extend X c[i]
-
-   PCR:   cs = consume extend B c
+   PCR:  c = consume solve X S k p
 *)
 C(I) == 
   \E i \in iterator(I) :
@@ -123,9 +117,7 @@ C(I) ==
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce update S X S c 
+   PCR:  c = reduce update S X S c 
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -158,6 +150,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:58:56 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:03:29 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

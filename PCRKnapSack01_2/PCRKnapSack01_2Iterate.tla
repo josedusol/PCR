@@ -30,11 +30,12 @@
      ubnd apply = lambda x. Len(x[1].n)     \\ iterate sequentially on number of items to consider
      step apply = lambda i. i + 1   
      
+     dep p(i-1) -> p(i)                     \\ producer is sequential
      dep p(i..) -> c(i)                     \\ consumer should wait for producer future
          
      PCR KnapSack01_2Iterate(X, R):         \\ auxiliary PCR to simulate "iterate" construct
        par
-         p = produceSeq apply X R
+         p = produce apply X R
          forall p
            c = consume consumeLast X R p    \\ we just want the last value
          r = reduce ret R X R c                 
@@ -54,7 +55,7 @@
 
 EXTENDS PCRKnapSack01_2Types, PCRBase, TLC
 
-VARIABLES cm3, im
+VARIABLES cm3
 
 KnapSack01_2Step == INSTANCE PCRKnapSack01_2Step WITH 
   InType    <- InType3,
@@ -76,7 +77,7 @@ upperBnd(x) == x[1].n
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpaceSeq WITH
+INSTANCE PCRIterationSpace WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
@@ -114,59 +115,54 @@ ret(x, o, c, I, i) == c[i].v
    Producer action
 *)
 P_1(I) == 
-  /\ i_p(I) \in iterator(I)  
-  /\ i_p(I) = 0
-  /\ ~ KnapSack01_2Step!wellDef(I \o <<i_p(I)>>)
-  /\ cm' = [cm EXCEPT 
-       ![I].v_p[i_p(I)] = [v |-> in(I)[2], r |-> 0]] 
-  /\ im'  = [im  EXCEPT 
-       ![I] = step(i_p(I)) ]                       
-\*  /\ PrintT("P_1" \o ToString(I \o <<i_p(I)>>) 
-\*                  \o " : in= " \o ToString(i_p(I)))
-            
+  \E i \in iterator(I) :
+    /\ i > lowerBnd(in(I)) => written(v_p(I), i-1)
+    /\ i = 0
+    /\ cm' = [cm EXCEPT 
+         ![I].v_p[i] = [v |-> in(I)[2], r |-> 0] ]                    
+\*    /\ PrintT("P_1" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))
+
 (*
    Producer call action
-*)
+*) 
 P_2_call(I) == 
-  /\ i_p(I) \in iterator(I) 
-  /\ ~ (i_p(I) = 0) 
-  /\ ~ KnapSack01_2Step!wellDef(I \o <<i_p(I)>>)
-  /\ cm3' = [cm3 EXCEPT 
-       ![I \o <<i_p(I)>>] = KnapSack01_2Step!initCtx(<<in(I)[1], v_p(I)[i_p(I)-1].v, i_p(I)>>) ]                  
-\*  /\ PrintT("P_2_call" \o ToString(I \o <<i_p(I)>>) 
-\*                       \o " : in= " \o ToString(i_p(I)))
-
+  \E i \in iterator(I) :
+    /\ i > lowerBnd(in(I)) => written(v_p(I), i-1)
+    /\ ~ (i = 0)
+    /\ ~ KnapSack01_2Step!wellDef(I \o <<i>>)
+    /\ cm3' = [cm3 EXCEPT 
+         ![I \o <<i>>] = KnapSack01_2Step!initCtx(<<in(I)[1], v_p(I)[i-1].v, i>>) ]   
+\*  /\ PrintT("P_2_call" \o ToString(I \o <<i>>) 
+\*                       \o " : in= " \o ToString(i)) 
+            
 (*
    Producer ret action
 *)
 P_2_ret(I) == 
-  /\ i_p(I) \in iterator(I)
-  /\ ~ written(v_p(I), i_p(I))
-  /\ ~ (i_p(I) = 0) 
-  /\ KnapSack01_2Step!wellDef(I \o <<i_p(I)>>)
-  /\ KnapSack01_2Step!finished(I \o <<i_p(I)>>)
-  /\ cm' = [cm EXCEPT 
-       ![I].v_p[i_p(I)] = [v |-> KnapSack01_2Step!out(I \o <<i_p(I)>>), r |-> 0]]
-  /\ im'  = [im  EXCEPT 
-       ![I] = step(i_p(I)) ]     
-\*  /\ PrintT("P_2_ret" \o ToString(I \o <<i_p(I)>>) 
-\*                      \o " : in= "  \o ToString(fibRec!in(I \o <<i_p(I)>>))    
-\*                      \o " : ret= " \o ToString(fibRec!out(I \o <<i_p(I)>>)))
+  \E i \in iterator(I) :
+    /\ ~ written(v_p(I), i)
+    /\ ~ (i = 0) 
+    /\ KnapSack01_2Step!wellDef(I \o <<i>>)
+    /\ KnapSack01_2Step!finished(I \o <<i>>)
+    /\ cm' = [cm EXCEPT 
+         ![I].v_p[i] = [v |-> KnapSack01_2Step!out(I \o <<i>>), r |-> 0]]   
+\*  /\ PrintT("P_2_ret" \o ToString(I \o <<i>>) 
+\*                      \o " : in= "  \o ToString(KnapSack01_2Step!in(I \o <<i>>))    
+\*                      \o " : ret= " \o ToString(KnapSack01_2Step!out(I \o <<i>>)))
 
 (*
    Producer action
+   
+   PCR:  p = produce apply X R
 *)
 P(I) == \/ P_1(I)      /\ UNCHANGED cm3
-        \/ P_2_call(I) /\ UNCHANGED <<cm,im>>
+        \/ P_2_call(I) /\ UNCHANGED cm
         \/ P_2_ret(I)  /\ UNCHANGED cm3                
 
 (* 
    Consumer action
    
-   FXML:  forall i \in Dom(p)
-            cs[i] = extend X c[i]
-
-   PCR:   cs = consume extend B c
+   PCR:  c = consume consumeLast X R p
 *)
 C(I) == 
   \E i \in iterator(I) :                  
@@ -181,9 +177,7 @@ C(I) ==
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce ret X R c
+   PCR:  r = reduce ret X R c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -208,15 +202,15 @@ R(I) ==
 Next(I) == 
   \/ /\ state(I) = "OFF" 
      /\ Start(I)
-     /\ UNCHANGED <<cm3,im>>
+     /\ UNCHANGED cm3
   \/ /\ state(I) = "RUN" 
      /\ \/ P(I)
-        \/ C(I)     /\ UNCHANGED <<cm3,im>>
-        \/ R(I)     /\ UNCHANGED <<cm3,im>>
-        \/ Quit(I)  /\ UNCHANGED <<cm3,im>>
+        \/ C(I)     /\ UNCHANGED cm3
+        \/ R(I)     /\ UNCHANGED cm3
+        \/ Quit(I)  /\ UNCHANGED cm3
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:57:57 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:50:30 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

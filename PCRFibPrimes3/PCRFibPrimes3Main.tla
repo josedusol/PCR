@@ -8,7 +8,7 @@ EXTENDS PCRFibPrimes3Types, FiniteSets, TLC
 
 CONSTANT Undef
 
-VARIABLES N, cm1, cm2, im1
+VARIABLES N, cm1, cm2
 
 ----------------------------------------------------------------------------
 
@@ -21,8 +21,7 @@ PCR1 == INSTANCE PCRFibPrimes3 WITH
   VarCType  <- VarCType1,
   VarRType  <- VarRType1,  
   cm        <- cm1,
-  cm2       <- cm2,
-  im        <- im1
+  cm2       <- cm2
 
 \* Instanciate second PCR with appropiate types  
 PCR2 == INSTANCE PCRIsPrimeRec WITH
@@ -36,18 +35,14 @@ PCR2 == INSTANCE PCRIsPrimeRec WITH
  
 ----------------------------------------------------------------------------
 
-vars == <<N,cm1,cm2,im1>>
+vars == <<N,cm1,cm2>>
 
 Init == /\ N \in InType1
         /\ PCR1!pre(N)
         /\ cm1 = [I \in CtxIdType1 |-> 
                      IF   I = <<>> 
                      THEN PCR1!initCtx(N)
-                     ELSE Undef]
-        /\ im1 = [I \in CtxIdType1 |-> 
-                     IF   I = <<>> 
-                     THEN PCR1!lowerBnd(N)
-                     ELSE Undef]                     
+                     ELSE Undef]               
         /\ cm2 = [I \in CtxIdType2 |-> Undef]
 
 (* PCR1 step at index I *)                  
@@ -58,7 +53,7 @@ Next1(I) == /\ cm1[I] # Undef
 (* PCR2 step at index I *)   
 Next2(I) == /\ cm2[I] # Undef
             /\ PCR2!Next(I)
-            /\ UNCHANGED <<N,cm1,im1>>
+            /\ UNCHANGED <<N,cm1>>
 
 Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ \A I \in PCR2!CtxIndex : PCR2!finished(I)
@@ -96,7 +91,6 @@ Solution(in) == LET fibValues == { fibonacci[n] : n \in 0..in }
 TypeInv == /\ N \in InType1
            /\ cm1 \in PCR1!CtxMap
            /\ cm2 \in PCR2!CtxMap
-           /\ im1 \in PCR1!IndexMap
 
 Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(N) )
   
@@ -132,11 +126,10 @@ subst ==
      ELSE Undef]
               
 PCRFibPrimes1 == INSTANCE PCRFibPrimes1Main
-  WITH cm1 <- subst,
-       im1 <- im1
+  WITH cm1 <- subst
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Dec 14 19:22:24 UYT 2020 by josedu
+\* Last modified Tue Dec 15 22:05:13 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

@@ -8,7 +8,7 @@ EXTENDS PCRNQueensAllDCTypes, TLC
 
 CONSTANT Undef
 
-VARIABLES B, cm1 
+VARIABLES X, cm1 
 
 ----------------------------------------------------------------------------
          
@@ -24,19 +24,19 @@ PCR1 == INSTANCE PCRNQueensAllDC WITH
            
 ----------------------------------------------------------------------------
 
-vars == <<B,cm1>>
+vars == <<X,cm1>>
 
-Init == /\ B \in InType1
-        /\ PCR1!pre(B)
+Init == /\ X \in InType1
+        /\ PCR1!pre(X)
         /\ cm1 = [I \in CtxIdType1 |-> 
                      IF   I = <<>> 
-                     THEN PCR1!initCtx(B)
+                     THEN PCR1!initCtx(X)
                      ELSE Undef]                                             
                      
 (* PCR1 step at index I *)                                                  
 Next1(I) == /\ cm1[I] # Undef
             /\ PCR1!Next(I)
-            /\ UNCHANGED B    
+            /\ UNCHANGED X    
 
 Done == /\ \A I \in PCR1!CtxIndex : PCR1!finished(I)
         /\ UNCHANGED vars    
@@ -73,10 +73,10 @@ Solution(in) == CASE Len(in) = 0      -> { }
                                            <<5, 3, 1, 4, 2>> }
                   \* [] Len(in) = 6      -> { ... 4 solutions ... } 
 
-TypeInv == /\ B \in InType1
+TypeInv == /\ X \in InType1
            /\ cm1 \in PCR1!CtxMap
 
-Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(B) )
+Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(X) )
 
 Termination == <> PCR1!finished(<<>>)
 
@@ -84,6 +84,6 @@ GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 17:15:38 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:13:18 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

@@ -79,11 +79,8 @@ pre(x) == TRUE
             
 (* 
    Producer action
-   
-   FXML:  forall i \in Range(1,Len(T),Step)
-            p[i] = lines T             
-   
-   PCR:   p = produce lines T                              
+
+   PCR:  p = produce lines T                              
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -95,10 +92,7 @@ P(I) ==
 (* 
    Consumer action
    
-   FXML:  forall i \in Dom(p)
-            c[i] = countWordsInLine W p[i] 
-
-   PCR:   c = consume countWordsInLine W
+   PCR:  c = consume countWordsInLine W
 *)
 C(I) == 
   \E i \in iterator(I) :
@@ -113,9 +107,7 @@ C(I) ==
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce joinCounts {} c
+   PCR:  c = reduce joinCounts {} c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -148,6 +140,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:52:14 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:11:34 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

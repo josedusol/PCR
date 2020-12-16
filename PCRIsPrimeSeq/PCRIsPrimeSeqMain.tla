@@ -4,11 +4,11 @@
    Main module for PCR IsPrimeSeq.
 *)
 
-EXTENDS PCRIsPrimeSeqTypes, FiniteSets
+EXTENDS PCRIsPrimeSeqTypes, FiniteSets, TLC
 
 CONSTANT Undef
 
-VARIABLES N, cm1, im1   
+VARIABLES N, cm1  
 
 ----------------------------------------------------------------------------
          
@@ -20,22 +20,17 @@ PCR1 == INSTANCE PCRIsPrimeSeq WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1, 
-  cm        <- cm1,
-  im        <- im1
+  cm        <- cm1
 
 ----------------------------------------------------------------------------
 
-vars == <<N,cm1,im1>>
+vars == <<N,cm1>>
 
 Init == /\ N \in InType1
         /\ PCR1!pre(N)
         /\ cm1 = [i \in CtxIdType1 |-> 
                       IF   i = << >> 
                       THEN PCR1!initCtx(N)
-                      ELSE Undef]                  
-        /\ im1 = [i \in CtxIdType1 |-> 
-                      IF   i = << >> 
-                      THEN PCR1!lowerBnd(N)
                       ELSE Undef]
 (* 
    PCR1 step at index I 
@@ -70,7 +65,6 @@ Solution(n) == isPrime(n)
 
 TypeInv == /\ N \in InType1
            /\ cm1 \in PCR1!CtxMap
-           /\ im1 \in PCR1!IndexMap
 
 Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(N) )
   
@@ -83,5 +77,5 @@ PCRIsPrime == INSTANCE PCRIsPrimeMain
   
 =============================================================================
 \* Modification History
-\* Last modified Mon Dec 14 23:09:33 UYT 2020 by josedu
+\* Last modified Wed Dec 16 14:59:40 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

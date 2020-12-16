@@ -14,9 +14,11 @@
      fun notDivides(N,p,i) = not (N % p[i] == 0)
      fun and(r1,r2) = r1 && r2 
         
+     dep p(i-1) -> p(i)   
+        
      PCR IsPrimeSeq(N):
        par
-         p = produceSeq divisors N
+         p = produce divisors N
          forall p
            c = consume notDivides N p
          r = reduce and (N > 1) c
@@ -24,8 +26,6 @@
 *)
 
 EXTENDS PCRIsPrimeSeqTypes, PCRBase, TLC
-
-VARIABLE im
 
 ----------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ upperBnd(x) == Sqrt(x)
 step(i)     == IF i = 2 THEN 3 ELSE i + 2          
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpaceSeq WITH
+INSTANCE PCRIterationSpace WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
@@ -77,27 +77,20 @@ pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  for (i=LowerBnd(N); i < UpperBnd(N); Step(i))
-            p[i] = divisors N            
-   
-   PCR:   p = produceSeq divisors N                              
+   PCR:  p = produce divisors N
 *)
 P(I) == 
-  /\ i_p(I) \in iterator(I) 
-  /\ cm' = [cm EXCEPT 
-       ![I].v_p[i_p(I)] = [v |-> divisors(in(I), v_p(I), I, i_p(I)), r |-> 0] ]
-  /\ im' = [im EXCEPT 
-       ![I] = step(i_p(I))]             
-\*  /\ PrintT("P" \o ToString(I \o <<i_p(I)>>) \o " : " \o ToString(v_p(I)[i_p(I)].v')) 
-
+  \E i \in iterator(I) :
+    /\ ~ written(v_p(I), i)
+    /\ i > lowerBnd(in(I)) => written(v_p(I), i-1)
+    /\ cm' = [cm EXCEPT 
+         ![I].v_p[i] = [v |-> divisors(in(I), v_p(I), I, i), r |-> 0]]         
+\*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))
 
 (* 
    Consumer action
    
-   FXML:  forall i \in Dom(p) 
-            c[i] = notDivides N p[i] 
-
-   PCR:   c = consume notDivides N
+   PCR:  c = consume notDivides N
 *) 
 C(I) == 
   \E i \in iterator(I) :
@@ -112,9 +105,7 @@ C(I) ==
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce and (N > 1) c
+   PCR:  c = reduce and (N > 1) c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -139,15 +130,14 @@ R(I) ==
 Next(I) == 
   \/ /\ state(I) = "OFF"
      /\ Start(I)
-     /\ UNCHANGED im
   \/ /\ state(I) = "RUN"
      /\ \/ P(I) 
-        \/ C(I)      /\ UNCHANGED im 
-        \/ R(I)      /\ UNCHANGED im    
-        \/ Quit(I)   /\ UNCHANGED im 
+        \/ C(I)
+        \/ R(I)   
+        \/ Quit(I)
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:56:28 UYT 2020 by josedu
+\* Last modified Wed Dec 16 14:57:56 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

@@ -18,8 +18,8 @@ CONSTANTS InType,       \* Type of PCR input
           VarRType,     \* Type of reducer output
           Undef
           
-\* Cartesian(<<S1,S2,...,Sn>>) = S1 \X S2 \X ... \X Sn
-Cartesian(S) == 
+\* X(<<S1,S2,...,Sn>>) = S1 \X S2 \X ... \X Sn
+X(S) == 
   LET U == UNION Range(S)
       FSeq == [1..Len(S) -> U]
   IN  {s \in FSeq : \A i \in 1..Len(s) : s[i] \in S[i]}  
@@ -32,7 +32,7 @@ State == {"OFF","RUN","END"}
 Var(T) == [IndexType -> [v : T, r : Nat] \union {Undef}]   
 VarP   == Var(VarPType)
 \*VarC   == VarCC(LAMBDA x : Var(x))
-VarC   == Cartesian([t \in 1..cLen |-> Var(VarCType[t])])   
+VarC   == X([t \in 1..cLen |-> Var(VarCType[t])])   
 \*Val(T)    == [v : T, r : Nat]                                   
 \*Var(D,T)  == [D -> Val(T) \union {Undef}]   
 \*Vars(D,S) == Cartesian([k \in 1..Len(S) |-> Var(D,S[k])]) 
@@ -85,5 +85,5 @@ ExtR(r, s)    == [k \in DOMAIN r |-> IF k \in DOMAIN s THEN s[k] ELSE r[k]]
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 18:45:10 UYT 2020 by josedu
+\* Last modified Wed Dec 16 14:45:18 UYT 2020 by josedu
 \* Created Wed Oct 21 14:41:25 UYT 2020 by josedu

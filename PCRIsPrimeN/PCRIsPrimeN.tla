@@ -78,10 +78,7 @@ pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  forall i \in Range(2,Sqrt(N),Step)
-            p[i] = divisors N               
-   
-   PCR:   p = produce divisors N
+   PCR:  p = produce divisors N
 *)
 P(I) == 
   \E i \in iterator(I) :
@@ -93,10 +90,7 @@ P(I) ==
 (* 
    Consumer action
    
-   FXML:  forall i \in Dom(p) 
-            c[i] = notDivides N p[i] 
-
-   PCR:   c = consume notDivides N
+   PCR:  c = consume notDivides N
 *) 
 C(I) == 
   \E i \in iterator(I) :
@@ -111,9 +105,7 @@ C(I) ==
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce and (N > 1) c
+   PCR:  c = reduce and (N > 1) c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -146,6 +138,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 18:52:15 UYT 2020 by josedu
+\* Last modified Wed Dec 16 14:53:55 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

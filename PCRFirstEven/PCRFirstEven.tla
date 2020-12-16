@@ -78,11 +78,8 @@ pre(x) == TRUE
 
 (* 
    Producer action
-   
-   FXML:  forall i \in Range(0,N,Step)
-            p[i] = id N               
-   
-   PCR:   p = produce id N
+
+   PCR:  p = produce id N
 *)
 P(I) == 
   \E i \in iterator(I) :
@@ -93,11 +90,8 @@ P(I) ==
                                           
 (* 
    Consumer action
-   
-   FXML:  forall j \in Dom(p)
-            c[j] = checkEven N p[j]
 
-   PCR:   c = consume checkEven N p
+   PCR:  c = consume checkEven N p
 *)
 C(I) == 
   \E i \in iterator(I) :
@@ -111,10 +105,8 @@ C(I) ==
    
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce reducer 0 c
+   PCR:  c = reduce reducer 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -147,6 +139,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:55:22 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:07:29 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

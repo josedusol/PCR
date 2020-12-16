@@ -20,7 +20,7 @@
          p = produce iterDivide X
          forall p
            c = consume subproblem X p
-         r = reduce [] merge c           \\ call merge PCR as a function
+         r = reduce merge [] c           \\ call merge PCR as a function
    ---------------------------------------------------------------  
 *)
 
@@ -90,10 +90,7 @@ pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(divide(B))
-            p[j] = divide L             
-   
-   PCR:   p = produce divide L                              
+   PCR:  p = produce iterDivide X                             
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -147,6 +144,8 @@ C_ret(I) ==
 
 (*
    Consumer action
+   
+   PCR:  c = consume subproblem X p
 *)
 C(I) == \/ C_base(I)
         \/ C_call(I) 
@@ -193,6 +192,8 @@ R_ret(I) ==
 
 (*
    Reducer action
+   
+   PCR:  c = reduce merge [] c
 *)
 R(I) == \/ R_call(I)
         \/ R_ret(I)  /\ UNCHANGED cm2 
@@ -212,6 +213,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:59:51 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:44:16 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -12,7 +12,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="0"/>
+    <intAttribute key="fpIndex" value="92"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -42,9 +42,9 @@
     <listAttribute key="modelParameterDefinitions">
         <listEntry value="InType1;;UNION {[1..n -&gt; Elem] : n \in 0..3};0;0"/>
         <listEntry value="Nat;;0..4;0;0"/>
-        <listEntry value="CtxIdType1;;UNION {[1..n -&gt; {1,2}] : n \in 0..2};0;0"/>
+        <listEntry value="CtxIdType1;;UNION {[1..n -&gt; {1,2}] : n \in 0..4};0;0"/>
         <listEntry value="IndexType1;;{1,2};0;0"/>
-        <listEntry value="CtxIdType2;;UNION {[1..n -&gt; {1,2}] : n \in 0..3};0;0"/>
+        <listEntry value="CtxIdType2;;UNION {[1..n -&gt; {1,2,3}] : n \in 0..6};0;0"/>
         <listEntry value="IndexType2;;{1,2};0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>

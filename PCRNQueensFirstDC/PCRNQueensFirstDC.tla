@@ -24,7 +24,7 @@
          p = produce iterDivide X
          forall p
            c = consume subproblem X p
-         r = reduce term conquer [] c
+         r = reduce term conquer null c
    ---------------------------------------------------------------------
 *)
 
@@ -138,11 +138,8 @@ pre(x) == \A r \in DOMAIN x : x[r] = 0
             
 (* 
    Producer action
-   
-   FXML:  forall i \in 1..Len(divide(X))
-            p[i] = divide X             
-   
-   PCR:   p = produce divide X                            
+
+   PCR:  p = produce iterDivide X                           
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -196,6 +193,8 @@ C_ret(I) ==
 
 (*
    Consumer action
+   
+   PCR:  c = consume subproblem X p
 *)
 C(I) == \/ C_base(I)
         \/ C_call(I) 
@@ -203,10 +202,8 @@ C(I) == \/ C_base(I)
 
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce [] conquer c
+   PCR:  c = reduce term conquer null c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -239,6 +236,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 21:00:55 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:20:34 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

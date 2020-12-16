@@ -12,9 +12,12 @@
    
      fun sum(r1,r2) = r1 + (if r2 then 1 else 0)  
    
+     dep p(i-1) -> p(i)
+     dep p(i-2) -> p(i)
+   
      PCR FibPrimes4(N):
        par
-         p = produceSeq fibRec p     \\ call fibRec PCR as a function
+         p = produce fibRec p     \\ call fibRec PCR as a function
          forall p
            c = consume isPrime N p
          r = reduce sum 0 c
@@ -23,7 +26,7 @@
 
 EXTENDS PCRFibPrimes4Types, PCRBase, TLC
 
-VARIABLES cm2, im
+VARIABLES cm2
 
 ----------------------------------------------------------------------------
 
@@ -61,7 +64,7 @@ upperBnd(x) == x
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpaceSeq WITH
+INSTANCE PCRIterationSpace WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
@@ -89,42 +92,39 @@ pre(x) == TRUE
    Producer call action
 *)
 P_call(I) == 
-  /\ i_p(I) \in iterator(I)  
-  /\ ~ fibRec!wellDef(I \o <<i_p(I)>>)
-  /\ cm2' = [cm2 EXCEPT 
-       ![I \o <<i_p(I)>>] = fibRec!initCtx(i_p(I)) ]                  
-\*  /\ PrintT("P_call" \o ToString(I \o <<i_p(I)>>) 
-\*                     \o " : in= " \o ToString(i_p(I)))
+  \E i \in iterator(I) :
+    /\ i > lowerBnd(in(I))     => written(v_p(I), i-1)
+    /\ i > lowerBnd(in(I)) + 1 => written(v_p(I), i-2)  
+    /\ ~ fibRec!wellDef(I \o <<i>>)
+    /\ cm2' = [cm2 EXCEPT 
+         ![I \o <<i>>] = fibRec!initCtx(i) ]                  
+\*    /\ PrintT("P_call" \o ToString(I \o <<i>>) 
+\*                       \o " : in= " \o ToString(i))
 
 (*
    Producer ret action
 *)
 P_ret(I) == 
-  /\ i_p(I) \in iterator(I)
-  /\ ~ written(v_p(I), i_p(I))
-  /\ fibRec!wellDef(I \o <<i_p(I)>>)
-  /\ fibRec!finished(I \o <<i_p(I)>>)
-  /\ cm' = [cm EXCEPT 
-       ![I].v_p[i_p(I)] = [v |-> fibRec!out(I \o <<i_p(I)>>), r |-> 0]]
-  /\ im'  = [im  EXCEPT 
-       ![I] = step(i_p(I)) ]     
-\*  /\ PrintT("P_ret" \o ToString(I \o <<i_p(I)>>) 
-\*                    \o " : in= "  \o ToString(fibRec!in(I \o <<i_p(I)>>))    
-\*                    \o " : ret= " \o ToString(fibRec!out(I \o <<i_p(I)>>)))
+  \E i \in iterator(I) :
+    /\ ~ written(v_p(I), i)
+    /\ fibRec!wellDef(I \o <<i>>)
+    /\ fibRec!finished(I \o <<i>>)
+    /\ cm' = [cm EXCEPT 
+         ![I].v_p[i] = [v |-> fibRec!out(I \o <<i>>), r |-> 0]] 
+\*  /\ PrintT("P_ret" \o ToString(I \o <<i>>) 
+\*                    \o " : in= "  \o ToString(fibRec!in(I \o <<i>>))    
+\*                    \o " : ret= " \o ToString(fibRec!out(I \o <<i>>)))
 
 (*
    Producer action
 *)
-P(I) == \/ P_call(I) /\ UNCHANGED <<cm,im>>
+P(I) == \/ P_call(I) /\ UNCHANGED cm
         \/ P_ret(I)  /\ UNCHANGED cm2  
 
 (* 
    Consumer action
-   
-   FXML:  forall i \in Dom(p)
-            c[i] = isPrime N p[i]
-
-   PCR:   c = consume isPrime N p
+ 
+   PCR:  c = consume isPrime N p
 *)
 C(I) == 
   \E i \in iterator(I) :
@@ -138,10 +138,8 @@ C(I) ==
 
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce sum 0 c
+   PCR:  c = reduce sum 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -166,15 +164,15 @@ R(I) ==
 Next(I) == 
   \/ /\ state(I) = "OFF" 
      /\ Start(I)   
-     /\ UNCHANGED <<cm2,im>>
+     /\ UNCHANGED cm2
   \/ /\ state(I) = "RUN" 
      /\ \/ P(I)
-        \/ C(I)      /\ UNCHANGED <<cm2,im>>
-        \/ R(I)      /\ UNCHANGED <<cm2,im>>
-        \/ Quit(I)   /\ UNCHANGED <<cm2,im>>           
+        \/ C(I)      /\ UNCHANGED cm2
+        \/ R(I)      /\ UNCHANGED cm2
+        \/ Quit(I)   /\ UNCHANGED cm2           
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:54:20 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:09:58 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

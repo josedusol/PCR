@@ -8,8 +8,8 @@
      
      fun iterDivide(X,p,i) = divide(X)[i]
      
-     fun divide(X) = [ L[1..Len(L)/2],
-                       L[(Len(L)/2)+1..Len(L)] ]
+     fun divide(X) = [ X[1..Len(X)/2],
+                       X[(Len(X)/2)+1..Len(X)] ]
      
      fun subproblem(X,p,i) = if   isBase(X, p, i)
                              then base(X, p, i)
@@ -26,7 +26,7 @@
            par
              c1 = consume subproblem X p
              c2 = consume merge c1[1] c1[2]     \\ call merge PCR as a function
-         r = reduce [] ret c2           
+         r = reduce ret [] c2           
    ---------------------------------------------------------------  
 *)
 
@@ -99,10 +99,7 @@ pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(divide(B))
-            p[j] = divide L             
-   
-   PCR:   p = produce divide L                              
+   PCR:  p = produce iterDivide X                          
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -156,6 +153,8 @@ C1_ret(I) ==
 
 (*
    Consumer 1 action
+   
+   PCR:  c1 = consume subproblem X p
 *)
 C1(I) == \/ C1_base(I)
          \/ C1_call(I) 
@@ -182,7 +181,6 @@ C2_call(I) ==
 C2_ret(I) == 
   \E i \in iterator(I) :
     /\ written(v_c1(I), i)
-    /\ read(v_c1(I), i)       
     /\ ~ written(v_c2(I), i)    
     /\ merge!wellDef(I \o <<i,3>>) 
     /\ merge!finished(I \o <<i,3>>)   
@@ -194,16 +192,16 @@ C2_ret(I) ==
 
 (*
    Consumer 2 action
+   
+   PCR:  c2 = consume merge c1[1] c1[2]
 *)
 C2(I) == \/ C2_call(I)
          \/ C2_ret(I)  /\ UNCHANGED cm2  
 
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   r = reduce [] ret c2
+   PCR:  r = reduce ret [] c2
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -238,6 +236,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 21:00:00 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:40:18 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

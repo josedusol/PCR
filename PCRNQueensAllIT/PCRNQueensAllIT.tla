@@ -5,31 +5,31 @@
    
    ---------------------------------------------------------------------
     fun divide, complete, abs, canAddQueenInRow, 
-         canAddQueenInCell, canAddQueens, addQueenInRow, addQueen
+        canAddQueenInCell, canAddQueens, addQueenInRow, addQueen
      
-     fun divide(B) = 
+     fun divide(X) = 
        cs = []
-       for i in 1..Len(B)
-         if canAddQueenInRow(B, i) then cs += [addQueenInRow(B, i)]
+       for i in 1..Len(X)
+         if canAddQueenInRow(X, i) then cs += [addQueenInRow(X, i)]
        return cs
         
      fun found(y, i) = if i > 0 then y[i] == y[i-1] else false
           
-     pre NQueensAllIT = \forall r \in 1..Len(B) : B[r] == 0
+     pre NQueensAllIT = \forall r \in 1..Len(X) : X[r] == 0
    
-     PCR NQueensAllIT(B : [Nat]) : {[Nat]}
+     PCR NQueensAllIT(X : [Nat]) : {[Nat]}
        par
-         p = produce id B
+         p = produce id X
          forall p
-           c = iterate found NQueensAllITStep [B]
+           c = iterate found NQueensAllITStep [X]
          r = reduce id2 {} c
        
-     PCR NQueensAllITStep(B : {[Nat]}) : {[Nat]}
+     PCR NQueensAllITStep(X : {[Nat]}) : {[Nat]}
        par
-         c = produce elem B
+         c = produce elem X
          forall c
-           cs = consume extend B c
-         r = reduce \union {} B    
+           cs = consume extend X c
+         r = reduce \union {} X    
    ---------------------------------------------------------------------
 *)
 
@@ -107,12 +107,9 @@ pre(x) == \A r \in DOMAIN x : x[r] = 0
 ----------------------------------------------------------------------------
             
 (* 
-   Producer action
+   Producer action            
    
-   FXML:  forall i \in 1..Len(divide(B))
-            p[i] = id B             
-   
-   PCR:   p = produce id B                            
+   PCR:  p = produce id X                            
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -187,6 +184,8 @@ C_end(I) ==
 
 (*
    Consumer iterator action
+   
+   PCR:  c = iterate found NQueensAllITStep [X]
 *)
 C(I) == \/ C_start(I) /\ UNCHANGED cm2        
         \/ C_call(I)  /\ UNCHANGED <<cm,ym>>
@@ -195,10 +194,8 @@ C(I) == \/ C_start(I) /\ UNCHANGED cm2
 
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce [] conquer c
+   PCR:  c = reduce [] conquer c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -232,6 +229,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 21:00:31 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:16:49 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -119,11 +119,8 @@ P(I) == \/ P_call(I) /\ UNCHANGED cm
 
 (* 
    Consumer action
-   
-   FXML:  forall i \in Dom(p)
-            c[i] = isPrime N p[i]
 
-   PCR:   c = consume isPrime N p
+   PCR:  c = consume isPrime N p
 *)
 C(I) == 
   \E i \in iterator(I) :
@@ -137,10 +134,8 @@ C(I) ==
 
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce sum 0 c
+   PCR:  c = reduce sum 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -174,6 +169,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:54:37 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:10:33 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

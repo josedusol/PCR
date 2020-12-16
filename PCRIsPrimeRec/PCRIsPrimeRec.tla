@@ -78,11 +78,8 @@ pre(x) == x[2] = Sqrt(x[1])
                                           
 (* 
    Producer action
-   
-   FXML:  forall j \in 0..N
-            p[j] = divisors N               
-   
-   PCR:   p = produce divisors N
+
+   PCR:  p = produce divisors N
 *)
 P(I) == 
   \E i \in iterator(I) :
@@ -145,9 +142,7 @@ C(I) == \/ C_base(I)
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce and True c
+   PCR:  c = reduce and True c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -180,6 +175,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:56:15 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:08:06 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

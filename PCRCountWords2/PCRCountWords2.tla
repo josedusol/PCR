@@ -82,10 +82,7 @@ pre(x) == \A w1 \in DOMAIN x[2] :
 (* 
    Producer action
 
-   FXML:  forall j \in Range(1,Len(T),Step)
-            p[i] = lines T             
-   
-   PCR:   p = produce lines T                              
+   PCR:  p = produce lines T                              
 *)
 P(I) == 
   \E i \in iterator(I) :
@@ -131,9 +128,7 @@ C(I) == \/ C_call(I)
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce joinCounts {} c
+   PCR:  c = reduce joinCounts {} c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -167,6 +162,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:52:29 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:11:55 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -76,11 +76,8 @@ pre(x) == TRUE
                                           
 (* 
    Producer action
-   
-   FXML:  forall i \in Range(0,UpBnd,Step)
-            p[i] = idProd N               
-   
-   PCR:   p = produce idProd N
+
+   PCR:  p = produce idProd N
 *)
 P(I) == 
   \E i \in iterator(I) :
@@ -182,10 +179,8 @@ C(I) == \/ C_base(I)
 
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce projectRed 0 c
+   PCR:  c = reduce projectRed 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -218,6 +213,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:55:13 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:07:18 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

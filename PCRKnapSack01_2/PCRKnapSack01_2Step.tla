@@ -30,11 +30,12 @@
      ubnd apply = lambda x. Len(x[1].n)     \\ iterate sequentially on number of items to consider
      step apply = lambda i. i + 1   
      
+     dep p(i-1) -> p(i)                     \\ producer is sequential
      dep p(i..) -> c(i)                     \\ consumer should wait for producer future
          
      PCR KnapSack01_2Iterate(X, R):         \\ auxiliary PCR to simulate "iterate" construct
        par
-         p = produceSeq apply X R
+         p = produce apply X R
          forall p
            c = consume consumeLast X R p    \\ we just want the last value
          r = reduce ret R X R c                 
@@ -114,10 +115,7 @@ pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(B)
-            c[i] = init B[i]             
-   
-   PCR:   c = produce elem B                            
+   PCR:  p = produce id X R k                            
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -128,11 +126,8 @@ P(I) ==
 
 (* 
    Consumer action
-   
-   FXML:  forall i \in Dom(p)
-            cs[i] = extend X c[i]
 
-   PCR:   cs = consume extend B c
+   PCR:  c = consume solve X R k p
 *)
 C(I) == 
   \E i \in iterator(I) :
@@ -146,10 +141,8 @@ C(I) ==
 
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce update R X R k c
+   PCR:  c = reduce update R X R k c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -182,6 +175,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:58:05 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:47:43 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

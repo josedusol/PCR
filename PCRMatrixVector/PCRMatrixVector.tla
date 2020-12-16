@@ -102,10 +102,7 @@ pre(x) == /\ Cardinality(DOMAIN x[2]) = x[1] * x[1]  \* X2 is a matrix of size X
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(divide(B))
-            p[i] = id B             
-   
-   PCR:   p = produce id B                            
+   PCR:  p = produce init N A X                            
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -164,6 +161,8 @@ C_end(I) ==
 
 (*
    Consumer iterator action
+   
+   PCR:  c = iterate until prodStep p N A X
 *)
 C(I) == \/ C_start(I)     
         \/ C_step(I)  /\ UNCHANGED cm
@@ -172,9 +171,7 @@ C(I) == \/ C_start(I)
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce [] update c
+   PCR:  c = reduce [] update c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -208,6 +205,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:59:10 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:05:59 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

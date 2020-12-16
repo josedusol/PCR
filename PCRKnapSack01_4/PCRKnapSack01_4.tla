@@ -119,10 +119,7 @@ pre(x) == Len(x.w) = x.n /\ Len(x.v) = x.n
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(divide(B))
-            p[i] = id B             
-   
-   PCR:   p = produce id B                            
+   PCR:  p = produce init X                           
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -196,7 +193,9 @@ C1_end(I) ==
 \*                       \o " con v=" \o ToString(v_c1(I)[i].v'))
 
 (*
-   Consumer 1 action
+   Consumer 1 iterator action
+   
+   PCR:  c1 = iterate until KnapSack01_4Step X p
 *)
 C1(I) == \/ C1_start(I) /\ UNCHANGED cm2        
          \/ C1_call(I)  /\ UNCHANGED <<cm,ym>>
@@ -205,6 +204,8 @@ C1(I) == \/ C1_start(I) /\ UNCHANGED cm2
 
 (*
    Consumer 2 action
+   
+   PCR:  c2 = consume backtrack X c1
 *)
 C2(I) ==
   \E i \in iterator(I) :
@@ -218,10 +219,8 @@ C2(I) ==
   
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce retSol [] c1 c2
+   PCR:  c = reduce retSol [] c1 c2
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -257,6 +256,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:58:47 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:02:56 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

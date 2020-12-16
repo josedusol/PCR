@@ -5,31 +5,31 @@
    
    ---------------------------------------------------------------------
     fun divide, complete, abs, canAddQueenInRow, 
-         canAddQueenInCell, canAddQueens, addQueenInRow, addQueen
+        canAddQueenInCell, canAddQueens, addQueenInRow, addQueen
      
-     fun divide(B) = 
+     fun divide(X) = 
        cs = []
-       for i in 1..Len(B)
-         if canAddQueenInRow(B, i) then cs += [addQueenInRow(B, i)]
+       for i in 1..Len(X)
+         if canAddQueenInRow(X, i) then cs += [addQueenInRow(X, i)]
        return cs
         
      fun found(y, i) = if i > 0 then y[i] == y[i-1] else false
           
-     pre NQueensAllIT = \forall r \in 1..Len(B) : B[r] == 0
+     pre NQueensAllIT = \forall r \in 1..Len(X) : X[r] == 0
    
-     PCR NQueensAllIT(B : [Nat]) : {[Nat]}
+     PCR NQueensAllIT(X : [Nat]) : {[Nat]}
        par
-         p = produce id B
+         p = produce id X
          forall p
-           c = iterate found NQueensAllITStep [B]
+           c = iterate found NQueensAllITStep [X]
          r = reduce id2 {} c
        
-     PCR NQueensAllITStep(B : {[Nat]}) : {[Nat]}
+     PCR NQueensAllITStep(X : {[Nat]}) : {[Nat]}
        par
-         c = produce elem B
+         c = produce elem X
          forall c
-           cs = consume extend B c
-         r = reduce \union {} B   
+           c = consume extend X c
+         r = reduce concat {} X  
    ---------------------------------------------------------------------
 *)
 
@@ -140,11 +140,8 @@ pre(x) == TRUE
             
 (* 
    Producer action
-   
-   FXML:  forall i \in 1..Len(B)
-            c[i] = elem B[i]             
-   
-   PCR:   c = produce elem B                            
+
+   PCR:  c = produce elem X                            
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -156,10 +153,7 @@ P(I) ==
 (* 
    Consumer action
    
-   FXML:  forall i \in Dom(p)
-            cs[i] = extend B c[i]
-
-   PCR:   cs = consume extend B c
+   PCR:  c = consume extend X c
 *)
 C(I) == 
   \E i \in iterator(I) :
@@ -173,10 +167,8 @@ C(I) ==
   
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce [] conquer c
+   PCR:  c = reduce concat {} X
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -209,6 +201,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 21:00:44 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:18:45 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -6,7 +6,7 @@
    ---------------------------------------------------------------------
      fun init, until, getLast, id, solve, update 
           
-     fun until(X, y, i) = i > X.n
+     fun until(X, i, y, y_i) = y_i > X.n
         
      PCR KnapSack01_1(X):
        par
@@ -85,11 +85,8 @@ pre(x) == TRUE
             
 (* 
    Producer action
-   
-   FXML:  forall i \in 1..Len(B)
-            c[i] = init B[i]             
-   
-   PCR:   c = produce elem B                            
+
+   PCR:  p = produce id X row k                          
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -101,10 +98,7 @@ P(I) ==
 (* 
    Consumer action
    
-   FXML:  forall i \in Dom(p)
-            cs[i] = extend X c[i]
-
-   PCR:   cs = consume extend B c
+   PCR:  c = consume solve X row k p
 *)
 C(I) == 
   \E i \in iterator(I) :
@@ -118,10 +112,8 @@ C(I) ==
 
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce update row X row k c
+   PCR:  r = reduce update row X row k c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -154,6 +146,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:57:32 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:04:51 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

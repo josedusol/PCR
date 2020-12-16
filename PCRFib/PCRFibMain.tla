@@ -8,7 +8,7 @@ EXTENDS PCRFibTypes, FiniteSets, TLC
 
 CONSTANT Undef
 
-VARIABLES N, cm1, im1
+VARIABLES N, cm1
 
 ----------------------------------------------------------------------------
          
@@ -20,23 +20,18 @@ PCR1 == INSTANCE PCRFib WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1, 
-  cm        <- cm1,
-  im        <- im1
+  cm        <- cm1
 
 ----------------------------------------------------------------------------
 
-vars == <<N,cm1,im1>>
+vars == <<N,cm1>>
 
 Init == /\ N \in InType1
         /\ PCR1!pre(N) 
         /\ cm1 = [I \in CtxIdType1 |-> 
                       IF   I = <<>> 
                       THEN PCR1!initCtx(N)
-                      ELSE Undef]  
-        /\ im1 = [I \in CtxIdType1 |-> 
-                     IF   I = <<>> 
-                     THEN PCR1!lowerBnd(N)
-                     ELSE Undef]                               
+                      ELSE Undef]                               
                           
 Next1(I) == /\ cm1[I] # Undef
             /\ PCR1!Next(I)
@@ -70,7 +65,6 @@ Solution(in) == fibonacci[in]
 
 TypeInv == /\ N \in InType1
            /\ cm1 \in PCR1!CtxMap
-           /\ im1 \in PCR1!IndexMap
 
 Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(N) )
   
@@ -78,5 +72,5 @@ Termination == <> PCR1!finished(<<>>)
   
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 22:01:41 UYT 2020 by josedu
+\* Last modified Tue Dec 15 22:32:19 UYT 2020 by josedu
 \* Created Sat Aug 08 21:17:14 UYT 2020 by josedu

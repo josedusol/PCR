@@ -16,9 +16,12 @@
      fun fib(N,p,i) = if i < 2 then 1 else p[i-1] + p[i-2]
      fun sum(r1,r2) = r1 + (if r2 then 1 else 0)
    
+     dep p(i-1) -> p(i)
+     dep p(i-2) -> p(i)      
+   
      PCR FibPrimes1(N):
        par
-         p = produceSeq fib N
+         p = produce fib N
          forall p
            c = consume isPrime N p
          r = reduce sum 0 c
@@ -27,17 +30,15 @@
 
 EXTENDS PCRFibPrimes1NTypes, PCRBaseN, TLC
 
-VARIABLE im
-
 ----------------------------------------------------------------------------
 
 (* 
    Basic functions                            
 *)
 
-fib(x, p, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
+fib(x, p, I, i) == IF i < 2 THEN 1 ELSE p[i-1].v + p[i-2].v
 
-isPrime(x, p, i) ==
+isPrime(x, p, I, i) ==
   LET n == p[i].v
       f[d \in Nat] ==
         IF d < 2
@@ -58,7 +59,7 @@ upperBnd(x) == x
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpaceNSeq WITH
+INSTANCE PCRIterationSpaceN WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
@@ -80,30 +81,25 @@ initCtx(x) == [in  |-> x,
 
 pre(x) == TRUE 
 
-----------------------------------------------------------------------------         
+----------------------------------------------------------------------------             
             
 (* 
    Producer action
-   
-   FXML:  for (i=LowerBnd(N); i < UpperBnd(N); Step(i))
-            p[i] = fib N            
-   
-   PCR:   p = produceSeq fib N                              
+
+   PCR:  p = produce fib N                              
 *)
 P(I) == 
-  /\ i_p(I) \in iterator(I)
-  /\ cm' = [cm EXCEPT 
-       ![I].v_p[i_p(I)] = [v |-> fib(in(I), v_p(I), i_p(I)), r |-> 0] ]
-  /\ im' = [im EXCEPT 
-       ![I] = step(i_p(I))]          
-\*  /\ PrintT("P" \o ToString(I \o <<i_p(I)>>) \o " : " \o ToString(v_p(I)[i_p(I)].v'))                  
+  \E i \in iterator(I) :
+    /\ ~ written(v_p(I), i)
+    /\ i > lowerBnd(in(I))     => written(v_p(I), i-1)
+    /\ i > lowerBnd(in(I)) + 1 => written(v_p(I), i-2)
+    /\ cm' = [cm EXCEPT 
+         ![I].v_p[i] = [v |-> fib(in(I), v_p(I), I, i), r |-> 0]]         
+\*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))
 
 
 (* 
    Consumer action
-   
-   FXML:  forall i \in Dom(p)
-            c[i] = isPrime N p[i]
 
    PCR:   c = consume isPrime N p
 *)
@@ -113,16 +109,14 @@ C(I) ==
     /\ ~ written(v_c(1, I), i)
     /\ cm' = [cm EXCEPT 
          ![I].v_p[i].r  = @ + 1, 
-         ![I].v_c[1][i] = [v |-> isPrime(in(I), v_p(I), i), r |-> 0] ]                                            
+         ![I].v_c[1][i] = [v |-> isPrime(in(I), v_p(I), I, i), r |-> 0] ]                                            
 \*    /\ PrintT("C" \o ToString(I \o <<i>>) \o " : P" \o ToString(i) 
 \*                  \o " con v=" \o ToString(v_p(I)[i].v))       
 
 (* 
    Reducer action
-   
-   FXML:  ...
-
-   PCR:   c = reduce sum 0 c
+ 
+   PCR:  c = reduce sum 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -147,15 +141,14 @@ R(I) ==
 Next(I) == 
   \/ /\ state(I) = "OFF" 
      /\ Start(I)
-     /\ UNCHANGED im
   \/ /\ state(I) = "RUN"  
      /\ \/ P(I) 
-        \/ C(I)    /\ UNCHANGED im
-        \/ R(I)    /\ UNCHANGED im
-        \/ Quit(I) /\ UNCHANGED im
+        \/ C(I)
+        \/ R(I)
+        \/ Quit(I)
         
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 18:44:10 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:08:59 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

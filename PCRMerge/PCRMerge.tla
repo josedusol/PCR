@@ -126,11 +126,8 @@ pre(x) == isOrdered(x[1]) /\ isOrdered(x[2])
             
 (* 
    Producer action
-   
-   FXML:  forall i \in 1..Len(divide(X,Y))
-            p[j] = iterDivide X Y            
-   
-   PCR:   p = produce iterDivide X Y                              
+
+   PCR:  p = produce iterDivide X Y                              
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -184,6 +181,8 @@ C_ret(I) ==
 
 (*
    Consumer action
+   
+   PCR:  c = consume subproblem X Y p
 *)
 C(I) == \/ C_base(I)
         \/ C_call(I) 
@@ -192,9 +191,7 @@ C(I) == \/ C_base(I)
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce [] conquer c
+   PCR:  c = reduce [] conquer c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -227,6 +224,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:59:25 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:07:44 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

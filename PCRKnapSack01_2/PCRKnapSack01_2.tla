@@ -30,11 +30,12 @@
      ubnd apply = lambda x. Len(x[1].n)     \\ iterate sequentially on number of items to consider
      step apply = lambda i. i + 1   
      
+     dep p(i-1) -> p(i)                     \\ producer is sequential
      dep p(i..) -> c(i)                     \\ consumer should wait for producer future
          
      PCR KnapSack01_2Iterate(X, R):         \\ auxiliary PCR to simulate "iterate" construct
        par
-         p = produceSeq apply X R
+         p = produce apply X R
          forall p
            c = consume consumeLast X R p    \\ we just want the last value
          r = reduce ret R X R c                 
@@ -54,7 +55,7 @@
 
 EXTENDS PCRKnapSack01_2Types, PCRBase, TLC
 
-VARIABLES cm2, cm3, im2
+VARIABLES cm2, cm3
 
 KnapSack01_2Iterate == INSTANCE PCRKnapSack01_2Iterate WITH 
   InType    <- InType2,
@@ -64,8 +65,7 @@ KnapSack01_2Iterate == INSTANCE PCRKnapSack01_2Iterate WITH
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,  
   cm        <- cm2,
-  cm3       <- cm3, 
-  im        <- im2
+  cm3       <- cm3
   
 ----------------------------------------------------------------------------
 
@@ -115,10 +115,7 @@ pre(x) == Len(x.w) = x.n /\ Len(x.v) = x.n
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(divide(B))
-            p[i] = id B             
-   
-   PCR:   p = produce id B                            
+   PCR:  p = produce init X                           
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -137,9 +134,7 @@ C_call(I) ==
     /\ cm'  = [cm  EXCEPT 
          ![I].v_p[i].r = @ + 1] 
     /\ cm2' = [cm2 EXCEPT 
-         ![I \o <<i>>] = KnapSack01_2Iterate!initCtx(<<in(I), v_p(I)[i].v>>) ]
-    /\ im2' = [im2 EXCEPT 
-         ![I \o <<i>>] = KnapSack01_2Iterate!lowerBnd(<<in(I), v_p(I)[i].v>>) ]            
+         ![I \o <<i>>] = KnapSack01_2Iterate!initCtx(<<in(I), v_p(I)[i].v>>) ]          
 \*    /\ PrintT("C_call" \o ToString(I \o <<j>>) 
 \*                       \o " : in= " \o ToString(v_p(I)[j].v))                                                                                                                                            
 
@@ -162,14 +157,12 @@ C_ret(I) ==
    Consumer action
 *)
 C(I) == \/ C_call(I) /\ UNCHANGED cm3
-        \/ C_ret(I)  /\ UNCHANGED <<cm2,cm3,im2>>
+        \/ C_ret(I)  /\ UNCHANGED <<cm2,cm3>>
   
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce getLast 0 X c
+   PCR:  c = reduce getLast 0 X c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -194,15 +187,15 @@ R(I) ==
 Next(I) == 
   \/ /\ state(I) = "OFF" 
      /\ Start(I)
-     /\ UNCHANGED <<cm2,cm3,im2>>
+     /\ UNCHANGED <<cm2,cm3>>
   \/ /\ state(I) = "RUN" 
-     /\ \/ P(I)    /\ UNCHANGED <<cm2,cm3,im2>>
+     /\ \/ P(I)    /\ UNCHANGED <<cm2,cm3>>
         \/ C(I)  
-        \/ R(I)    /\ UNCHANGED <<cm2,cm3,im2>>
-        \/ Quit(I) /\ UNCHANGED <<cm2,cm3,im2>>
+        \/ R(I)    /\ UNCHANGED <<cm2,cm3>>
+        \/ Quit(I) /\ UNCHANGED <<cm2,cm3>>
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:57:48 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:58:37 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

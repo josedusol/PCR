@@ -130,11 +130,8 @@ pre(x) == TRUE
             
 (* 
    Producer action
-   
-   FXML:  forall i \in 1..Len(divide(B))
-            p[j] = divide L             
-   
-   PCR:   p = produce divide L                              
+
+   PCR:   p = produce iterDivide X Y                              
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -222,9 +219,7 @@ C3(I) ==
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   r = reduce conquer [] c
+   PCR:  r = reduce conquer [] c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -262,6 +257,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:57:05 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:13:48 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

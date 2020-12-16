@@ -30,12 +30,13 @@
      ubnd apply = lambda x. Len(x[1].n)     \\ iterate sequentially on number of items to consider
      step apply = lambda i. i + 1   
      
-     dep c(i-1) -> c(i)                     \\ consumers should also be sequential
+     dep p(i-1) -> p(i)                     \\ producer is sequential
+     dep c(i-1) -> c(i)                     \\ consumer should also be sequential
      dep c(i..) -> r(i)                     \\ reducer should wait for consumer future
          
      PCR KnapSack01_3Iterate(X, R):         \\ auxiliary PCR to simulate "iterate" construct
        par
-         p = produceSeq apply X R
+         p = produce apply X R
          forall p
            c = consume pass X R p    
          r = reduce retLast R X R c         \\ we just want the last value of c       
@@ -55,7 +56,7 @@
 
 EXTENDS PCRKnapSack01_3Types, PCRBase, TLC
 
-VARIABLES cm2, cm3, im2
+VARIABLES cm2, cm3
 
 KnapSack01_3Iterate == INSTANCE PCRKnapSack01_3Iterate WITH 
   InType    <- InType2,
@@ -65,8 +66,7 @@ KnapSack01_3Iterate == INSTANCE PCRKnapSack01_3Iterate WITH
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,  
   cm        <- cm2,
-  cm3       <- cm3, 
-  im        <- im2
+  cm3       <- cm3
   
 ----------------------------------------------------------------------------
 
@@ -138,9 +138,7 @@ C_call(I) ==
     /\ cm'  = [cm  EXCEPT 
          ![I].v_p[i].r = @ + 1] 
     /\ cm2' = [cm2 EXCEPT 
-         ![I \o <<i>>] = KnapSack01_3Iterate!initCtx(<<in(I), v_p(I)[i].v>>) ]
-    /\ im2' = [im2 EXCEPT 
-         ![I \o <<i>>] = KnapSack01_3Iterate!lowerBnd(<<in(I), v_p(I)[i].v>>) ]            
+         ![I \o <<i>>] = KnapSack01_3Iterate!initCtx(<<in(I), v_p(I)[i].v>>) ]           
 \*    /\ PrintT("C_call" \o ToString(I \o <<j>>) 
 \*                       \o " : in= " \o ToString(v_p(I)[j].v))                                                                                                                                            
 
@@ -163,7 +161,7 @@ C_ret(I) ==
    Consumer action
 *)
 C(I) == \/ C_call(I) /\ UNCHANGED cm3
-        \/ C_ret(I)  /\ UNCHANGED <<cm2,cm3,im2>>          
+        \/ C_ret(I)  /\ UNCHANGED <<cm2,cm3>>          
 
 (* 
    Reducer action
@@ -195,15 +193,15 @@ R(I) ==
 Next(I) == 
   \/ /\ state(I) = "OFF" 
      /\ Start(I)
-     /\ UNCHANGED <<cm2,cm3,im2>>
+     /\ UNCHANGED <<cm2,cm3>>
   \/ /\ state(I) = "RUN" 
-     /\ \/ P(I)    /\ UNCHANGED <<cm2,cm3,im2>>
+     /\ \/ P(I)    /\ UNCHANGED <<cm2,cm3>>
         \/ C(I)  
-        \/ R(I)    /\ UNCHANGED <<cm2,cm3,im2>>
-        \/ Quit(I) /\ UNCHANGED <<cm2,cm3,im2>>
+        \/ R(I)    /\ UNCHANGED <<cm2,cm3>>
+        \/ Quit(I) /\ UNCHANGED <<cm2,cm3>>
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:58:18 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:56:56 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

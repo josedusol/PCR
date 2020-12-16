@@ -11,7 +11,7 @@ EXTENDS PCRFibPrimes1Types, FiniteSets, TLC
 
 CONSTANT Undef
 
-VARIABLES N, cm1, im1
+VARIABLES N, cm1
 
 ----------------------------------------------------------------------------
          
@@ -23,22 +23,17 @@ PCR1 == INSTANCE PCRFibPrimes1 WITH
   VarPType  <- VarPType1,
   VarCType  <- VarCType1,
   VarRType  <- VarRType1, 
-  cm        <- cm1,
-  im        <- im1                      
+  cm        <- cm1                 
                       
 ----------------------------------------------------------------------------
 
-vars == <<N,cm1,im1>>
+vars == <<N,cm1>>
 
 Init == /\ N \in InType1
         /\ PCR1!pre(N)
         /\ cm1 = [I \in CtxIdType1 |-> 
                      IF   I = << >> 
                      THEN PCR1!initCtx(N)
-                     ELSE Undef]
-        /\ im1 = [I \in CtxIdType1 |-> 
-                     IF   I = << >> 
-                     THEN PCR1!lowerBnd(N)
                      ELSE Undef]   
 
 (* PCR1 step on index I *)                  
@@ -78,7 +73,6 @@ Solution(in) == LET fibValues == { fibonacci[n] : n \in 0..in }
 
 TypeInv == /\ N \in InType1
            /\ cm1 \in PCR1!CtxMap
-           /\ im1 \in PCR1!IndexMap
 
 IteratorType1 == 
   \A I \in PCR1!CtxIndex :
@@ -87,8 +81,8 @@ IteratorType1 ==
 
 IteratorType2 == \A I \in PCR1!CtxIndex : PCR1!iterator(I) \subseteq IndexType1
 
-ProducerType == \A I \in PCR1!CtxIndex : \A i \in PCR1!iterator(I) : 
-                    i < PCR1!i_p(I) => PCR1!written(PCR1!v_p(I), i)
+\*ProducerType == \A I \in PCR1!CtxIndex : \A i \in PCR1!iterator(I) : 
+\*                    i < PCR1!i_p(I) => PCR1!written(PCR1!v_p(I), i)
 
 Correctness == []( PCR1!finished(<<>>) => PCR1!out(<<>>) = Solution(N) )
   
@@ -98,6 +92,6 @@ GTermination == [][ PCR1!finished(<<>>) <=> Done ]_vars
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Nov 09 22:01:14 UYT 2020 by josedu
+\* Last modified Tue Dec 15 21:11:15 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:24:43 UYT 2020 by josed
 \* Created Mon Jul 06 12:54:04 UYT 2020 by josed

@@ -16,9 +16,12 @@
      fun fib(N,p,i) = if i < 2 then 1 else p[i-1] + p[i-2]
      fun sum(r,z) = r + (if z then 1 else 0)
    
+     dep p(i-1) -> p(i)
+     dep p(i-2) -> p(i)   
+   
      PCR FibPrimes1(N):
        par
-         p = produceSeq fib N
+         p = produce fib N
          forall p
            c = consume isPrime N p
          r = reduce sum 0 c
@@ -26,8 +29,6 @@
 *)
 
 EXTENDS PCRFibPrimes1Types, PCRBase, TLC
-
-VARIABLE im
 
 ----------------------------------------------------------------------------
 
@@ -58,7 +59,7 @@ upperBnd(x) == x
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpaceSeq WITH
+INSTANCE PCRIterationSpace WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
@@ -85,27 +86,21 @@ pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  for (i=LowerBnd(N); i < UpperBnd(N); Step(i))
-            p[i] = fib N            
-   
-   PCR:   p = produceSeq fib N                              
+   PCR:  p = produce fib N                          
 *)
 P(I) == 
-  /\ i_p(I) \in iterator(I)
-  /\ cm' = [cm EXCEPT 
-       ![I].v_p[i_p(I)] = [v |-> fib(in(I), v_p(I), I, i_p(I)), r |-> 0] ]
-  /\ im' = [im EXCEPT 
-       ![I] = step(i_p(I))]          
-\*  /\ PrintT("P" \o ToString(I \o <<i_p(I)>>) \o " : " \o ToString(v_p(I)[i_p(I)].v'))                  
-
+  \E i \in iterator(I) :
+    /\ ~ written(v_p(I), i)
+    /\ i > lowerBnd(in(I))     => written(v_p(I), i-1)
+    /\ i > lowerBnd(in(I)) + 1 => written(v_p(I), i-2)
+    /\ cm' = [cm EXCEPT 
+         ![I].v_p[i] = [v |-> fib(in(I), v_p(I), I, i), r |-> 0]]         
+\*  /\ PrintT("P" \o ToString(I \o <<i>>) \o " : " \o ToString(v_p(I)[i].v'))
 
 (* 
    Consumer action
-   
-   FXML:  forall i \in Dom(p)
-            c[i] = isPrime N p[i]
 
-   PCR:   c = consume isPrime N p
+   PCR:  c = consume isPrime N p
 *)
 C(I) == 
   \E i \in iterator(I) :
@@ -120,9 +115,7 @@ C(I) ==
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce sum 0 c
+   PCR:  c = reduce sum 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -147,15 +140,14 @@ R(I) ==
 Next(I) == 
   \/ /\ state(I) = "OFF" 
      /\ Start(I)
-     /\ UNCHANGED im
-  \/ /\ state(I) = "RUN"  
+  \/ /\ state(I) = "RUN"
      /\ \/ P(I) 
-        \/ C(I)    /\ UNCHANGED im
-        \/ R(I)    /\ UNCHANGED im
-        \/ Quit(I) /\ UNCHANGED im
+        \/ C(I)
+        \/ R(I)
+        \/ Quit(I)
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:53:11 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:08:35 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

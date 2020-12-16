@@ -77,9 +77,6 @@ pre(x) == TRUE
 (* 
    Producer action
 
-   FXML: forall i \in Range(1,Len(W),Step)
-           p[i] = elem W             
-   
    PCR:  p = produce elem W                              
 *)
 P(I) == 
@@ -93,10 +90,7 @@ P(I) ==
 (* 
    Consumer action
    
-   FXML:  forall i \in Dom(p)
-            c[i] = count L p[i] 
-
-   PCR:   c = consume count L
+   PCR:  c = consume count L
 *) 
 C(I) == 
   \E i \in iterator(I) :
@@ -110,10 +104,8 @@ C(I) ==
 
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce joinCounts {} c
+   PCR:  c = reduce joinCounts {} c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -146,6 +138,6 @@ Next(I) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:52:45 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:12:16 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:29:48 UYT 2020 by josed
 \* Created Mon Jul 06 13:22:55 UYT 2020 by josed

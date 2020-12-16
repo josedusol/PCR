@@ -106,11 +106,8 @@ pre(x) == \A r \in DOMAIN x : x[r] = 0
             
 (* 
    Producer action
-   
-   FXML:  forall i \in 1..Len(divide(B))
-            p[i] = id B             
-   
-   PCR:   p = produce id B                            
+
+   PCR:  p = produce id X                           
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -185,6 +182,8 @@ C_end(I) ==
 
 (*
    Consumer iterator action
+   
+   PCR:  c = iterate found NQueensFirstStep [X]
 *)
 C(I) == \/ C_start(I) /\ UNCHANGED cm2        
         \/ C_call(I)  /\ UNCHANGED <<cm,ym>>
@@ -194,9 +193,7 @@ C(I) == \/ C_start(I) /\ UNCHANGED cm2
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce ret {} c
+   PCR:  c = reduce ret {} c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -230,6 +227,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 21:01:06 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:21:33 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

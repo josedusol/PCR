@@ -12,9 +12,12 @@
    
      fun sum(r1,r2) = r1 + (if r2 then 1 else 0)  
    
+     dep p(i-1) -> p(i)
+     dep p(i-2) -> p(i)
+   
      PCR FibPrimes6(N):
        par
-         p = produceSeq fib p     \\ call fib PCR as a function
+         p = produce fib p        \\ call fib PCR as a function
          forall p
            c = consume isPrime p  \\ call isPrime PCR as a function
          r = reduce sum 0 c
@@ -23,7 +26,7 @@
 
 EXTENDS PCRFibPrimes6Types, PCRBase, TLC
 
-VARIABLES cm2, cm3, im, im2 
+VARIABLES cm2, cm3
 
 ----------------------------------------------------------------------------
 
@@ -40,8 +43,7 @@ fib == INSTANCE PCRFib WITH
   VarPType  <- VarPType2,
   VarCType  <- VarCType2,
   VarRType  <- VarRType2,
-  cm        <- cm2,
-  im        <- im2
+  cm        <- cm2
 
 isPrime == INSTANCE PCRIsPrime WITH
   InType    <- InType3,
@@ -63,7 +65,7 @@ upperBnd(x) == x
 step(i)     == i + 1  
 eCnd(r)     == FALSE
  
-INSTANCE PCRIterationSpaceSeq WITH
+INSTANCE PCRIterationSpace WITH
   lowerBnd  <- lowerBnd,
   upperBnd  <- upperBnd,  
   step      <- step
@@ -91,35 +93,36 @@ pre(x) == TRUE
    Producer call action
 *)
 P_call(I) == 
-  /\ i_p(I) \in iterator(I) 
-  /\ ~ fib!wellDef(I \o <<i_p(I)>>)
-  /\ cm2' = [cm2 EXCEPT 
-       ![I \o <<i_p(I)>>] = fib!initCtx(i_p(I))]  
-  /\ im2' = [im2 EXCEPT 
-       ![I \o <<i_p(I)>>] = fib!lowerBnd(i_p(I))]               
-\*  /\ PrintT("P_call" \o ToString(I \o <<i_p(I)>>) 
-\*                     \o " : in= " \o ToString(i_p(I)))
+  \E i \in iterator(I) :
+    /\ i > lowerBnd(in(I))     => written(v_p(I), i-1)
+    /\ i > lowerBnd(in(I)) + 1 => written(v_p(I), i-2)  
+    /\ ~ fib!wellDef(I \o <<i>>)
+    /\ cm2' = [cm2 EXCEPT 
+         ![I \o <<i>>] = fib!initCtx(i) ]                  
+\*    /\ PrintT("P_call" \o ToString(I \o <<i>>) 
+\*                       \o " : in= " \o ToString(i))
 
 (*
    Producer ret action
 *)
 P_ret(I) == 
-  /\ ~ written(v_p(I), i_p(I))
-  /\ fib!wellDef(I \o <<i_p(I)>>)
-  /\ fib!finished(I \o <<i_p(I)>>)
-  /\ cm' = [cm EXCEPT 
-       ![I].v_p[i_p(I)] = [v |-> fib!out(I \o <<i_p(I)>>), r |-> 0]]
-  /\ im' = [im EXCEPT 
-       ![I] = step(i_p(I)) ]     
-\*  /\ PrintT("P_ret" \o ToString(I \o <<i_p(I)>>) 
-\*                    \o " : in= "  \o ToString(fib!in(I \o <<i_p(I)>>))    
-\*                    \o " : ret= " \o ToString(fib!out(I \o <<i_p(I)>>)))
+  \E i \in iterator(I) :
+    /\ ~ written(v_p(I), i)
+    /\ fib!wellDef(I \o <<i>>)
+    /\ fib!finished(I \o <<i>>)
+    /\ cm' = [cm EXCEPT 
+         ![I].v_p[i] = [v |-> fib!out(I \o <<i>>), r |-> 0]] 
+\*  /\ PrintT("P_ret" \o ToString(I \o <<i>>) 
+\*                    \o " : in= "  \o ToString(fib!in(I \o <<i>>))    
+\*                    \o " : ret= " \o ToString(fib!out(I \o <<i>>)))
+
+
 
 (*
    Producer action
 *)
-P(I) == \/ P_call(I) /\ UNCHANGED <<cm,cm3,im>>
-        \/ P_ret(I)  /\ UNCHANGED <<cm2,cm3,im2>> 
+P(I) == \/ P_call(I) /\ UNCHANGED <<cm,cm3>>
+        \/ P_ret(I)  /\ UNCHANGED <<cm2,cm3>> 
 
 (*
    Consumer call action
@@ -153,15 +156,13 @@ C_ret(I) ==
 (*
    Consumer action
 *)
-C(I) == \/ C_call(I) /\ UNCHANGED <<cm2,im,im2>>
-        \/ C_ret(I)  /\ UNCHANGED <<cm2,cm3,im,im2>>   
+C(I) == \/ C_call(I) /\ UNCHANGED <<cm2>>
+        \/ C_ret(I)  /\ UNCHANGED <<cm2,cm3>>   
 
 (* 
    Reducer action
-   
-   FXML:  ...
 
-   PCR:   c = reduce sum 0 c
+   PCR:  c = reduce sum 0 c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -186,15 +187,15 @@ R(I) ==
 Next(I) == 
   \/ /\ state(I) = "OFF" 
      /\ Start(I)   
-     /\ UNCHANGED <<cm2,cm3,im,im2>>
+     /\ UNCHANGED <<cm2,cm3>>
   \/ /\ state(I) = "RUN" 
      /\ \/ P(I)
         \/ C(I)
-        \/ R(I)    /\ UNCHANGED <<cm2,cm3,im,im2>>
-        \/ Quit(I) /\ UNCHANGED <<cm2,cm3,im,im2>>           
+        \/ R(I)    /\ UNCHANGED <<cm2,cm3>>
+        \/ Quit(I) /\ UNCHANGED <<cm2,cm3>>           
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 20:54:50 UYT 2020 by josedu
+\* Last modified Wed Dec 16 15:10:57 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

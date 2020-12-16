@@ -36,6 +36,8 @@ EXTENDS PCRQuickSortTypes, PCRBase, TLC
    Basic functions                 
 *)
 
+\* To improve QuickSort data partition the following can be used
+\*
 \*Position(s, e) == CHOOSE i \in 1..Len(s) : s[i] = e
 \*
 \*max(a, b) == IF a >= b THEN a ELSE b
@@ -122,10 +124,7 @@ pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(divide(B))
-            p[j] = divide L             
-   
-   PCR:   p = produce divide L                              
+   PCR:  p = produce iterDivide X                              
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -179,6 +178,8 @@ C_ret(I) ==
 
 (*
    Consumer action
+   
+   PCR:  c = consume subproblem X p
 *)
 C(I) == \/ C_base(I)
         \/ C_call(I) 
@@ -187,9 +188,7 @@ C(I) == \/ C_base(I)
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce [] conquer c
+   PCR:  c = reduce [] conquer c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -222,6 +221,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 21:01:25 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:26:08 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

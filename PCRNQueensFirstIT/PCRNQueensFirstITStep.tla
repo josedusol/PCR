@@ -22,7 +22,7 @@
        
      PCR NQueensFirstITStep(X : {[Nat]}) : {[Nat]}
        par
-         p = produce elem B
+         p = produce elem X
          forall p
            c = consume extend X p
          r = reduce eureka union {} c   
@@ -138,10 +138,7 @@ pre(x) == TRUE
 (* 
    Producer action
    
-   FXML:  forall i \in 1..Len(B)
-            c[i] = elem B[i]             
-   
-   PCR:   c = produce elem B                            
+   PCR:  c = produce elem X                            
 *)
 P(I) == 
   \E i \in iterator(I) : 
@@ -153,10 +150,7 @@ P(I) ==
 (* 
    Consumer action
    
-   FXML:  forall i \in Dom(p)
-            cs[i] = extend B c[i]
-
-   PCR:   cs = consume extend B c
+   PCR:  c = consume extend X p
 *)
 C(I) == 
   \E i \in iterator(I) :
@@ -171,9 +165,7 @@ C(I) ==
 (* 
    Reducer action
    
-   FXML:  ...
-
-   PCR:   c = reduce eureka union {} c 
+   PCR:  c = reduce eureka union {} c
 *)
 R(I) == 
   \E i \in iterator(I) :
@@ -206,6 +198,6 @@ Next(I) ==
  
 =============================================================================
 \* Modification History
-\* Last modified Tue Dec 15 21:01:14 UYT 2020 by josedu
+\* Last modified Wed Dec 16 16:22:33 UYT 2020 by josedu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed
