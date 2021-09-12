@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.lamport.tla.toolbox.tool.tlc.modelCheck">
+    <stringAttribute key="TLCCmdLineParameters" value=""/>
+    <stringAttribute key="alias" value=""/>
+    <intAttribute key="collectCoverage" value="0"/>
+    <stringAttribute key="configurationName" value="PCRMatrixVector_N2_one"/>
+    <booleanAttribute key="deferLiveness" value="false"/>
+    <intAttribute key="dfidDepth" value="100"/>
+    <booleanAttribute key="dfidMode" value="false"/>
+    <intAttribute key="distributedFPSetCount" value="0"/>
+    <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
+    <intAttribute key="distributedNodesCount" value="1"/>
+    <stringAttribute key="distributedTLC" value="off"/>
+    <stringAttribute key="distributedTLCVMArgs" value=""/>
+    <intAttribute key="fpBits" value="1"/>
+    <intAttribute key="fpIndex" value="22"/>
+    <booleanAttribute key="fpIndexRandom" value="true"/>
+    <intAttribute key="maxHeapSize" value="25"/>
+    <intAttribute key="maxSetSize" value="1000000"/>
+    <booleanAttribute key="mcMode" value="true"/>
+    <stringAttribute key="modelBehaviorInit" value=""/>
+    <stringAttribute key="modelBehaviorNext" value=""/>
+    <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
+    <intAttribute key="modelBehaviorSpecType" value="1"/>
+    <stringAttribute key="modelBehaviorVars" value="X, c, p, r, in, red, ys"/>
+    <stringAttribute key="modelComments" value=""/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
+    <listAttribute key="modelCorrectnessInvariants">
+        <listEntry value="0TypeInv"/>
+        <listEntry value="0Inv"/>
+    </listAttribute>
+    <listAttribute key="modelCorrectnessProperties">
+        <listEntry value="0Correctness"/>
+        <listEntry value="0Termination"/>
+        <listEntry value="0SemA!Spec"/>
+        <listEntry value="0SemA!FairSpec"/>
+    </listAttribute>
+    <intAttribute key="modelEditorOpenTabs" value="14"/>
+    <stringAttribute key="modelExpressionEval" value=""/>
+    <stringAttribute key="modelParameterActionConstraint" value=""/>
+    <listAttribute key="modelParameterConstants">
+        <listEntry value="lBnd;x:;1;0;0"/>
+        <listEntry value="uBnd;x:;x[1];0;0"/>
+        <listEntry value="prop;i:;TRUE;0;0"/>
+        <listEntry value="pre;x:;/\ Cardinality(DOMAIN x[2]) = x[1] * x[1]  &#13;&#10;/\ Len(x[3]) = x[1];0;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
+        <listEntry value="cnd;yv:k:;LET n == yv[k][1][1]&#13;&#10;    j == yv[k][3]&#13;&#10;IN j &gt;= n;0;0"/>
+        <listEntry value="I0;;&lt;&lt;&gt;&gt;;0;0"/>
+        <listEntry value="Op;x:y:;vecSum(x,y);0;0"/>
+        <listEntry value="D;;VarRType;0;0"/>
+        <listEntry value="T;;InType;0;0"/>
+        <listEntry value="Tp;;VarPType;0;0"/>
+        <listEntry value="fc;z:;LET mtx == z[1][2]&#13;&#10;    vec == z[1][3]&#13;&#10;    i   == z[2]&#13;&#10;    j   == z[3]+1&#13;&#10;    v   == z[4]&#13;&#10;IN &lt;&lt;z[1],i,j, v + (mtx[&lt;&lt;i,j&gt;&gt;] * vec[i])&gt;&gt;;0;0"/>
+        <listEntry value="fp;x:vp:i:;&lt;&lt;x,i,0,0&gt;&gt;;0;0"/>
+        <listEntry value="fr;x:vc:i:;LET n == x[1]&#13;&#10;    v == vc[i][4]&#13;&#10;IN [k \in 1..n |-&gt; IF k = i THEN v ELSE 0];0;0"/>
+        <listEntry value="gp;x:i:;fp(x,p,i);0;0"/>
+        <listEntry value="Dep_cr;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
+        <listEntry value="id;;&lt;&lt;0,0&gt;&gt;;0;0"/>
+        <listEntry value="Dep_p;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterContraint" value="/\ X[1] = 2&#13;&#10;/\ X[2] =  (&lt;&lt;1, 1&gt;&gt; :&gt; 1 @@ &lt;&lt;1, 2&gt;&gt; :&gt; 1&#13;&#10;         @@ &lt;&lt;2, 1&gt;&gt; :&gt; 0 @@ &lt;&lt;2, 2&gt;&gt; :&gt; 2) &#13;&#10;/\ X[3] = &lt;&lt;1,1&gt;&gt;"/>
+    <listAttribute key="modelParameterDefinitions">
+        <listEntry value="Index;;{I0};0;0"/>
+        <listEntry value="Assig;;{1,2};0;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterModelValues" value="{}"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 2&#13;&#10;MaxNum == 3&#13;&#10;MaxProd == MaxNum*MaxNum*N&#13;&#10;Pos == {&lt;&lt;x, y&gt;&gt; : x, y \in 1..N}&#13;&#10;Matrix == [Pos -&gt; 0..MaxNum]&#13;&#10;VecIn  == [1..N -&gt; 0..MaxNum]&#13;&#10;VecOut == [1..N -&gt; 0..MaxProd]&#13;&#10;Ass == 1..N&#13;&#10;IterI == 0..N&#13;&#10;Value == 0..MaxProd&#13;&#10;In1Type  == {N}&#13;&#10;In2Type  == Matrix&#13;&#10;In3Type  == VecIn&#13;&#10;InType   == In1Type \X In2Type \X In3Type&#13;&#10;VarPType == InType \X Ass \X IterI \X Value  &#13;&#10;VarCType == InType \X Ass \X IterI \X Value&#13;&#10;VarRType == VecOut"/>
+    <intAttribute key="modelVersion" value="20191005"/>
+    <intAttribute key="numberOfWorkers" value="2"/>
+    <stringAttribute key="postCondition" value=""/>
+    <booleanAttribute key="recover" value="false"/>
+    <stringAttribute key="result.mail.address" value=""/>
+    <intAttribute key="simuAril" value="-1"/>
+    <intAttribute key="simuDepth" value="100"/>
+    <stringAttribute key="simuNumTraces" value="9223372036854775807"/>
+    <intAttribute key="simuSeed" value="-1"/>
+    <stringAttribute key="specName" value="PCR_A_it"/>
+    <stringAttribute key="tlcResourcesProfile" value="local custom"/>
+    <listAttribute key="traceExploreExpressions">
+        <listEntry value="0\A i \in iterator : red[i]"/>
+        <listEntry value="0finished"/>
+        <listEntry value="1UNCHANGED vars"/>
+    </listAttribute>
+    <stringAttribute key="view" value=""/>
+    <booleanAttribute key="visualizeStateGraph" value="false"/>
+</launchConfiguration>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.lamport.tla.toolbox.tool.tlc.modelCheck">
+    <stringAttribute key="TLCCmdLineParameters" value=""/>
+    <stringAttribute key="alias" value=""/>
+    <intAttribute key="collectCoverage" value="0"/>
+    <stringAttribute key="configurationName" value="PCRNQueensAllDC"/>
+    <booleanAttribute key="deferLiveness" value="false"/>
+    <intAttribute key="dfidDepth" value="100"/>
+    <booleanAttribute key="dfidMode" value="false"/>
+    <intAttribute key="distributedFPSetCount" value="0"/>
+    <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
+    <intAttribute key="distributedNodesCount" value="1"/>
+    <stringAttribute key="distributedTLC" value="off"/>
+    <stringAttribute key="distributedTLCVMArgs" value=""/>
+    <intAttribute key="fpBits" value="1"/>
+    <intAttribute key="fpIndex" value="7"/>
+    <booleanAttribute key="fpIndexRandom" value="true"/>
+    <intAttribute key="maxHeapSize" value="25"/>
+    <intAttribute key="maxSetSize" value="1000000"/>
+    <booleanAttribute key="mcMode" value="true"/>
+    <stringAttribute key="modelBehaviorInit" value=""/>
+    <stringAttribute key="modelBehaviorNext" value=""/>
+    <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
+    <intAttribute key="modelBehaviorSpecType" value="1"/>
+    <stringAttribute key="modelBehaviorVars" value="X, c, p, r, in, rs"/>
+    <stringAttribute key="modelComments" value=""/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
+    <listAttribute key="modelCorrectnessInvariants">
+        <listEntry value="1Inv"/>
+        <listEntry value="0TypeInv"/>
+    </listAttribute>
+    <listAttribute key="modelCorrectnessProperties">
+        <listEntry value="0Termination"/>
+        <listEntry value="1Correctness"/>
+    </listAttribute>
+    <intAttribute key="modelEditorOpenTabs" value="14"/>
+    <stringAttribute key="modelExpressionEval" value=""/>
+    <stringAttribute key="modelParameterActionConstraint" value=""/>
+    <listAttribute key="modelParameterConstants">
+        <listEntry value="I0;;&lt;&lt;&gt;&gt;;0;0"/>
+        <listEntry value="pre;x:;\A k \in DOMAIN x : x[k] = 0;0;0"/>
+        <listEntry value="div;x:;LET N_ == Len(x)&#13;&#10;    rec[k \in Nat] ==&#13;&#10;        IF k &lt;= N_&#13;&#10;        THEN IF canAddQueenInRow(x, k)&#13;&#10;             THEN &lt;&lt;addQueenInRow(x, k)&gt;&gt; \o rec[k+1]&#13;&#10;             ELSE rec[k+1]&#13;&#10;        ELSE &lt;&lt;&gt;&gt; &#13;&#10;IN rec[1];0;0"/>
+        <listEntry value="D;;VarRType;0;0"/>
+        <listEntry value="T;;InType;0;0"/>
+        <listEntry value="fr;x:vc:i:;vc[i];0;0"/>
+        <listEntry value="Op;x:y:;x \union y;0;0"/>
+        <listEntry value="isBase;x:vp:i:;complete(vp[i]) \/ ~ canAddQueens(vp[i]);0;0"/>
+        <listEntry value="base;x:vp:i:;IF complete(vp[i]) THEN { vp[i] } ELSE {};0;0"/>
+        <listEntry value="Dep_cr;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
+        <listEntry value="id;;{};0;0"/>
+        <listEntry value="Dep_pc;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterContraint" value=""/>
+    <listAttribute key="modelParameterDefinitions">
+        <listEntry value="Nat;;0..N+1;0;0"/>
+        <listEntry value="Index;;UNION {[1..n -&gt; Assig] : n \in Size};0;0"/>
+        <listEntry value="Assig;;1..N;0;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterModelValues" value="{}"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 3&#13;&#10;Size == 0..N&#13;&#10;Config == UNION {[1..n -&gt; 0..N] : n \in Size}   &#13;&#10;InType   == Config&#13;&#10;VarPType == Config &#13;&#10;VarCType == SUBSET Config&#13;&#10;VarRType == SUBSET Config&#13;&#10;canAddQueenInCell(x, rw, cl) == &#13;&#10;  /\ x[rw] = 0               &#13;&#10;  /\ \A k \in DOMAIN x : x[k] # cl  &#13;&#10;  /\ \A k \in DOMAIN x :           &#13;&#10;        x[k] # 0 =&gt; abs(x[k] - cl) # abs(k - rw)                   &#13;&#10;addQueen(x, k, cl) == [x EXCEPT ![k] = cl]                         &#13;&#10;addQueenInRow(x, k) == &#13;&#10;  LET n == Len(x)&#13;&#10;      F[cl \in Nat] ==&#13;&#10;        IF cl &lt;= n&#13;&#10;        THEN IF canAddQueenInCell(x, k, cl)&#13;&#10;             THEN addQueen(x, k, cl)&#13;&#10;             ELSE F[cl+1]&#13;&#10;        ELSE x &#13;&#10;  IN F[1]&#13;&#10;canAddQueenInRow(x, k) == &#13;&#10;  LET n == Len(x)&#13;&#10;      F[cl \in Nat] ==&#13;&#10;        IF cl &lt;= n&#13;&#10;        THEN canAddQueenInCell(x, k, cl) \/ F[cl+1] &#13;&#10;        ELSE FALSE &#13;&#10;  IN F[1]      &#13;&#10;canAddQueens(x) == &#13;&#10;  LET n == Len(x)&#13;&#10;      F[k \in Nat] ==&#13;&#10;        IF k &lt;= n&#13;&#10;        THEN IF x[k] = 0&#13;&#10;             THEN canAddQueenInRow(x, k) /\ F[k+1] &#13;&#10;             ELSE F[k+1]&#13;&#10;        ELSE TRUE &#13;&#10;  IN F[1] &#13;&#10;divide(x) == &#13;&#10;  LET n == Len(x)&#13;&#10;      F[k \in Nat] ==&#13;&#10;        IF k &lt;= n&#13;&#10;        THEN IF canAddQueenInRow(x, k)&#13;&#10;             THEN &lt;&lt;addQueenInRow(x, k)&gt;&gt; \o F[k+1]&#13;&#10;             ELSE F[k+1]&#13;&#10;        ELSE &lt;&lt;&gt;&gt; &#13;&#10;  IN F[1]&#13;&#10;complete(cfg) == \A k \in DOMAIN cfg : cfg[k] # 0"/>
+    <intAttribute key="modelVersion" value="20191005"/>
+    <intAttribute key="numberOfWorkers" value="2"/>
+    <stringAttribute key="postCondition" value=""/>
+    <booleanAttribute key="recover" value="false"/>
+    <stringAttribute key="result.mail.address" value=""/>
+    <intAttribute key="simuAril" value="-1"/>
+    <intAttribute key="simuDepth" value="100"/>
+    <stringAttribute key="simuNumTraces" value="9223372036854775807"/>
+    <intAttribute key="simuSeed" value="-1"/>
+    <stringAttribute key="specName" value="PCR_DC"/>
+    <stringAttribute key="tlcResourcesProfile" value="local custom"/>
+    <listAttribute key="traceExploreExpressions">
+        <listEntry value="0WDIndex"/>
+        <listEntry value="1SUBSET Config"/>
+    </listAttribute>
+    <stringAttribute key="view" value=""/>
+    <booleanAttribute key="visualizeStateGraph" value="false"/>
+</launchConfiguration>

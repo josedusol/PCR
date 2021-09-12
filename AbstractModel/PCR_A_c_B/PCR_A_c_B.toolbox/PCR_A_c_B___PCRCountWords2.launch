@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.lamport.tla.toolbox.tool.tlc.modelCheck">
+    <stringAttribute key="TLCCmdLineParameters" value=""/>
+    <stringAttribute key="alias" value=""/>
+    <intAttribute key="collectCoverage" value="0"/>
+    <stringAttribute key="configurationName" value="PCRCountWords2"/>
+    <booleanAttribute key="deferLiveness" value="false"/>
+    <intAttribute key="dfidDepth" value="100"/>
+    <booleanAttribute key="dfidMode" value="false"/>
+    <intAttribute key="distributedFPSetCount" value="0"/>
+    <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
+    <intAttribute key="distributedNodesCount" value="1"/>
+    <stringAttribute key="distributedTLC" value="off"/>
+    <stringAttribute key="distributedTLCVMArgs" value=""/>
+    <intAttribute key="fpBits" value="1"/>
+    <intAttribute key="fpIndex" value="73"/>
+    <booleanAttribute key="fpIndexRandom" value="true"/>
+    <intAttribute key="maxHeapSize" value="25"/>
+    <intAttribute key="maxSetSize" value="1000000"/>
+    <booleanAttribute key="mcMode" value="true"/>
+    <stringAttribute key="modelBehaviorInit" value=""/>
+    <stringAttribute key="modelBehaviorNext" value=""/>
+    <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
+    <intAttribute key="modelBehaviorSpecType" value="1"/>
+    <stringAttribute key="modelBehaviorVars" value="c1, c2, in, p1, p2, red1, red2, X1, X2, out1, out2"/>
+    <stringAttribute key="modelComments" value=""/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
+    <listAttribute key="modelCorrectnessInvariants">
+        <listEntry value="0Inv"/>
+    </listAttribute>
+    <listAttribute key="modelCorrectnessProperties">
+        <listEntry value="0Termination"/>
+        <listEntry value="0Correctness"/>
+        <listEntry value="1SemA!Spec"/>
+        <listEntry value="0SemA!FairSpec"/>
+    </listAttribute>
+    <intAttribute key="modelEditorOpenTabs" value="14"/>
+    <stringAttribute key="modelExpressionEval" value=""/>
+    <stringAttribute key="modelParameterActionConstraint" value=""/>
+    <listAttribute key="modelParameterConstants">
+        <listEntry value="T0;;InType1;0;0"/>
+        <listEntry value="T1;;VarPType1;0;0"/>
+        <listEntry value="T2;;VarPType2;0;0"/>
+        <listEntry value="Id1;;EmptyBag;0;0"/>
+        <listEntry value="Id2;;EmptyBag;0;0"/>
+        <listEntry value="Dom1;;VarRType1;0;0"/>
+        <listEntry value="Dom2;;VarRType2;0;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
+        <listEntry value="f1;x1:i:;x1[1][i];0;0"/>
+        <listEntry value="pre;x1:;TRUE;0;0"/>
+        <listEntry value="f2;x1:c1_i:i:;c1_i;0;0"/>
+        <listEntry value="Op1;x:y:;x (+) y;0;0"/>
+        <listEntry value="Op2;x:y:;x (+) y;0;0"/>
+        <listEntry value="prop1;i:;TRUE;0;0"/>
+        <listEntry value="prop2;j:;TRUE;0;0"/>
+        <listEntry value="uBnd1;x1:;Len(x1[1]);0;0"/>
+        <listEntry value="uBnd2;x2:;Len(x2[1][2]);0;0"/>
+        <listEntry value="lBnd1;x1:;1;0;0"/>
+        <listEntry value="lBnd2;x2:;1;0;0"/>
+        <listEntry value="g1;x2:j:;x2[1][2][j];0;0"/>
+        <listEntry value="g2;x2:p2_j:j:;LET w == p2_j&#13;&#10;    l == x2[2]&#13;&#10;IN  IF   w \in Range(l) &#13;&#10;    THEN w :&gt; Cardinality({n \in DOMAIN l : l[n] = w})&#13;&#10;    ELSE EmptyBag;0;0"/>
+        <listEntry value="g3;x2:c2_j:j:;c2_j;0;0"/>
+        <listEntry value="T3;;VarCType2;0;0"/>
+        <listEntry value="I0;;&lt;&lt;&gt;&gt;;0;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterContraint" value=""/>
+    <listAttribute key="modelParameterDefinitions">
+        <listEntry value="Nat;;NatMock2;0;0"/>
+        <listEntry value="IndexB;;{&lt;&lt;i&gt;&gt; : i \in 1..Len(X1[I0][1])};0;0"/>
+        <listEntry value="IndexA;;{I0};0;0"/>
+        <listEntry value="SemA!Index;;IndexA;0;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterModelValues" value="{}"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="NatMock1 == 0..2&#13;&#10;NatMock2 == 0..8&#13;&#10;Word == 0..1&#13;&#10;Bags(S) == UNION {[s -&gt; NatMock2\{0}] : s \in SUBSET S}&#13;&#10;LType == UNION {[1..k -&gt; Word] : k \in NatMock1}&#13;&#10;TType == UNION {[1..k -&gt; LType] : k \in NatMock1}&#13;&#10;WType == LType&#13;&#10;InType1 == TType \X WType&#13;&#10;VarPType1 == LType&#13;&#10;VarCType1 == Bags(Word) &#13;&#10;VarRType1 == Bags(Word)&#13;&#10;InType2   == InType1 \X LType&#13;&#10;VarPType2 == Word &#13;&#10;VarCType2 == Bags(Word) &#13;&#10;VarRType2 == Bags(Word)&#13;&#10;count(l, w) ==&#13;&#10;  IF   w \in Range(l) &#13;&#10;  THEN w :&gt; Cardinality({k \in DOMAIN l : l[k] = w})&#13;&#10;  ELSE EmptyBag"/>
+    <intAttribute key="modelVersion" value="20191005"/>
+    <intAttribute key="numberOfWorkers" value="2"/>
+    <stringAttribute key="postCondition" value=""/>
+    <booleanAttribute key="recover" value="false"/>
+    <stringAttribute key="result.mail.address" value=""/>
+    <intAttribute key="simuAril" value="-1"/>
+    <intAttribute key="simuDepth" value="100"/>
+    <stringAttribute key="simuNumTraces" value="9223372036854775807"/>
+    <intAttribute key="simuSeed" value="-1"/>
+    <stringAttribute key="specName" value="PCR_A_c_B"/>
+    <stringAttribute key="tlcResourcesProfile" value="local custom"/>
+    <listAttribute key="traceExploreExpressions">
+        <listEntry value="1Sem1!Index"/>
+        <listEntry value="1ENABLED &lt;&lt;Sem1!P(&lt;&lt;1&gt;&gt;)&gt;&gt;_Sem1!vars"/>
+        <listEntry value="0[Sem1!Next]_Sem1!vars"/>
+        <listEntry value="0Sem1!vars"/>
+        <listEntry value="0Sem1!P(&lt;&lt;1&gt;&gt;)"/>
+        <listEntry value="1/\ wrt(p1[&lt;&lt;1&gt;&gt;]) &#13;&#10;/\ ~ wrt(cS[&lt;&lt;1&gt;&gt;])"/>
+        <listEntry value="1UNCHANGED &lt;&lt;X1,p1,red1,out1&gt;&gt;"/>
+    </listAttribute>
+    <setAttribute key="traceExploreExtends"/>
+    <stringAttribute key="view" value=""/>
+    <booleanAttribute key="visualizeStateGraph" value="false"/>
+</launchConfiguration>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.lamport.tla.toolbox.tool.tlc.modelCheck">
+    <stringAttribute key="TLCCmdLineParameters" value=""/>
+    <stringAttribute key="alias" value=""/>
+    <intAttribute key="collectCoverage" value="0"/>
+    <stringAttribute key="configurationName" value="PCRMergeSort2"/>
+    <booleanAttribute key="deferLiveness" value="false"/>
+    <intAttribute key="dfidDepth" value="100"/>
+    <booleanAttribute key="dfidMode" value="false"/>
+    <intAttribute key="distributedFPSetCount" value="0"/>
+    <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
+    <intAttribute key="distributedNodesCount" value="1"/>
+    <stringAttribute key="distributedTLC" value="off"/>
+    <stringAttribute key="distributedTLCVMArgs" value=""/>
+    <intAttribute key="fpBits" value="1"/>
+    <intAttribute key="fpIndex" value="0"/>
+    <booleanAttribute key="fpIndexRandom" value="true"/>
+    <intAttribute key="maxHeapSize" value="25"/>
+    <intAttribute key="maxSetSize" value="1000000"/>
+    <booleanAttribute key="mcMode" value="true"/>
+    <stringAttribute key="modelBehaviorInit" value=""/>
+    <stringAttribute key="modelBehaviorNext" value=""/>
+    <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
+    <intAttribute key="modelBehaviorSpecType" value="1"/>
+    <stringAttribute key="modelBehaviorVars" value="c1, c2, in, p1, p2, r1, r2, rs1, rs2, X1, X2"/>
+    <stringAttribute key="modelComments" value=""/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
+    <listAttribute key="modelCorrectnessInvariants">
+        <listEntry value="1Inv"/>
+        <listEntry value="0TypeInv"/>
+    </listAttribute>
+    <listAttribute key="modelCorrectnessProperties">
+        <listEntry value="0TerminationA"/>
+        <listEntry value="1CorrectnessA"/>
+        <listEntry value="0SemDC!Spec"/>
+        <listEntry value="0SemDC!FairSpec"/>
+        <listEntry value="0CorrectnessB"/>
+        <listEntry value="0TerminationB"/>
+    </listAttribute>
+    <intAttribute key="modelEditorOpenTabs" value="14"/>
+    <stringAttribute key="modelExpressionEval" value=""/>
+    <stringAttribute key="modelParameterActionConstraint" value=""/>
+    <listAttribute key="modelParameterConstants">
+        <listEntry value="I0;;&lt;&lt;&gt;&gt;;0;0"/>
+        <listEntry value="pre;x:;TRUE;0;0"/>
+        <listEntry value="div1;x1:;LET mid == Len(x1) \div 2&#13;&#10;IN  &lt;&lt; SubSeq(x1, 1, mid),  SubSeq(x1, mid+1, Len(x1)) &gt;&gt;;0;0"/>
+        <listEntry value="div2;x2:;LET X_ == IF Len(x2[1]) &gt;= Len(x2[2]) THEN x2[1] ELSE x2[2]  &#13;&#10;    Y  == IF Len(x2[1]) &gt;= Len(x2[2]) THEN x2[2] ELSE x2[1] &#13;&#10;IN IF isBaseCase(X_,Y) &#13;&#10;   THEN &lt;&lt; &lt;&lt;X_,Y&gt;&gt;, &lt;&lt;&lt;&lt;&gt;&gt;,&lt;&lt;&gt;&gt;&gt;&gt; &gt;&gt;&#13;&#10;   ELSE LET X_m == (Len(X_) + 1) \div 2                        \* 1. Split X in two parts X1 and X2&#13;&#10;            X1_ == SubSeq(X_, 1, X_m) &#13;&#10;            X2_ == SubSeq(X_, X_m+1, Len(X_)) &#13;&#10;            k   == X2_[1]                                      \* 2. Take X2[1] and search its position in Y&#13;&#10;            Y_m == binarySearch(Y, k)&#13;&#10;            Y1  == CASE Y_m = -1     -&gt; &lt;&lt; &gt;&gt;                  \* 3. Split Y in that position&#13;&#10;                     [] Y_m &gt; Len(Y) -&gt; Y&#13;&#10;                     [] OTHER        -&gt; SubSeq(Y, 1, Y_m-1)                          &#13;&#10;            Y2  == CASE Y_m = -1     -&gt; Y                        &#13;&#10;                     [] Y_m &gt; Len(Y) -&gt; &lt;&lt; &gt;&gt;&#13;&#10;                     [] OTHER        -&gt; SubSeq(Y, Y_m, Len(Y))   &#13;&#10;        IN  &lt;&lt; &lt;&lt;X1_,Y1&gt;&gt;, &lt;&lt;X2_,Y2&gt;&gt; &gt;&gt;                       \* Produce two sub-merges;0;0"/>
+        <listEntry value="D;;VarRType1;0;0"/>
+        <listEntry value="T;;InType1;0;0"/>
+        <listEntry value="fr1;x1:vc1:i:;vc1[i];0;0"/>
+        <listEntry value="fr2;x2:vc2:j:;vc2[j];0;0"/>
+        <listEntry value="base1;x1:vp1:i:;vp1[i];0;0"/>
+        <listEntry value="base2;x2:vp2:j:;LET X_ == vp2[j][1]  &#13;&#10;    Y  == vp2[j][2]&#13;&#10;IN IF Len(Y) = 0 &#13;&#10;   THEN X_ &#13;&#10;   ELSE IF X_[1] &lt;= Y[1]       \* Order two unitary lists&#13;&#10;        THEN &lt;&lt;X_[1], Y[1]&gt;&gt;  &#13;&#10;        ELSE &lt;&lt;Y[1],  X_[1]&gt;&gt;;0;0"/>
+        <listEntry value="isBase1;x1:vp1:i:;Len(vp1[i]) &lt;= 1;0;0"/>
+        <listEntry value="isBase2;x2:vp2:j:;isBaseCase(vp2[j][1], vp2[j][2]);0;0"/>
+        <listEntry value="id;;&lt;&lt;&gt;&gt;;0;0"/>
+        <listEntry value="Dep_pc1;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
+        <listEntry value="Dep_pc2;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
+        <listEntry value="Op2;x:y:;x \o y;0;0"/>
+        <listEntry value="Dep_cr1;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
+        <listEntry value="Dep_cr2;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterContraint" value=""/>
+    <listAttribute key="modelParameterDefinitions">
+        <listEntry value="Nat;;0..3;0;0"/>
+        <listEntry value="IndexA;;UNION {[1..n -&gt; AssigA] : n \in 0..2};0;0"/>
+        <listEntry value="IndexB;;IndexA \X UNION {[1..n -&gt; AssigB] : n \in 1..4};0;0"/>
+        <listEntry value="AssigA;;1..2;0;0"/>
+        <listEntry value="AssigB;;AssigA;0;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
+        <listEntry value="PCR_DC!Index;;IndexA;0;0"/>
+        <listEntry value="PCR_DC!Assig;;AssigA;0;0"/>
+        <listEntry value="PCR_DC!Undef;;Undef;0;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterModelValues" value="{}"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="Elem == 0..2&#13;&#10;InType1 == UNION {[1..n -&gt; Elem] : n \in 0..3}&#13;&#10;VarPType1 == InType1&#13;&#10;VarCType1 == InType1&#13;&#10;VarRType1 == InType1&#13;&#10;In1Type2 == InType1&#13;&#10;In2Type2 == InType1&#13;&#10;InType2  == In1Type2 \X In2Type2&#13;&#10;VarPType2 == InType2&#13;&#10;VarCType2 == Seq(Elem)&#13;&#10;VarRType2 == Seq(Elem)&#13;&#10;binarySearch(seq, e) ==&#13;&#10;  LET F[s \in Seq(Elem)] == &#13;&#10;    IF s = &lt;&lt; &gt;&gt; &#13;&#10;    THEN -1&#13;&#10;    ELSE LET m == (Len(s) + 1) \div 2&#13;&#10;         IN  CASE  e = s[m]  -&gt;  m&#13;&#10;               []  e &lt; s[m]  -&gt;  F[SubSeq(s, 1, m-1)]&#13;&#10;               []  e &gt; s[m]  -&gt;  LET pv == F[SubSeq(s, m+1, Len(s))]&#13;&#10;                                 IN  IF pv &gt; -1 THEN pv + m ELSE m - pv&#13;&#10;  IN F[seq]&#13;&#10;isOrdered(s) == &#13;&#10;  \/ Len(s) &lt;= 1&#13;&#10;  \/ LET n == 2..Len(s) IN \A k \in n: s[k-1] &lt;= s[k]&#13;&#10;isBaseCase(x,y) == Len(x) &lt;= 1 /\ Len(y) &lt;= 1"/>
+    <intAttribute key="modelVersion" value="20191005"/>
+    <intAttribute key="numberOfWorkers" value="2"/>
+    <stringAttribute key="postCondition" value=""/>
+    <booleanAttribute key="recover" value="false"/>
+    <stringAttribute key="result.mail.address" value=""/>
+    <intAttribute key="simuAril" value="-1"/>
+    <intAttribute key="simuDepth" value="100"/>
+    <stringAttribute key="simuNumTraces" value="9223372036854775807"/>
+    <intAttribute key="simuSeed" value="-1"/>
+    <stringAttribute key="specName" value="PCR_DC_r_DCrLeft"/>
+    <stringAttribute key="tlcResourcesProfile" value="local custom"/>
+    <listAttribute key="traceExploreExpressions">
+        <listEntry value="0WDIndexA"/>
+        <listEntry value="0IndexB_(&lt;&lt;&gt;&gt;)"/>
+        <listEntry value="0endB(&lt;&lt;2&gt;&gt;)"/>
+        <listEntry value="1R1_end(&lt;&lt;1&gt;&gt;)"/>
+    </listAttribute>
+    <stringAttribute key="view" value=""/>
+    <booleanAttribute key="visualizeStateGraph" value="false"/>
+</launchConfiguration>

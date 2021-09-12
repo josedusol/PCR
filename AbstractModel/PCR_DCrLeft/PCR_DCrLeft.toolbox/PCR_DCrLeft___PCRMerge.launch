@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.lamport.tla.toolbox.tool.tlc.modelCheck">
+    <stringAttribute key="TLCCmdLineParameters" value=""/>
+    <stringAttribute key="alias" value=""/>
+    <intAttribute key="collectCoverage" value="0"/>
+    <stringAttribute key="configurationName" value="PCRMerge"/>
+    <booleanAttribute key="deferLiveness" value="false"/>
+    <intAttribute key="dfidDepth" value="100"/>
+    <booleanAttribute key="dfidMode" value="false"/>
+    <intAttribute key="distributedFPSetCount" value="0"/>
+    <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
+    <intAttribute key="distributedNodesCount" value="1"/>
+    <stringAttribute key="distributedTLC" value="off"/>
+    <stringAttribute key="distributedTLCVMArgs" value=""/>
+    <intAttribute key="fpBits" value="1"/>
+    <intAttribute key="fpIndex" value="0"/>
+    <booleanAttribute key="fpIndexRandom" value="true"/>
+    <intAttribute key="maxHeapSize" value="25"/>
+    <intAttribute key="maxSetSize" value="1000000"/>
+    <booleanAttribute key="mcMode" value="true"/>
+    <stringAttribute key="modelBehaviorInit" value=""/>
+    <stringAttribute key="modelBehaviorNext" value=""/>
+    <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
+    <intAttribute key="modelBehaviorSpecType" value="1"/>
+    <stringAttribute key="modelBehaviorVars" value="X, c, p, r, in, rs"/>
+    <stringAttribute key="modelComments" value=""/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
+    <listAttribute key="modelCorrectnessInvariants">
+        <listEntry value="1Inv"/>
+    </listAttribute>
+    <listAttribute key="modelCorrectnessProperties">
+        <listEntry value="0Termination"/>
+        <listEntry value="1Correctness"/>
+        <listEntry value="0[](\A I \in WDIndex : end(I) =&gt; r[I] = X[I][1] \uplus X[I][2])"/>
+    </listAttribute>
+    <intAttribute key="modelEditorOpenTabs" value="14"/>
+    <stringAttribute key="modelExpressionEval" value=""/>
+    <stringAttribute key="modelParameterActionConstraint" value=""/>
+    <listAttribute key="modelParameterConstants">
+        <listEntry value="I0;;&lt;&lt;&gt;&gt;;0;0"/>
+        <listEntry value="pre;x:;isOrdered(x[1]) /\ isOrdered(x[2]);0;0"/>
+        <listEntry value="div;x:;LET X_ == IF Len(x[1]) &gt;= Len(x[2]) THEN x[1] ELSE x[2]  &#13;&#10;    Y  == IF Len(x[1]) &gt;= Len(x[2]) THEN x[2] ELSE x[1] &#13;&#10;IN LET X_m == Len(X_)\div 2                                \* 1. Split X in two parts X1 and X2&#13;&#10;       X1  == SubSeq(X_, 1, X_m) &#13;&#10;       X2  == SubSeq(X_, X_m+1, Len(X_)) &#13;&#10;       k   == X2[1]                                        \* 2. Take X2[1] and search its position in Y&#13;&#10;       Y_m == binarySearch(Y, k)&#13;&#10;       Y1  == CASE Y_m = 0         -&gt; &lt;&lt; &gt;&gt;                \* 3. Split Y in that position&#13;&#10;                   [] Y_m &gt; Len(Y) -&gt; Y&#13;&#10;                   [] OTHER        -&gt; SubSeq(Y, 1, Y_m)                          &#13;&#10;       Y2  == CASE Y_m = 0         -&gt; Y                        &#13;&#10;                   [] Y_m &gt; Len(Y) -&gt; &lt;&lt; &gt;&gt;&#13;&#10;                   [] OTHER        -&gt; SubSeq(Y, Y_m+1, Len(Y))&#13;&#10;   IN  &lt;&lt; &lt;&lt;X1,Y1&gt;&gt;, &lt;&lt;X2,Y2&gt;&gt; &gt;&gt;                          \* Produce two sub-merges;0;0"/>
+        <listEntry value="D;;VarRType;0;0"/>
+        <listEntry value="T;;InType;0;0"/>
+        <listEntry value="fr;x:vc:i:;vc[i];0;0"/>
+        <listEntry value="Op;x:y:;x \o y;0;0"/>
+        <listEntry value="isBase;x:vp:i:;Len(vp[i][1]) &lt;= 1 /\ Len(vp[i][2]) &lt;= 1;0;0"/>
+        <listEntry value="base;x:vp:i:;vp[i][1] \uplus vp[i][2]  \* trivial merge;0;0"/>
+        <listEntry value="Dep_cr;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
+        <listEntry value="id;;&lt;&lt;&gt;&gt;;0;0"/>
+        <listEntry value="Dep_pc;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterContraint" value=""/>
+    <listAttribute key="modelParameterDefinitions">
+        <listEntry value="Nat;;0..4;0;0"/>
+        <listEntry value="Index;;UNION {[1..n -&gt; Assig] : n \in 0..4};0;0"/>
+        <listEntry value="Assig;;1..2;0;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterModelValues" value="{}"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="Elem == 0..3&#13;&#10;Input == UNION {[1..n -&gt; Elem] : n \in 0..3}&#13;&#10;In1Type == Input&#13;&#10;In2Type == Input&#13;&#10;InType   == In1Type \X In2Type&#13;&#10;VarPType == InType&#13;&#10;VarCType == Seq(Elem)&#13;&#10;VarRType == Seq(Elem)&#13;&#10;binarySearch(seq, e) ==&#13;&#10;  LET F[s \in Seq(Elem)] == &#13;&#10;    IF s = &lt;&lt; &gt;&gt; &#13;&#10;    THEN 0&#13;&#10;    ELSE LET m == (Len(s)+1) \div 2&#13;&#10;         IN  CASE  e = s[m]  -&gt;  m&#13;&#10;               []  e &lt; s[m]  -&gt;  F[SubSeq(s, 1, m-1)]&#13;&#10;               []  e &gt; s[m]  -&gt;  LET pv == F[SubSeq(s,m+1,Len(s))]&#13;&#10;                                 IN IF pv &gt; 0 THEN pv+m+1 ELSE m-pv&#13;&#10;  IN F[seq]&#13;&#10;isOrdered(s) == &#13;&#10;  \/ Len(s) &lt;= 1&#13;&#10;  \/ LET n == 2..Len(s) IN \A k \in n: s[k-1] &lt;= s[k]"/>
+    <intAttribute key="modelVersion" value="20191005"/>
+    <intAttribute key="numberOfWorkers" value="2"/>
+    <stringAttribute key="postCondition" value=""/>
+    <booleanAttribute key="recover" value="false"/>
+    <stringAttribute key="result.mail.address" value=""/>
+    <intAttribute key="simuAril" value="-1"/>
+    <intAttribute key="simuDepth" value="100"/>
+    <stringAttribute key="simuNumTraces" value="9223372036854775807"/>
+    <intAttribute key="simuSeed" value="-1"/>
+    <stringAttribute key="specName" value="PCR_DCrLeft"/>
+    <stringAttribute key="tlcResourcesProfile" value="local custom"/>
+    <listAttribute key="traceExploreExpressions">
+        <listEntry value="1WDIndex"/>
+    </listAttribute>
+    <stringAttribute key="view" value=""/>
+    <booleanAttribute key="visualizeStateGraph" value="false"/>
+</launchConfiguration>

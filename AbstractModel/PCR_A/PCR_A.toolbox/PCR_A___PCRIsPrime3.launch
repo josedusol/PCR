@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.lamport.tla.toolbox.tool.tlc.modelCheck">
+    <stringAttribute key="TLCCmdLineParameters" value=""/>
+    <stringAttribute key="alias" value=""/>
+    <intAttribute key="collectCoverage" value="0"/>
+    <stringAttribute key="configurationName" value="PCRIsPrime3"/>
+    <booleanAttribute key="deferLiveness" value="false"/>
+    <intAttribute key="dfidDepth" value="100"/>
+    <booleanAttribute key="dfidMode" value="false"/>
+    <intAttribute key="distributedFPSetCount" value="0"/>
+    <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
+    <intAttribute key="distributedNodesCount" value="1"/>
+    <stringAttribute key="distributedTLC" value="off"/>
+    <stringAttribute key="distributedTLCVMArgs" value=""/>
+    <intAttribute key="fpBits" value="1"/>
+    <intAttribute key="fpIndex" value="20"/>
+    <booleanAttribute key="fpIndexRandom" value="true"/>
+    <intAttribute key="maxHeapSize" value="25"/>
+    <intAttribute key="maxSetSize" value="1000000"/>
+    <booleanAttribute key="mcMode" value="true"/>
+    <stringAttribute key="modelBehaviorInit" value=""/>
+    <stringAttribute key="modelBehaviorNext" value=""/>
+    <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
+    <intAttribute key="modelBehaviorSpecType" value="1"/>
+    <stringAttribute key="modelBehaviorVars" value="X, c, p, r, in, out"/>
+    <stringAttribute key="modelComments" value=""/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
+    <listAttribute key="modelCorrectnessInvariants">
+        <listEntry value="0TypeInv"/>
+        <listEntry value="1Inv"/>
+    </listAttribute>
+    <listAttribute key="modelCorrectnessProperties">
+        <listEntry value="1Correctness"/>
+        <listEntry value="0Termination"/>
+        <listEntry value="0SemAnoProp!Spec"/>
+        <listEntry value="0SemAnoProp!FairSpec"/>
+    </listAttribute>
+    <intAttribute key="modelEditorOpenTabs" value="14"/>
+    <stringAttribute key="modelExpressionEval" value=""/>
+    <stringAttribute key="modelParameterActionConstraint" value=""/>
+    <listAttribute key="modelParameterConstants">
+        <listEntry value="lBnd;x:;1;0;0"/>
+        <listEntry value="uBnd;x:;Sqrt(x) \div 2;0;0"/>
+        <listEntry value="prop;i:;TRUE;0;0"/>
+        <listEntry value="pre;x:;TRUE;0;0"/>
+        <listEntry value="T;;InType;0;0"/>
+        <listEntry value="Tp;;VarPType;0;0"/>
+        <listEntry value="Tc;;VarCType;0;0"/>
+        <listEntry value="fp;x:vp:;[i \in Assig |-&gt; IF i=1 THEN 2 ELSE 2*i - 1];0;0"/>
+        <listEntry value="Undef;;Undef;1;0"/>
+        <listEntry value="I0;;&lt;&lt;&gt;&gt;;0;0"/>
+        <listEntry value="Op;x:y:;x /\ y;0;0"/>
+        <listEntry value="LApc;;{};0;0"/>
+        <listEntry value="LBp;;{};0;0"/>
+        <listEntry value="LBpc;;{};0;0"/>
+        <listEntry value="gp;x:;fp(x,p);0;0"/>
+        <listEntry value="fc;x:vp:;[i \in Assig |-&gt; ~ Divides(vp[i],x)];0;0"/>
+        <listEntry value="fr;x:vc:;[i \in Assig |-&gt; vc[i]];0;0"/>
+        <listEntry value="r0;x:;TRUE;0;0"/>
+        <listEntry value="LBr;;{};0;0"/>
+        <listEntry value="D;;VarRType;0;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterContraint" value=""/>
+    <listAttribute key="modelParameterDefinitions">
+        <listEntry value="Nat;;0..25;0;0"/>
+        <listEntry value="Index;;{I0};0;0"/>
+    </listAttribute>
+    <stringAttribute key="modelParameterModelValues" value="{}"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="InType == Nat&#13;&#10;VarPType == Nat&#13;&#10;VarCType == BOOLEAN&#13;&#10;VarRType == BOOLEAN"/>
+    <intAttribute key="modelVersion" value="20191005"/>
+    <intAttribute key="numberOfWorkers" value="2"/>
+    <stringAttribute key="postCondition" value=""/>
+    <booleanAttribute key="recover" value="false"/>
+    <stringAttribute key="result.mail.address" value=""/>
+    <intAttribute key="simuAril" value="-1"/>
+    <intAttribute key="simuDepth" value="100"/>
+    <stringAttribute key="simuNumTraces" value="9223372036854775807"/>
+    <intAttribute key="simuSeed" value="-1"/>
+    <stringAttribute key="specName" value="PCR_A"/>
+    <stringAttribute key="tlcResourcesProfile" value="local custom"/>
+    <listAttribute key="traceExploreExpressions">
+        <listEntry value="0\A i \in iterator : red[i]"/>
+        <listEntry value="0finished"/>
+        <listEntry value="1UNCHANGED vars"/>
+    </listAttribute>
+    <stringAttribute key="view" value=""/>
+    <booleanAttribute key="visualizeStateGraph" value="false"/>
+</launchConfiguration>
