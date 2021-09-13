@@ -9,7 +9,7 @@ eureka computations, unbounded iteration and recursion,
 and stream programming. It was firstly introduced in [[1]](https://link.springer.com/article/10.1007/s10009-017-0465-2).
 
 The current project, resulting from a master thesis, seek to provide
-a formal framework based on the TLA+ specification language to 
+a formal framework based on the TLA+ specification language [[2]](https://lamport.azurewebsites.net/tla/tla.html) to: 
 - Express high level PCR designs and prove their functional 
 correctness in the sense that their parallel computation computes a 
 given mathematical function.
