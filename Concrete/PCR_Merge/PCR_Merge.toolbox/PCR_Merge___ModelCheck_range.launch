@@ -3,7 +3,7 @@
     <stringAttribute key="TLCCmdLineParameters" value=""/>
     <stringAttribute key="alias" value=""/>
     <intAttribute key="collectCoverage" value="0"/>
-    <stringAttribute key="configurationName" value="PCRIsPrime2"/>
+    <stringAttribute key="configurationName" value="ModelCheck_range"/>
     <booleanAttribute key="deferLiveness" value="false"/>
     <intAttribute key="dfidDepth" value="100"/>
     <booleanAttribute key="dfidMode" value="false"/>
@@ -13,7 +13,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="127"/>
+    <intAttribute key="fpIndex" value="0"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -27,46 +27,34 @@
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="0TypeInv"/>
-        <listEntry value="1Inv"/>
-        <listEntry value="1Correctness"/>
+        <listEntry value="0Inv"/>
+        <listEntry value="0Correctness"/>
+        <listEntry value="1CorrectnessAlt"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="0A1step!Spec"/>
-        <listEntry value="0A1step!FairSpec"/>
+        <listEntry value="1PCR_DC!Spec"/>
+        <listEntry value="0PCR_DC!FairSpec"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
     <stringAttribute key="modelParameterActionConstraint" value=""/>
     <listAttribute key="modelParameterConstants">
-        <listEntry value="lBnd;x:;0;0;0"/>
-        <listEntry value="uBnd;x:;Sqrt(x);0;0"/>
-        <listEntry value="prop;i:;i &lt;= 2 \/ Odd(i);0;0"/>
-        <listEntry value="pre;x:;TRUE;0;0"/>
-        <listEntry value="T;;InType;0;0"/>
-        <listEntry value="Tp;;VarPType;0;0"/>
-        <listEntry value="Tc;;VarCType;0;0"/>
-        <listEntry value="fp;x:vp:i:;i;0;0"/>
-        <listEntry value="I0;;&lt;&lt;&gt;&gt;;0;0"/>
-        <listEntry value="gp;x:i:;fp(x,p,i);0;0"/>
-        <listEntry value="fc;x:vp:i:;x &gt; 1 /\ (vp[i] &gt; 1 =&gt; ~ Divides(vp[i],x));0;0"/>
-        <listEntry value="fr;x:vc:i:;vc[i];0;0"/>
-        <listEntry value="Op;x:y:;x /\ y;0;0"/>
-        <listEntry value="D;;VarRType;0;0"/>
-        <listEntry value="id;;TRUE;0;0"/>
-        <listEntry value="Dep_cr;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
-        <listEntry value="Dep_pc;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
-        <listEntry value="Dep_pp;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
+        <listEntry value="Elem;;0..3;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="Index;;{I0};0;0"/>
-        <listEntry value="Assig;;0..MaxN;0;0"/>
-        <listEntry value="Nat;;0..MaxN;0;0"/>
+        <listEntry value="Nat;;0..3;0;0"/>
+        <listEntry value="Index;;UNION {[1..n -&gt; Assig] : n \in 0..4};0;0"/>
+        <listEntry value="T;;InType;0;0"/>
         <listEntry value="Undef;;Undef;1;0"/>
+        <listEntry value="Assig;;1..2;0;0"/>
+        <listEntry value="PCR_DC!Index;;Index;0;0"/>
+        <listEntry value="PCR_DC!Assig;;Assig;0;0"/>
+        <listEntry value="PCR_DC!Undef;;Undef;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 5&#13;&#10;InType == 0..MaxN&#13;&#10;VarPType == Nat&#13;&#10;VarCType == BOOLEAN&#13;&#10;VarRType == BOOLEAN"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="Size1 == 2&#13;&#10;Size2 == 2&#13;&#10;Input == UNION {[1..n -&gt; Elem] : n \in 0..Max({Size1,Size2})}&#13;&#10;In1Type == Input&#13;&#10;In2Type == Input&#13;&#10;InType   == In1Type \X In2Type&#13;&#10;VarPType == InType&#13;&#10;VarCType == Seq(Elem)&#13;&#10;VarRType == Seq(Elem)"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <stringAttribute key="postCondition" value=""/>
@@ -76,13 +64,10 @@
     <intAttribute key="simuDepth" value="100"/>
     <stringAttribute key="simuNumTraces" value="9223372036854775807"/>
     <intAttribute key="simuSeed" value="-1"/>
-    <stringAttribute key="specName" value="PCR_A"/>
+    <stringAttribute key="specName" value="PCR_Merge"/>
     <stringAttribute key="tlcResourcesProfile" value="local custom"/>
     <listAttribute key="traceExploreExpressions">
-        <listEntry value="0\A i \in iterator : red[i]"/>
-        <listEntry value="0finished"/>
-        <listEntry value="1UNCHANGED vars"/>
-        <listEntry value="1Nat"/>
+        <listEntry value="1gp(X[I])"/>
     </listAttribute>
     <stringAttribute key="view" value=""/>
     <booleanAttribute key="visualizeStateGraph" value="false"/>

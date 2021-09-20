@@ -64,6 +64,6 @@ INSTANCE PCR_DC WITH base <- _base, isBase <- _isBase
   Alternative correctness
 *)
 
-CorrectnessAlt == end(I0) => r[I0] = IsOrdered(X[I0])
+CorrectnessAlt == end(I0) => r[I0] = SortSeq(X[I0], <)
 
 =============================================================================

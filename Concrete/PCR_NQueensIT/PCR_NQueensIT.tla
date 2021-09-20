@@ -119,7 +119,7 @@ INSTANCE PCR_A_it_B WITH uBnd2 <- _uBnd2
   Alternative correctness
 *)
 
-Solutions(x) == CASE Len(x) = 0      -> { }
+Solutions(x) == CASE Len(x) = 0      -> { <<>>  }
                   [] Len(x) = 1      -> { <<1>> }
                   [] Len(x) \in 2..3 -> { }
                   [] Len(x) = 4      -> { <<3,1,4,2>>, 

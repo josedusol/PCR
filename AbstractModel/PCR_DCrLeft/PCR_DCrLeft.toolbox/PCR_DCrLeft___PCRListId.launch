@@ -27,10 +27,10 @@
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="1Inv"/>
+        <listEntry value="1Correctness"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="1Correctness"/>
         <listEntry value="0SemDC!Spec"/>
         <listEntry value="0SemDC!FairSpec"/>
     </listAttribute>

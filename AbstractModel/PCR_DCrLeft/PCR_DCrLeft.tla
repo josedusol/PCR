@@ -190,8 +190,8 @@ R(I,i) ==
          
 Done == /\ \A I \in WDIndex : end(I)
         /\ UNCHANGED <<in,vs>>
-\*        /\ PrintT("Done: In = " \o ToString(X[I0])
-\*                 \o " - Out = " \o ToString(r[I0]))     
+        /\ PrintT("Done: In = " \o ToString(X[I0])
+                 \o " - Out = " \o ToString(r[I0]))     
 
 Step == /\ \E I \in WDIndex : 
              \E i \in It(X[I]) : \/ P(I,i) 
@@ -273,7 +273,7 @@ PCR_DC == INSTANCE PCR_DC
 
 ============================================================================
 \* Modification History
-\* Last modified Wed Sep 08 18:30:07 UYT 2021 by josedu
+\* Last modified Mon Sep 20 16:24:10 UYT 2021 by josedu
 \* Last modified Thu Jul 08 01:02:39 GMT-03:00 2021 by JosEdu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

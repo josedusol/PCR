@@ -13,7 +13,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="124"/>
+    <intAttribute key="fpIndex" value="0"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -28,11 +28,9 @@
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="0TypeInv"/>
         <listEntry value="0Inv"/>
-        <listEntry value="0AxiomCheck"/>
         <listEntry value="0Correctness"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
-        <listEntry value="1Correctness"/>
         <listEntry value="0Termination"/>
         <listEntry value="0A1step!Spec"/>
         <listEntry value="0A1step!FairSpec"/>
@@ -64,7 +62,7 @@
     <listAttribute key="modelParameterDefinitions">
         <listEntry value="Nat;;0..4;0;0"/>
         <listEntry value="Index;;{I0};0;0"/>
-        <listEntry value="Assig;;1..in;0;0"/>
+        <listEntry value="Assig;;1..4;0;0"/>
         <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>

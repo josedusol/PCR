@@ -27,11 +27,11 @@
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="1Inv"/>
+        <listEntry value="0Correctness"/>
+        <listEntry value="1\A I \in WDIndex : end(I) =&gt; r[I] = X[I][1] \uplus X[I][2]"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="1Correctness"/>
-        <listEntry value="0[](\A I \in WDIndex : end(I) =&gt; r[I] = X[I][1] \uplus X[I][2])"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>

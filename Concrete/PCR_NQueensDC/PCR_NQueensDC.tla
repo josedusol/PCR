@@ -40,7 +40,7 @@ Dep_cr == <<{},{}>>
 validPos(C,i,j) == 
   /\ C[i] = 0               
   /\ \A k \in DOMAIN C : C[k] # j  
-  /\ \A k \in DOMAIN C : C[k] # 0 => abs(C[k] - j) # abs(k - i)   
+  /\ \A k \in DOMAIN C : C[k] # 0 => abs(C[k] - j) # abs(k - i) 
                                             
 addQInRow(C,i)    == LET j == CHOOSE j \in DOMAIN C : validPos(C,i,j)
                      IN  [C EXCEPT ![i] = j]    

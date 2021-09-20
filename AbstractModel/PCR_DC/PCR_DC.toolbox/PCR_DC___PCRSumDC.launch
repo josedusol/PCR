@@ -8,7 +8,7 @@
     <intAttribute key="dfidDepth" value="100"/>
     <booleanAttribute key="dfidMode" value="false"/>
     <intAttribute key="distributedFPSetCount" value="0"/>
-    <stringAttribute key="distributedNetworkInterface" value="192.168.0.152"/>
+    <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
     <intAttribute key="distributedNodesCount" value="1"/>
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
@@ -22,15 +22,15 @@
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
     <intAttribute key="modelBehaviorSpecType" value="1"/>
-    <stringAttribute key="modelBehaviorVars" value="red, X, c, p, r, in"/>
+    <stringAttribute key="modelBehaviorVars" value="X, c, p, r, in, rs"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="1Inv"/>
+        <listEntry value="1Correctness"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
-        <listEntry value="1Termination"/>
-        <listEntry value="1Correctness"/>
+        <listEntry value="0Termination"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>

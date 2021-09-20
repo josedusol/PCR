@@ -8,12 +8,12 @@
     <intAttribute key="dfidDepth" value="100"/>
     <booleanAttribute key="dfidMode" value="false"/>
     <intAttribute key="distributedFPSetCount" value="0"/>
-    <stringAttribute key="distributedNetworkInterface" value="127.0.0.1"/>
+    <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
     <intAttribute key="distributedNodesCount" value="1"/>
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="0"/>
+    <intAttribute key="fpIndex" value="88"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -28,21 +28,20 @@
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="0Inv"/>
         <listEntry value="0TypeInv"/>
-        <listEntry value="0Inv1"/>
-        <listEntry value="0Inv2"/>
-        <listEntry value="0TypeInv1"/>
-        <listEntry value="0TypeInv2"/>
-        <listEntry value="1IndexInvB"/>
+        <listEntry value="0InvA"/>
+        <listEntry value="0InvB"/>
+        <listEntry value="0TypeInvA"/>
+        <listEntry value="0TypeInvB"/>
+        <listEntry value="1CorrectnessA"/>
+        <listEntry value="0CorrectnessB"/>
+        <listEntry value="0Correctness"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="0Correctness"/>
         <listEntry value="0PCR_A!Spec"/>
         <listEntry value="0PCR_A!FairSpec"/>
-        <listEntry value="0Correctness1"/>
-        <listEntry value="0Correctness2"/>
-        <listEntry value="0Termination1"/>
-        <listEntry value="0Termination2"/>
+        <listEntry value="1TerminationA"/>
+        <listEntry value="1TerminationB"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>

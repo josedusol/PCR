@@ -3,7 +3,7 @@
     <stringAttribute key="TLCCmdLineParameters" value=""/>
     <stringAttribute key="alias" value=""/>
     <intAttribute key="collectCoverage" value="0"/>
-    <stringAttribute key="configurationName" value="ModelCheck"/>
+    <stringAttribute key="configurationName" value="ModelCheck_one"/>
     <booleanAttribute key="deferLiveness" value="false"/>
     <intAttribute key="dfidDepth" value="100"/>
     <booleanAttribute key="dfidMode" value="false"/>
@@ -13,7 +13,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="78"/>
+    <intAttribute key="fpIndex" value="52"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -22,34 +22,40 @@
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
     <intAttribute key="modelBehaviorSpecType" value="1"/>
-    <stringAttribute key="modelBehaviorVars" value="X, c, p, r, in, rs"/>
+    <stringAttribute key="modelBehaviorVars" value="c1, c2, s, in, p1, p2, r1, r2, rs1, rs2, X1, X2"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="0TypeInv"/>
-        <listEntry value="1Inv"/>
+        <listEntry value="0Inv"/>
+        <listEntry value="1CorrectnessAlt"/>
+        <listEntry value="0Correctness"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
-        <listEntry value="0Correctness"/>
         <listEntry value="0Termination"/>
-        <listEntry value="1CorrectnessAlt"/>
+        <listEntry value="0PCR_A_it!Spec"/>
+        <listEntry value="0PCR_A_it!FairSpec"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
     <stringAttribute key="modelParameterActionConstraint" value=""/>
-    <listAttribute key="modelParameterConstants">
-        <listEntry value="Elem;;0..3;0;0"/>
-    </listAttribute>
+    <listAttribute key="modelParameterConstants"/>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="Nat;;0..4;0;0"/>
-        <listEntry value="Index;;UNION {[1..n -&gt; Assig] : n \in 0..2};0;0"/>
-        <listEntry value="T;;InType;0;0"/>
+        <listEntry value="Nat;;AssigB;0;0"/>
+        <listEntry value="T;;InType1;0;0"/>
+        <listEntry value="Config;;[1..N -&gt; 0..N];0;0"/>
+        <listEntry value="IndexA;;{I0};0;0"/>
+        <listEntry value="AssigA;;{0};0;0"/>
+        <listEntry value="IndexB;;{I0 \o &lt;&lt;i&gt;&gt; : i \in AssigB};0;0"/>
+        <listEntry value="AssigB;;IF N &lt;= 1 THEN 1..3 ELSE 1..N*N;0;0"/>
         <listEntry value="Undef;;Undef;1;0"/>
-        <listEntry value="Assig;;1..2;0;0"/>
+        <listEntry value="PCR_A_it!Index;;IndexA;0;0"/>
+        <listEntry value="PCR_A_it!Assig;;AssigA;0;0"/>
+        <listEntry value="PCR_A_it!Undef;;Undef;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="InType == UNION {[1..n -&gt; Elem] : n \in 0..4}&#13;&#10;VarPType == InType&#13;&#10;VarCType == InType&#13;&#10;VarRType == InType"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 0&#13;&#10;InType1   == Config&#13;&#10;VarPType1 == Config &#13;&#10;VarCType1 == SUBSET Config&#13;&#10;VarRType1 == SUBSET Config&#13;&#10;InType2   == SUBSET Config&#13;&#10;VarPType2 == Config &#13;&#10;VarCType2 == SUBSET Config&#13;&#10;VarRType2 == SUBSET Config"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <stringAttribute key="postCondition" value=""/>
@@ -59,7 +65,7 @@
     <intAttribute key="simuDepth" value="100"/>
     <stringAttribute key="simuNumTraces" value="9223372036854775807"/>
     <intAttribute key="simuSeed" value="-1"/>
-    <stringAttribute key="specName" value="PCR_MergeSort1"/>
+    <stringAttribute key="specName" value="PCR_NQueensIT"/>
     <stringAttribute key="tlcResourcesProfile" value="local custom"/>
     <listAttribute key="traceExploreExpressions">
         <listEntry value="1gp(X[I])"/>

@@ -15,6 +15,7 @@
     ubnd FibPrimes1 = \N. x 
    
     PCR FibPrimes1(N)
+    
       par
         p = produce fibs p
         c = consume isPrime p

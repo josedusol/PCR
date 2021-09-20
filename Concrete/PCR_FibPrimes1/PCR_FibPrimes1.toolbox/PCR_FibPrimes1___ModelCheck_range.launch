@@ -3,7 +3,7 @@
     <stringAttribute key="TLCCmdLineParameters" value=""/>
     <stringAttribute key="alias" value=""/>
     <intAttribute key="collectCoverage" value="0"/>
-    <stringAttribute key="configurationName" value="PCRIsPrime2"/>
+    <stringAttribute key="configurationName" value="ModelCheck_range"/>
     <booleanAttribute key="deferLiveness" value="false"/>
     <intAttribute key="dfidDepth" value="100"/>
     <booleanAttribute key="dfidMode" value="false"/>
@@ -13,7 +13,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="127"/>
+    <intAttribute key="fpIndex" value="112"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -24,11 +24,13 @@
     <intAttribute key="modelBehaviorSpecType" value="1"/>
     <stringAttribute key="modelBehaviorVars" value="X, c, p, r, in, rs"/>
     <stringAttribute key="modelComments" value=""/>
-    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="0TypeInv"/>
-        <listEntry value="1Inv"/>
+        <listEntry value="0Inv"/>
+        <listEntry value="0LemmaCheck"/>
         <listEntry value="1Correctness"/>
+        <listEntry value="0CorrectnessAlt"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
@@ -38,35 +40,18 @@
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
     <stringAttribute key="modelParameterActionConstraint" value=""/>
-    <listAttribute key="modelParameterConstants">
-        <listEntry value="lBnd;x:;0;0;0"/>
-        <listEntry value="uBnd;x:;Sqrt(x);0;0"/>
-        <listEntry value="prop;i:;i &lt;= 2 \/ Odd(i);0;0"/>
-        <listEntry value="pre;x:;TRUE;0;0"/>
-        <listEntry value="T;;InType;0;0"/>
-        <listEntry value="Tp;;VarPType;0;0"/>
-        <listEntry value="Tc;;VarCType;0;0"/>
-        <listEntry value="fp;x:vp:i:;i;0;0"/>
-        <listEntry value="I0;;&lt;&lt;&gt;&gt;;0;0"/>
-        <listEntry value="gp;x:i:;fp(x,p,i);0;0"/>
-        <listEntry value="fc;x:vp:i:;x &gt; 1 /\ (vp[i] &gt; 1 =&gt; ~ Divides(vp[i],x));0;0"/>
-        <listEntry value="fr;x:vc:i:;vc[i];0;0"/>
-        <listEntry value="Op;x:y:;x /\ y;0;0"/>
-        <listEntry value="D;;VarRType;0;0"/>
-        <listEntry value="id;;TRUE;0;0"/>
-        <listEntry value="Dep_cr;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
-        <listEntry value="Dep_pc;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
-        <listEntry value="Dep_pp;;&lt;&lt;{},{}&gt;&gt;;0;0"/>
-    </listAttribute>
+    <listAttribute key="modelParameterConstants"/>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
+        <listEntry value="Nat;;0..3;0;0"/>
         <listEntry value="Index;;{I0};0;0"/>
-        <listEntry value="Assig;;0..MaxN;0;0"/>
-        <listEntry value="Nat;;0..MaxN;0;0"/>
+        <listEntry value="T;;InType;0;0"/>
         <listEntry value="Undef;;Undef;1;0"/>
+        <listEntry value="Assig;;1..X[I0];0;0"/>
+        <listEntry value="A1step!Assig;;Assig;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 5&#13;&#10;InType == 0..MaxN&#13;&#10;VarPType == Nat&#13;&#10;VarCType == BOOLEAN&#13;&#10;VarRType == BOOLEAN"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 3&#13;&#10;MaxFN == 1&#13;&#10;InType == 0..MaxN&#13;&#10;VarPType == Nat&#13;&#10;VarCType == BOOLEAN&#13;&#10;VarRType == Nat"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <stringAttribute key="postCondition" value=""/>
@@ -76,13 +61,10 @@
     <intAttribute key="simuDepth" value="100"/>
     <stringAttribute key="simuNumTraces" value="9223372036854775807"/>
     <intAttribute key="simuSeed" value="-1"/>
-    <stringAttribute key="specName" value="PCR_A"/>
+    <stringAttribute key="specName" value="PCR_FibPrimes1"/>
     <stringAttribute key="tlcResourcesProfile" value="local custom"/>
     <listAttribute key="traceExploreExpressions">
-        <listEntry value="0\A i \in iterator : red[i]"/>
-        <listEntry value="0finished"/>
-        <listEntry value="1UNCHANGED vars"/>
-        <listEntry value="1Nat"/>
+        <listEntry value="1gp(X[I])"/>
     </listAttribute>
     <stringAttribute key="view" value=""/>
     <booleanAttribute key="visualizeStateGraph" value="false"/>

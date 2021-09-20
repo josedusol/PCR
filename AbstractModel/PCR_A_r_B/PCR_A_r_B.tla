@@ -380,6 +380,8 @@ CorrectnessA == endA(I0) => r1[I0] = A(X1[I0])
 
 TerminationA == <> endA(I0) 
 
+GTerminationA == endA(I0) => \A I \in WDIndexB : endB(I)
+
 (* 
   PCR B roperties
 *)
@@ -455,7 +457,7 @@ PCR_A == INSTANCE PCR_A
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Sep 09 02:17:41 UYT 2021 by josedu
+\* Last modified Mon Sep 20 18:42:14 UYT 2021 by josedu
 \* Last modified Wed Jul 07 20:05:49 GMT-03:00 2021 by JosEdu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -22,16 +22,15 @@
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
     <intAttribute key="modelBehaviorSpecType" value="1"/>
-    <stringAttribute key="modelBehaviorVars" value="X, c, p, r, in, red"/>
+    <stringAttribute key="modelBehaviorVars" value="X, c, p, r, in, rs"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="0TypeInv"/>
         <listEntry value="0Inv"/>
-        <listEntry value="1AxiomCheck"/>
+        <listEntry value="1Correctness"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
-        <listEntry value="0Correctness"/>
         <listEntry value="0Termination"/>
         <listEntry value="1A1step!Spec"/>
     </listAttribute>

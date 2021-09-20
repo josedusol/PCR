@@ -126,6 +126,6 @@ INSTANCE PCR_DC_r_DCrLeft
   Alternative correctness
 *)
 
-CorrectnessAlt == endA(I0) => r1[I0] = IsOrdered(X1[I0])
+CorrectnessAlt == endA(I0) => r1[I0] = SortSeq(X1[I0], <)
 
 ============================================================================-

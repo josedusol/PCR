@@ -358,8 +358,8 @@ R2(I,i) ==
 Done == /\ \A I \in WDIndexA : endA(I)
         /\ \A I \in WDIndexB : endB(I)
         /\ UNCHANGED <<in,vs1,X2,vs2>>
-\*        /\ PrintT("Done: In = " \o ToString(X1[I0])
-\*                 \o " - Out = " \o ToString(r1[I0]))     
+        /\ PrintT("Done: In = " \o ToString(X1[I0])
+                 \o " - Out = " \o ToString(r1[I0]))     
 
 StepA == /\ \E I \in WDIndexA : 
               \E i \in ItA(X1[I]) : \/ P1(I,i) 
@@ -521,7 +521,7 @@ PCR_DC == INSTANCE PCR_DC
 
 ============================================================================
 \* Modification History
-\* Last modified Thu Sep 09 02:18:20 UYT 2021 by josedu
+\* Last modified Mon Sep 20 17:25:55 UYT 2021 by josedu
 \* Last modified Thu Jul 08 01:14:51 GMT-03:00 2021 by JosEdu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

@@ -3,7 +3,7 @@
     <stringAttribute key="TLCCmdLineParameters" value=""/>
     <stringAttribute key="alias" value=""/>
     <intAttribute key="collectCoverage" value="0"/>
-    <stringAttribute key="configurationName" value="ModelCheck"/>
+    <stringAttribute key="configurationName" value="ModelCheck_one"/>
     <booleanAttribute key="deferLiveness" value="false"/>
     <intAttribute key="dfidDepth" value="100"/>
     <booleanAttribute key="dfidMode" value="false"/>
@@ -13,7 +13,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="24"/>
+    <intAttribute key="fpIndex" value="91"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -22,17 +22,17 @@
     <stringAttribute key="modelBehaviorNext" value=""/>
     <stringAttribute key="modelBehaviorSpec" value="FairSpec"/>
     <intAttribute key="modelBehaviorSpecType" value="1"/>
-    <stringAttribute key="modelBehaviorVars" value="c1, c2, s, in, p1, p2, r1, r2, rs1, rs2, X1, X2"/>
+    <stringAttribute key="modelBehaviorVars" value="X, c, p, r, in, rs"/>
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="0TypeInv"/>
-        <listEntry value="1Inv"/>
+        <listEntry value="0Inv"/>
+        <listEntry value="1Correctness"/>
+        <listEntry value="0CorrectnessAlt"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
-        <listEntry value="0Correctness"/>
         <listEntry value="0Termination"/>
-        <listEntry value="1CorrectnessAlt"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
@@ -40,17 +40,15 @@
     <listAttribute key="modelParameterConstants"/>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="Nat;;AssigB;0;0"/>
-        <listEntry value="T;;InType1;0;0"/>
-        <listEntry value="Config;;UNION {[1..n -&gt; 0..N] : n \in Size};0;0"/>
-        <listEntry value="IndexA;;{I0};0;0"/>
-        <listEntry value="AssigA;;{0};0;0"/>
-        <listEntry value="IndexB;;{I0 \o &lt;&lt;i&gt;&gt; : i \in AssigB};0;0"/>
-        <listEntry value="AssigB;;1..N*N;0;0"/>
+        <listEntry value="Nat;;0..N;0;0"/>
+        <listEntry value="T;;InType;0;0"/>
+        <listEntry value="Config;;[1..N -&gt; 0..N];0;0"/>
+        <listEntry value="Index;;UNION {[1..n -&gt; Assig] : n \in 0..N};0;0"/>
+        <listEntry value="Assig;;1..N;0;0"/>
         <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="N == 4&#13;&#10;Size == 0..N&#13;&#10;InType1   == Config&#13;&#10;VarPType1 == Config &#13;&#10;VarCType1 == SUBSET Config&#13;&#10;VarRType1 == SUBSET Config&#13;&#10;InType2   == SUBSET Config&#13;&#10;VarPType2 == Config &#13;&#10;VarCType2 == SUBSET Config&#13;&#10;VarRType2 == SUBSET Config"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 1&#13;&#10;InType   == Config&#13;&#10;VarPType == Config &#13;&#10;VarCType == SUBSET Config&#13;&#10;VarRType == SUBSET Config"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <stringAttribute key="postCondition" value=""/>
@@ -60,7 +58,7 @@
     <intAttribute key="simuDepth" value="100"/>
     <stringAttribute key="simuNumTraces" value="9223372036854775807"/>
     <intAttribute key="simuSeed" value="-1"/>
-    <stringAttribute key="specName" value="PCR_NQueensIT"/>
+    <stringAttribute key="specName" value="PCR_NQueensDC"/>
     <stringAttribute key="tlcResourcesProfile" value="local custom"/>
     <listAttribute key="traceExploreExpressions">
         <listEntry value="1gp(X[I])"/>
