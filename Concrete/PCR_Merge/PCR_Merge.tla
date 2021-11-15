@@ -33,7 +33,7 @@ EXTENDS Naturals, Sequences, SeqUtils, ArithUtils, TLC
 
 CONSTANT Elem
 
-T == Seq(Elem)
+T == Seq(Elem) \X Seq(Elem)
 D == Seq(Elem)
 
 Dep_pc == <<{},{}>>

@@ -173,7 +173,7 @@ Step == /\ \E I \in WDIndex :
                                  \/ C(I,i)
                                  \/ R(I,i)
         /\ UNCHANGED in                      
-      
+
 Next == Step \/ Done
 
 Spec == Init /\ [][Next]_<<in,vs>>
@@ -244,7 +244,7 @@ A1step == INSTANCE PCR_A1step
 
 ============================================================================
 \* Modification History
-\* Last modified Tue Sep 14 18:23:02 UYT 2021 by josedu
+\* Last modified Tue Sep 28 18:04:03 UYT 2021 by josedu
 \* Last modified Thu Jul 08 02:51:43 GMT-03:00 2021 by JosEdu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

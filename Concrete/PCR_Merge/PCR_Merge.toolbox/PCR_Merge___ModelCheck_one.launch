@@ -13,7 +13,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="20"/>
+    <intAttribute key="fpIndex" value="0"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -24,11 +24,11 @@
     <intAttribute key="modelBehaviorSpecType" value="1"/>
     <stringAttribute key="modelBehaviorVars" value="X, c, p, r, in, rs"/>
     <stringAttribute key="modelComments" value=""/>
-    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="true"/>
+    <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="0TypeInv"/>
-        <listEntry value="1Inv"/>
-        <listEntry value="1Correctness"/>
+        <listEntry value="0Inv"/>
+        <listEntry value="0Correctness"/>
         <listEntry value="0CorrectnessAlt"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
@@ -54,7 +54,7 @@
         <listEntry value="PCR_DC!Undef;;Undef;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="Size1 == 3&#13;&#10;Size2 == 3&#13;&#10;Input == UNION {[1..n -&gt; Elem] : n \in 0..Max({Size1,Size2})}&#13;&#10;In1Type == Input&#13;&#10;In2Type == Input&#13;&#10;InType   == In1Type \X In2Type&#13;&#10;VarPType == InType&#13;&#10;VarCType == Seq(Elem)&#13;&#10;VarRType == Seq(Elem)"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="Size1 == 2&#13;&#10;Size2 == 2&#13;&#10;Input == UNION {[1..n -&gt; Elem] : n \in 0..Max({Size1,Size2})}&#13;&#10;In1Type == Input&#13;&#10;In2Type == Input&#13;&#10;InType   == In1Type \X In2Type&#13;&#10;VarPType == InType&#13;&#10;VarCType == Seq(Elem)&#13;&#10;VarRType == Seq(Elem)"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <stringAttribute key="postCondition" value=""/>

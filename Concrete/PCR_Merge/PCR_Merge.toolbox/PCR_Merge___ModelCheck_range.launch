@@ -28,12 +28,12 @@
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="0TypeInv"/>
         <listEntry value="0Inv"/>
-        <listEntry value="0Correctness"/>
-        <listEntry value="1CorrectnessAlt"/>
+        <listEntry value="1Correctness"/>
+        <listEntry value="0CorrectnessAlt"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="1PCR_DC!Spec"/>
+        <listEntry value="0PCR_DC!Spec"/>
         <listEntry value="0PCR_DC!FairSpec"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
@@ -42,7 +42,7 @@
     <listAttribute key="modelParameterConstants">
         <listEntry value="Elem;;0..3;0;0"/>
     </listAttribute>
-    <stringAttribute key="modelParameterContraint" value=""/>
+    <stringAttribute key="modelParameterContraint" value="in \in (   (UNION {[1..n -&gt; Elem] : n \in 0..Size1})&#13;&#10;        \X (UNION {[1..n -&gt; Elem] : n \in 0..Size2}))"/>
     <listAttribute key="modelParameterDefinitions">
         <listEntry value="Nat;;0..3;0;0"/>
         <listEntry value="Index;;UNION {[1..n -&gt; Assig] : n \in 0..4};0;0"/>

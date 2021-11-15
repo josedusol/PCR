@@ -15,7 +15,6 @@
     ubnd FibPrimes1 = \N. x 
    
     PCR FibPrimes1(N)
-    
       par
         p = produce fibs p
         c = consume isPrime p
@@ -125,13 +124,19 @@ fcRelevanceCheck ==
       
 frRelevanceCheck == 
   \A i \in It(X[I0]), vc1 \in St(Tc), vc2 \in St(Tc) :
-    eqs(vc1,vc2,deps(X[I0],Dep_cr,i)) => fr(X[I0],vc1,i) = fr(X[I0],vc2,i)      
+    eqs(vc1,vc2,deps(X[I0],Dep_cr,i)) => fr(X[I0],vc1,i) = fr(X[I0],vc2,i)    
+    
+AlgebraCheck ==   
+  /\ \A x, y, z \in D : Op(Op(x, y), z) = Op(x, Op(y, z)) 
+  /\ \A x \in D : Op(x, id) = x /\ Op(id, x) = x
+  /\ \A x, y \in D : Op(x, y) = Op(y, x)                
 
 LemmaCheck == /\ TypeCheck
               /\ BFunWDCheck
               /\ fpRelevanceCheck
               /\ fcRelevanceCheck
               /\ frRelevanceCheck
+              /\ AlgebraCheck
 
 (* 
   Alternative correctness

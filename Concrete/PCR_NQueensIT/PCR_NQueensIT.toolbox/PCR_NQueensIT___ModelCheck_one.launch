@@ -13,7 +13,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="52"/>
+    <intAttribute key="fpIndex" value="15"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -28,8 +28,8 @@
     <listAttribute key="modelCorrectnessInvariants">
         <listEntry value="0TypeInv"/>
         <listEntry value="0Inv"/>
-        <listEntry value="1CorrectnessAlt"/>
-        <listEntry value="0Correctness"/>
+        <listEntry value="0CorrectnessAlt"/>
+        <listEntry value="1Correctness"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
@@ -55,7 +55,7 @@
         <listEntry value="PCR_A_it!Undef;;Undef;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="N == 0&#13;&#10;InType1   == Config&#13;&#10;VarPType1 == Config &#13;&#10;VarCType1 == SUBSET Config&#13;&#10;VarRType1 == SUBSET Config&#13;&#10;InType2   == SUBSET Config&#13;&#10;VarPType2 == Config &#13;&#10;VarCType2 == SUBSET Config&#13;&#10;VarRType2 == SUBSET Config"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 4&#13;&#10;InType1   == Config&#13;&#10;VarPType1 == Config &#13;&#10;VarCType1 == SUBSET Config&#13;&#10;VarRType1 == SUBSET Config&#13;&#10;InType2   == SUBSET Config&#13;&#10;VarPType2 == Config &#13;&#10;VarCType2 == SUBSET Config&#13;&#10;VarRType2 == SUBSET Config"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <stringAttribute key="postCondition" value=""/>

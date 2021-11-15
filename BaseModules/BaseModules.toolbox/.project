@@ -51,6 +51,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/ArithUtilsThms_proofs.tla</locationURI>
 		</link>
 		<link>
+			<name>BagUtils.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/BagUtils.tla</locationURI>
+		</link>
+		<link>
 			<name>BaseModules.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/BaseModules.tla</locationURI>

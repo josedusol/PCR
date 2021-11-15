@@ -13,7 +13,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="68"/>
+    <intAttribute key="fpIndex" value="89"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -26,7 +26,7 @@
     <stringAttribute key="modelComments" value=""/>
     <booleanAttribute key="modelCorrectnessCheckDeadlock" value="false"/>
     <listAttribute key="modelCorrectnessInvariants">
-        <listEntry value="1Inv"/>
+        <listEntry value="0Inv"/>
         <listEntry value="1Correctness"/>
         <listEntry value="0CorrectnessAlt"/>
     </listAttribute>
@@ -48,7 +48,7 @@
         <listEntry value="Nat;;0..N;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="N == 19&#13;&#10;InType == {N}&#13;&#10;VarPType == Nat&#13;&#10;VarCType == BOOLEAN&#13;&#10;VarRType == BOOLEAN"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 20&#13;&#10;InType == {N}&#13;&#10;VarPType == Nat&#13;&#10;VarCType == BOOLEAN&#13;&#10;VarRType == BOOLEAN"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <stringAttribute key="postCondition" value=""/>

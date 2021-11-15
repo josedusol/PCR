@@ -35,10 +35,15 @@ seqSum[s \in Seq(Nat)] ==
 
 Log(x,b) == CHOOSE n \in Nat : TRUE   \* implemented in Java  
 
+RECURSIVE Log2(_)
+Log2(x) == IF 2 > x 
+           THEN 0
+           ELSE 1 + Log2(x \div 2)
+
 vecSum(v1, v2) == [i \in 1..Len(v1) |-> v1[i] + v2[i]] 
 
 =============================================================================
 \* Modification History
+\* Last modified Sat Sep 25 23:26:59 UYT 2021 by josedu
 \* Last modified Mon Jul 05 18:12:01 GMT-03:00 2021 by JosEdu
-\* Last modified Wed Feb 24 23:19:55 UYT 2021 by josedu
 \* Created Sat Jan 23 00:46:54 UYT 2021 by josedu

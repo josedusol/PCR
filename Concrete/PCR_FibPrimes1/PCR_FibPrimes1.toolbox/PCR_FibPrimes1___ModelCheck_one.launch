@@ -5,7 +5,7 @@
     <intAttribute key="collectCoverage" value="0"/>
     <stringAttribute key="configurationName" value="ModelCheck_one"/>
     <booleanAttribute key="deferLiveness" value="false"/>
-    <intAttribute key="dfidDepth" value="100"/>
+    <intAttribute key="dfidDepth" value="1000"/>
     <booleanAttribute key="dfidMode" value="false"/>
     <intAttribute key="distributedFPSetCount" value="0"/>
     <stringAttribute key="distributedNetworkInterface" value="192.168.0.185"/>
@@ -13,7 +13,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="51"/>
+    <intAttribute key="fpIndex" value="53"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -29,7 +29,7 @@
         <listEntry value="0TypeInv"/>
         <listEntry value="0Inv"/>
         <listEntry value="0LemmaCheck"/>
-        <listEntry value="1Correctness"/>
+        <listEntry value="0Correctness"/>
         <listEntry value="0CorrectnessAlt"/>
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
@@ -43,7 +43,7 @@
     <listAttribute key="modelParameterConstants"/>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="Nat;;0..MaxFN;0;0"/>
+        <listEntry value="Nat;;0..N;0;0"/>
         <listEntry value="Index;;{I0};0;0"/>
         <listEntry value="T;;InType;0;0"/>
         <listEntry value="Undef;;Undef;1;0"/>
@@ -51,14 +51,14 @@
         <listEntry value="A1step!Assig;;Assig;0;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="N == 12&#13;&#10;MaxFN == 13&#13;&#10;InType == {N}&#13;&#10;VarPType == Nat&#13;&#10;VarCType == BOOLEAN&#13;&#10;VarRType == Nat"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="N == 20&#13;&#10;MaxFN == 1&#13;&#10;InType == {N}&#13;&#10;VarPType == Nat&#13;&#10;VarCType == BOOLEAN&#13;&#10;VarRType == Nat"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <stringAttribute key="postCondition" value=""/>
     <booleanAttribute key="recover" value="false"/>
     <stringAttribute key="result.mail.address" value=""/>
     <intAttribute key="simuAril" value="-1"/>
-    <intAttribute key="simuDepth" value="100"/>
+    <intAttribute key="simuDepth" value="1000"/>
     <stringAttribute key="simuNumTraces" value="9223372036854775807"/>
     <intAttribute key="simuSeed" value="-1"/>
     <stringAttribute key="specName" value="PCR_FibPrimes1"/>

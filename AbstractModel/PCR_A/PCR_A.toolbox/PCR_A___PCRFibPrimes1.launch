@@ -13,7 +13,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="0"/>
+    <intAttribute key="fpIndex" value="31"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -60,13 +60,13 @@
     </listAttribute>
     <stringAttribute key="modelParameterContraint" value=""/>
     <listAttribute key="modelParameterDefinitions">
-        <listEntry value="Nat;;0..4;0;0"/>
+        <listEntry value="Nat;;0..MaxN;0;0"/>
         <listEntry value="Index;;{I0};0;0"/>
-        <listEntry value="Assig;;1..4;0;0"/>
+        <listEntry value="Assig;;1..MaxN;0;0"/>
         <listEntry value="Undef;;Undef;1;0"/>
     </listAttribute>
     <stringAttribute key="modelParameterModelValues" value="{}"/>
-    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 4&#13;&#10;MaxFN == 3&#13;&#10;InType == 0..MaxN&#13;&#10;VarPType == Nat&#13;&#10;VarCType == BOOLEAN&#13;&#10;VarRType == Nat"/>
+    <stringAttribute key="modelParameterNewDefinitions" value="MaxN == 3&#13;&#10;MaxFN == 1&#13;&#10;InType == 0..MaxN&#13;&#10;VarPType == Nat&#13;&#10;VarCType == BOOLEAN&#13;&#10;VarRType == Nat"/>
     <intAttribute key="modelVersion" value="20191005"/>
     <intAttribute key="numberOfWorkers" value="2"/>
     <stringAttribute key="postCondition" value=""/>

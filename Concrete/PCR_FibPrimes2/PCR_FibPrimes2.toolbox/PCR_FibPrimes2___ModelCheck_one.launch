@@ -13,7 +13,7 @@
     <stringAttribute key="distributedTLC" value="off"/>
     <stringAttribute key="distributedTLCVMArgs" value=""/>
     <intAttribute key="fpBits" value="1"/>
-    <intAttribute key="fpIndex" value="83"/>
+    <intAttribute key="fpIndex" value="31"/>
     <booleanAttribute key="fpIndexRandom" value="true"/>
     <intAttribute key="maxHeapSize" value="25"/>
     <intAttribute key="maxSetSize" value="1000000"/>
@@ -33,8 +33,8 @@
     </listAttribute>
     <listAttribute key="modelCorrectnessProperties">
         <listEntry value="0Termination"/>
-        <listEntry value="0PCR_A!Spec"/>
-        <listEntry value="0PCR_A!FairSpec"/>
+        <listEntry value="1PCR_A!Spec"/>
+        <listEntry value="1PCR_A!FairSpec"/>
     </listAttribute>
     <intAttribute key="modelEditorOpenTabs" value="14"/>
     <stringAttribute key="modelExpressionEval" value=""/>
