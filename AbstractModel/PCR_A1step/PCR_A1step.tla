@@ -24,7 +24,7 @@
   -----------------------------------------------------------------.'  
 *)
 
-EXTENDS AbstractAlgebra, Naturals, Sequences, Bags, SeqUtils, ArithUtils, TLC
+EXTENDS AbstractAlgebra, Naturals, Sequences, SeqUtils, Bags, ArithUtils, TLC
 
 ----------------------------------------------------------------------------
 
@@ -88,7 +88,7 @@ Termination == <>(out = A(in))
 
 ============================================================================
 \* Modification History
-\* Last modified Wed Sep 08 18:29:03 UYT 2021 by josedu
+\* Last modified Thu Nov 18 21:10:18 UYT 2021 by josedu
 \* Last modified Wed Jul 07 17:27:06 GMT-03:00 2021 by JosEdu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

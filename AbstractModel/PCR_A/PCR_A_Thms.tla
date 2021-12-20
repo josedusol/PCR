@@ -1403,337 +1403,337 @@ THEOREM Thm_Correctness == Spec => []Correctness
 <1> QED 
   BY <1>1, <1>2, Thm_Inv, PTL DEF Spec 
 
-\*LEMMA H_A1stepEqA == ASSUME NEW x
-\*                     PROVE  A1step!A(x) = A(x)
-\*  BY DEF A1step!A, A,
-\*         A1step!M!BigOpP, A1step!M!BigOp, A1step!M!bigOp, M!BigOpP, M!BigOp, M!bigOp,
-\*         A1step!Assig, A1step!Fr, A1step!Fc, A1step!Gp, Assig, Fr, Fc, Gp
-\*
-\*THEOREM Thm_Refinement == Spec => A1step!Spec
-\*<1> DEFINE x    == X[I0]
-\*           y    == r[I0]
-\*           m    == lBnd(x) 
-\*           n    == uBnd(x)
-\*           Q(j) == prop(j)
-\*           f(i) == Fr(x,Fc(x,Gp(x)))[i]
-\*<1>1. Init => A1step!Init
-\*  <2> SUFFICES ASSUME Init
-\*               PROVE  A1step!Init
-\*    OBVIOUS
-\*  <2>1. /\ x \in T
-\*        /\ pre(x)
-\*        /\ y = id
-\*    BY H_Type DEF Init    
-\*  <2> QED 
-\*    BY <2>1 DEF A1step!Init, inS, outS 
-\*<1>2. /\ Inv 
-\*      /\ Correctness'
-\*      /\ [Next]_<<in,vs>>
-\*      => [A1step!Next]_A1step!vs
-\*  <2>0. SUFFICES ASSUME IndexInv, TypeInv, PInv,
-\*                        CInv, RInv1, RInv2,
-\*                        Correctness',
-\*                        [Next]_<<in,vs>>
-\*                 PROVE  [A1step!Next]_<<inS,outS>>
-\*    BY DEF A1step!vs, Inv
-\*  <2>A. CASE Step
-\*    <3>0. SUFFICES ASSUME \E i \in It(x) : \/ P(I0,i)
-\*                                           \/ C(I0,i)
-\*                                           \/ R(I0,i)
-\*                   PROVE [A1step!Next]_<<inS,outS>>
-\*      BY <2>0, <2>A DEF Step, IndexInv    
-\*    <3>1. PICK i \in It(x) : \/ P(I0,i)
-\*                             \/ C(I0,i)
-\*                             \/ R(I0,i)
-\*      BY <3>0 
-\*    <3>2. x \in T
-\*      BY <2>0 DEF IndexInv, TypeInv, WDIndex, wrt
-\*    <3>3. /\ I0 \in Seq(Nat) 
-\*          /\ I0 \in WDIndex
-\*          /\ i \in Nat
-\*          /\ i \in {k \in m..n : Q(k)} 
-\*          /\ It(x) \subseteq Nat
-\*      BY <2>0, <3>2, H_Type DEF IndexInv, WDIndex, It       
-\*    <3>4. m \in Nat /\ n \in Nat 
-\*      BY <2>0, <3>2, H_Type DEF TypeInv, m, n     
-\*    <3>5. \A j \in It(x) : 
-\*            /\ red(I0,j)     => wrt(c[I0][j])
-\*            /\ wrt(c[I0][j]) => wrt(p[I0][j])
-\*      BY <2>0 DEF CInv, RInv1, wrts, deps
-\*
-\*    <3>A. CASE P(I0,i)    
-\*      <4>0. SUFFICES ASSUME P(I0,i)
-\*                     PROVE  UNCHANGED <<inS,outS>>
-\*         BY <2>0, <3>A DEF P
-\*      <4>1. /\ ~ wrt(p[I0][i])
-\*            /\ <<X,rs>>' = <<X,rs>>           BY <4>0 DEF P                
-\*      <4>2. ~ wrt(p[I0][i]) => ~ red(I0,i)    BY <3>5
-\*      <4>3. ~ red(I0,i)                       BY <4>1, <4>2
-\*      <4>4. ~ end(I0)                         BY <4>3 DEF end
-\*      <4>5. ~ end(I0)'                        BY <4>4, <4>1 DEF end, It
-\*      <4>6. <<inS,outS>>' = <<inS,outS>>      BY <4>1, <4>4, <4>5 DEF inS, outS                  
-\*      <4> QED 
-\*        BY <4>6
-\*    
-\*    <3>B. CASE C(I0,i)
-\*      <4>0. SUFFICES ASSUME C(I0,i)
-\*                     PROVE  UNCHANGED <<inS,outS>>
-\*        BY <2>0, <3>B DEF C
-\*      <4>1. /\ ~ wrt(c[I0][i])
-\*            /\ <<X,rs>>' = <<X,rs>>           BY <4>0 DEF C                
-\*      <4>2. ~ wrt(c[I0][i]) => ~ red(I0,i)    BY <3>5
-\*      <4>3. ~ red(I0,i)                       BY <4>1, <4>2
-\*      <4>4. ~ end(I0)                         BY <4>3 DEF end
-\*      <4>5. ~ end(I0)'                        BY <4>4, <4>1 DEF end, It
-\*      <4>6. <<inS,outS>>' = <<inS,outS>>      BY <4>1, <4>4, <4>5 DEF inS, outS                  
-\*      <4> QED 
-\*        BY <4>6    
-\*    
-\*    <3>C. CASE R(I0,i) /\ end(I0)'
-\*      <4>0. SUFFICES ASSUME R(I0,i),
-\*                            end(I0)'
-\*                     PROVE  outS' = A1step!A(x)
-\*        BY <2>0, <3>C DEF R, A1step!Next, inS    
-\*      <4> DEFINE g(j) == fr(x,c[I0],j)                         
-\*      <4>1. /\ ~ red(I0,i)
-\*            /\ wrts(c[I0],deps(x,Dep_cr,i))
-\*            /\ y'  = Op(y, g(i))
-\*            /\ rs' = [rs EXCEPT ![I0][i] = TRUE]
-\*            /\ X'  = X
-\*        BY <2>0, <4>0, <3>3 DEF TypeInv, R, St
-\*        
-\*      <4>2. /\ \A j \in It(x)\{i} : red(I0,j)
-\*            /\ ~ red(I0,i) 
-\*        <5>1. It(x)' = It(x)           
-\*          BY <4>1 DEF It, m, n    
-\*        <5>2. ~ red(I0,i)
-\*          BY <4>1
-\*        <5>3. rs' = [rs EXCEPT ![I0][i] = TRUE]
-\*          BY <4>1                 
-\*        <5>4. \A j \in It(x) : red(I0,j)'
-\*          BY <4>0, <5>1 DEF end
-\*        <5> QED 
-\*          BY <5>2, <5>3, <5>4 
-\*           
-\*      <4>3. /\ \A j \in It(x) : wrt(c[I0][j]) 
-\*            /\ \A j \in It(x) : wrt(p[I0][j])        
-\*        <5>1. \A j \in It(x) : wrt(c[I0][j])                
-\*          <6>1. wrt(c[I0][i]) 
-\*            BY <4>1 DEF wrts, deps
-\*          <6>2. \A j \in It(x)\{i} : wrt(c[I0][j])
-\*            BY <2>0, <3>3, <3>5, <4>2
-\*          <6> QED
-\*            BY <2>0, <3>3, <6>1, <6>2
-\*        <5>2. \A j \in It(x) : wrt(p[I0][j])
-\*          BY <3>5, <5>1 
-\*        <5> QED
-\*          BY <5>1, <5>2   
-\*      
-\*      <4>4. /\ \A j \in It(x) : Gp(x)[j] = p[I0][j]
-\*            /\ Gp(x) \in St(Tp) /\ p[I0] \in St(Tp)        
-\*        <5>1. Gp(x) \in St(Tp)
-\*          <6>1. \A j \in Nat : gp(x,j) \in Tp \union {Undef}
-\*            BY <3>2, <3>3, H_BFunType
-\*          <6> QED 
-\*            BY <3>3, <6>1 DEF Gp, St                 
-\*        <5>2. p[I0] \in St(Tp)
-\*          BY <2>0, <3>3 DEF TypeInv                                              
-\*        <5>3. \A j \in It(x) : Gp(x)[j] = p[I0][j]
-\*          <6>0. SUFFICES ASSUME NEW j \in It(x) 
-\*                         PROVE  gp(x,j) = fp(x,p[I0],j)
-\*            BY <2>0, <3>3, <4>3 DEF PInv, Gp           
-\*          <6> QED 
-\*            BY <3>2, <4>3, H_ProdEqInv                      
-\*        <5> QED 
-\*          BY <5>1, <5>2, <5>3 DEF St     
-\*      
-\*      <4>5. /\ \A j \in It(x) : Fc(x,Gp(x))[j] = c[I0][j]
-\*            /\ Fc(x,Gp(x)) \in St(Tc) /\ c[I0] \in St(Tc)               
-\*        <5>1. Fc(x,Gp(x)) \in St(Tc)   
-\*          <6>1. \A j \in Nat : fc(x,Gp(x),j) \in Tc \union {Undef}
-\*            BY <3>2, <3>3, <4>4, H_BFunType
-\*          <6> QED 
-\*            BY <3>3, <6>1 DEF Fc, St 
-\*        <5>2. c[I0] \in St(Tc)
-\*          BY <2>0, <3>3 DEF TypeInv                                       
-\*        <5>3. \A j \in It(x) : Fc(x,Gp(x))[j] = c[I0][j]
-\*          <6>0. SUFFICES ASSUME NEW j \in It(x) 
-\*                         PROVE  fc(x,Gp(x),j) = fc(x,p[I0],j)
-\*            BY <2>0, <3>3, <4>3 DEF CInv, Fc        
-\*          <6>1. eqs(Gp(x),p[I0],deps(x,Dep_pc,j))
-\*            <7>1. deps(x,Dep_pc,j) \subseteq It(x)  
-\*              BY <3>2, <3>3, H_Type DEF deps, It
-\*            <7>2. wrts(p[I0],deps(x,Dep_pc,j))
-\*              BY <4>3, <7>1 DEF wrts
-\*            <7>3. \A k \in deps(x,Dep_pc,j) : 
-\*                    wrt(p[I0][k]) /\ Gp(x)[k] = p[I0][k]
-\*              BY <4>4, <7>1, <7>2 DEF wrts         
-\*            <7> QED  
-\*              BY <7>3 DEF eqs                
-\*          <6>2. Gp(x) \in St(Tp) /\ p[I0] \in St(Tp)
-\*            BY <4>4                                             
-\*          <6>3. fc(x,Gp(x),j) = fc(x,p[I0],j)
-\*            BY <3>2, <3>3, <6>1, <6>2, H_fcRelevance     
-\*          <6> QED 
-\*            BY <6>3                                     
-\*        <5> QED  
-\*          BY <5>1, <5>2, <5>3 DEF St  
-\*      
-\*      <4>6. /\ \A j \in It(x) : f(j) = g(j)
-\*            /\ \A j \in It(x) : f(j) \in D /\ g(j) \in D      
-\*        <5>1. \A j \in It(x) : f(j) = g(j)
-\*          <6>0. SUFFICES ASSUME NEW j \in It(x)
-\*                         PROVE  fr(x,Fc(x,Gp(x)),j) = fr(x,c[I0],j)
-\*            BY <3>3 DEF Fr
-\*          <6>1. eqs(Fc(x,Gp(x)),c[I0],deps(x,Dep_cr,j))              
-\*            <7>1. deps(x,Dep_cr,j) \subseteq It(x)  
-\*              BY <3>2, <3>3, H_Type DEF deps, It
-\*            <7>2. wrts(c[I0],deps(x,Dep_cr,j))
-\*              BY <4>3, <7>1 DEF wrts              
-\*            <7>3. \A k \in deps(x,Dep_cr,j) :
-\*                    wrt(c[I0][k]) /\ Fc(x,Gp(x))[k] = c[I0][k]
-\*              BY <4>5, <7>1, <7>2 DEF wrts         
-\*            <7> QED  
-\*              BY <7>3 DEF eqs  
-\*          <6>2. Fc(x,Gp(x)) \in St(Tc) /\ c[I0] \in St(Tc)
-\*            BY <4>5                              
-\*          <6>3. fr(x,Fc(x,Gp(x)),j) = fr(x,c[I0],j)
-\*            BY <3>2, <3>3, <6>1, <6>2, H_frRelevance     
-\*          <6> QED 
-\*            BY <6>3                     
-\*        <5>2. \A j \in It(x) : f(j) \in D     
-\*          <6>1. \A j \in It(x) : deps(x,Dep_cr,j) \subseteq It(x)
-\*            BY <3>2, <3>3, H_Type DEF deps,It 
-\*          <6>2. \A j \in It(x) : fr(x,Fc(x,Gp(x)),j) \in D  
-\*            BY <3>2, <4>3, <4>5, <6>1, H_BFunWD DEF wrts
-\*          <6> QED
-\*            BY <3>3, <6>2 DEF Fr, St 
-\*        <5>3. \A j \in It(x) : g(j) \in D                   
-\*          <6>1. \A j \in It(x) : deps(x,Dep_cr,j) \subseteq It(x)
-\*            BY <3>2, <3>3, H_Type DEF deps, It
-\*          <6>2. \A j \in It(x) : fr(x,c[I0],j) \in D
-\*            BY <3>2, <4>3, <4>5, <6>1, H_BFunWD DEF wrts                        
-\*          <6> QED     
-\*            BY <6>2          
-\*        <5> QED
-\*          BY <5>1, <5>2, <5>3
-\*          
-\*      <4> DEFINE Q1(j) == Q(j) /\ j # i
-\*                 Q2(j) == Q(j) /\ red(I0,j)
-\*      <4> HIDE DEF Q, Q1, Q2, f, g, m, n 
-\*            
-\*      <4>7. M!BigOpP(m,n,Q,f) = Op(M!BigOpP(m,n,Q1,f), f(i))
-\*        <5>1. m \in Nat /\ n \in Nat /\ m <= n
-\*          BY <3>3, <3>4 
-\*        <5>2. i \in m..n /\ Q(i)  
-\*          BY <3>3 DEF Q
-\*        <5>3. \A j \in m..n : Q(j) \in BOOLEAN
-\*          BY <3>3, <3>2, H_Type, m..n \subseteq Nat DEF It, Q, m, n
-\*        <5>4. \A j \in {k \in m..n : Q(k)} : f(j) \in D
-\*          BY <4>6 DEF It, m, n, Q
-\*        <5>5. MT!BigOpP(m,n,Q,f) = Op(MT!BigOpP(m,n,Q1,f), f(i))
-\*          BY <5>1, <5>2, <5>3, <5>4, H_AMon, MT!SplitRandomP, Isa DEF Q1
-\*        <5> QED
-\*          BY <5>5, H_MeqMT
-\*      
-\*      <4>8. M!BigOpP(m,n,Q1,f) = M!BigOpP(m,n,Q2,f)
-\*        <5>1. m \in Nat /\ n \in Nat 
-\*          BY <3>4   
-\*        <5>2. \A j \in {k \in m..n : Q1(k) /\ Q2(k)} : f(j) \in D 
-\*          BY <4>6 DEF Q, Q1, Q2, It, m, n       
-\*        <5>3. /\ \A j \in m..n : Q1(j) \in BOOLEAN
-\*              /\ \A j \in m..n : Q2(j) \in BOOLEAN  
-\*          BY DEF Q1, Q2
-\*        <5>4. \A j \in m..n : Q1(j) <=> Q2(j)       
-\*          BY <3>3, <3>4, <4>2 DEF It, Q, Q1, Q2, m, n 
-\*        <5>5. MT!BigOpP(m,n,Q1,f) = MT!BigOpP(m,n,Q2,f)    
-\*          BY <5>1, <5>2, <5>3, <5>4, H_AMon, MT!PredicateEq, Isa
-\*        <5> QED 
-\*          BY <5>5, H_MeqMT
-\*                       
-\*      <4>9. /\ M!BigOpP(m,n,Q2,f) = M!BigOpP(m,n,Q2,g)
-\*            /\ f(i) = g(i) 
-\*        <5>1. m \in Nat /\ n \in Nat 
-\*          BY <3>4
-\*        <5>2. \A j \in m..n : Q2(j) \in BOOLEAN    
-\*          BY DEF Q2
-\*        <5>3. /\ \A j \in {k \in m..n : Q2(k)} : f(j) \in D
-\*              /\ \A j \in {k \in m..n : Q2(k)} : g(j) \in D  
-\*          BY <4>6 DEF Q, Q2, It, m, n
-\*        <5>4. \A j \in {k \in m..n : Q2(k)} : f(j) = g(j)   
-\*          BY <2>0, <3>3, <4>6 DEF Q, Q2, It, m, n 
-\*        <5>5. MT!BigOpP(m,n,Q2,f) = MT!BigOpP(m,n,Q2,g)  
-\*          BY <5>1, <5>2, <5>3, <5>4, H_AMon, MT!FunctionEqP, IsaM("blast") 
-\*        <5>6. f(i) = g(i) 
-\*          BY <4>6 
-\*        <5> QED    
-\*          BY <5>5, <5>6, H_MeqMT
-\*
-\*      <4>E1. A(x) = M!BigOpP(m,n,Q,f)              BY DEF A, Q, f, m, n 
-\*      <4>E2.    @ = Op(M!BigOpP(m,n,Q1,f), f(i))   BY <4>7
-\*      <4>E3.    @ = Op(M!BigOpP(m,n,Q2,f), f(i))   BY <4>8
-\*      <4>E4.    @ = Op(M!BigOpP(m,n,Q2,g), g(i))   BY <4>9
-\*      <4>E5.    @ = Op(y, g(i))                    BY <2>0, <3>3 DEF RInv2,Q,Q2,g,m,n
-\*      <4>E6.    @ = y'                             BY <4>1
-\*
-\*      <4>10. outS' = y'            BY <4>0 DEF outS, y
-\*      <4>11.     @ = A(x)          BY <4>E1, <4>E2, <4>E3, <4>E4, <4>E5, <4>E6       
-\*      <4>12.     @ = A1step!A(x)   BY H_A1stepEqA         
-\*      <4> QED
-\*        BY <4>10, <4>11, <4>12
-\* 
-\*(*    A shorter proof, reusing the Correctness property:        
-\*
-\*      <4>2. outS' = y'             BY <4>0 DEF outS, y
-\*      <4>3.     @ = A(x)'          BY <2>0, <4>0 DEF Correctness        
-\*      <4>4.     @ = A(x)           BY <4>1 DEF A, M!BigOpP, M!BigOp, M!bigOp        
-\*      <4>5.     @ = A1step!A(x)    BY H_A1stepEqA
-\*      <4> QED   
-\*        BY <4>2, <4>3, <4>4, <4>5                 
-\**)  
-\*
-\*    <3>D. CASE R(I0,i) /\ ~ end(I0)'
-\*      <4>0. SUFFICES ASSUME R(I0,i),
-\*                            ~ end(I0)'
-\*                     PROVE  UNCHANGED <<inS,outS>>
-\*        BY <2>0, <3>D DEF R, A1step!Next, inS                              
-\*      <4>1. /\ ~ red(I0,i)
-\*            /\ X' = X            
-\*        BY <4>0 DEF R      
-\*      <4>2. ~ end(I0)
-\*        BY <4>1 DEF end          
-\*      <4>3. outS  = id 
-\*        BY <4>2 DEF outS
-\*      <4>4. outS' = id     
-\*        BY <4>0 DEF outS               
-\*      <4> QED
-\*        BY <4>1, <4>3, <4>4 DEF inS     
-\*        
-\*    <3> QED
-\*      BY <3>1, <3>A, <3>B, <3>C, <3>D 
-\*  <2>B. CASE Done
-\*    <3>0. SUFFICES ASSUME UNCHANGED <<in,vs>> 
-\*                   PROVE  UNCHANGED <<inS,outS>>
-\*      BY <2>B DEF Done, vs
-\*    <3>1. <<inS,outS>>' = <<inS,outS>> 
-\*      BY <3>0 DEF inS, outS, vs, end
-\*    <3> QED    
-\*      BY <3>1
-\*  <2>C. CASE UNCHANGED <<in,vs>>
-\*    <3>0. SUFFICES ASSUME UNCHANGED <<in,vs>> 
-\*                   PROVE  UNCHANGED <<inS,outS>>
-\*      BY <2>C DEF vs
-\*    <3>1. <<inS,outS>>' = <<inS,outS>>
-\*      BY <3>0 DEF inS, outS, vs, end
-\*    <3> QED    
-\*      BY <3>1
-\*  <2> QED
-\*    BY <2>0, <2>A, <2>B, <2>C DEF Next
-\*<1> QED 
-\*  BY <1>1, <1>2, Thm_Inv, Thm_Correctness, PTL DEF Spec, A1step!Spec
+LEMMA H_A1stepEqA == ASSUME NEW x
+                     PROVE  A1step!A(x) = A(x)
+  BY DEF A1step!A, A,
+         A1step!M!BigOpP, A1step!M!BigOp, A1step!M!bigOp, M!BigOpP, M!BigOp, M!bigOp,
+         A1step!Assig, A1step!Fr, A1step!Fc, A1step!Gp, Assig, Fr, Fc, Gp
+
+THEOREM Thm_Refinement == Spec => A1step!Spec
+<1> DEFINE x    == X[I0]
+           y    == r[I0]
+           m    == lBnd(x) 
+           n    == uBnd(x)
+           Q(j) == prop(j)
+           f(i) == Fr(x,Fc(x,Gp(x)))[i]
+<1>1. Init => A1step!Init
+  <2> SUFFICES ASSUME Init
+               PROVE  A1step!Init
+    OBVIOUS
+  <2>1. /\ x \in T
+        /\ pre(x)
+        /\ y = id
+    BY H_Type DEF Init    
+  <2> QED 
+    BY <2>1 DEF A1step!Init, inS, outS 
+<1>2. /\ Inv 
+      /\ Correctness'
+      /\ [Next]_<<in,vs>>
+      => [A1step!Next]_A1step!vs
+  <2>0. SUFFICES ASSUME IndexInv, TypeInv, PInv,
+                        CInv, RInv1, RInv2,
+                        Correctness',
+                        [Next]_<<in,vs>>
+                 PROVE  [A1step!Next]_<<inS,outS>>
+    BY DEF A1step!vs, Inv
+  <2>A. CASE Step
+    <3>0. SUFFICES ASSUME \E i \in It(x) : \/ P(I0,i)
+                                           \/ C(I0,i)
+                                           \/ R(I0,i)
+                   PROVE [A1step!Next]_<<inS,outS>>
+      BY <2>0, <2>A DEF Step, IndexInv    
+    <3>1. PICK i \in It(x) : \/ P(I0,i)
+                             \/ C(I0,i)
+                             \/ R(I0,i)
+      BY <3>0 
+    <3>2. x \in T
+      BY <2>0 DEF IndexInv, TypeInv, WDIndex, wrt
+    <3>3. /\ I0 \in Seq(Nat) 
+          /\ I0 \in WDIndex
+          /\ i \in Nat
+          /\ i \in {k \in m..n : Q(k)} 
+          /\ It(x) \subseteq Nat
+      BY <2>0, <3>2, H_Type DEF IndexInv, WDIndex, It       
+    <3>4. m \in Nat /\ n \in Nat 
+      BY <2>0, <3>2, H_Type DEF TypeInv, m, n     
+    <3>5. \A j \in It(x) : 
+            /\ red(I0,j)     => wrt(c[I0][j])
+            /\ wrt(c[I0][j]) => wrt(p[I0][j])
+      BY <2>0 DEF CInv, RInv1, wrts, deps
+
+    <3>A. CASE P(I0,i)    
+      <4>0. SUFFICES ASSUME P(I0,i)
+                     PROVE  UNCHANGED <<inS,outS>>
+         BY <2>0, <3>A DEF P
+      <4>1. /\ ~ wrt(p[I0][i])
+            /\ <<X,rs>>' = <<X,rs>>           BY <4>0 DEF P                
+      <4>2. ~ wrt(p[I0][i]) => ~ red(I0,i)    BY <3>5
+      <4>3. ~ red(I0,i)                       BY <4>1, <4>2
+      <4>4. ~ end(I0)                         BY <4>3 DEF end
+      <4>5. ~ end(I0)'                        BY <4>4, <4>1 DEF end, It
+      <4>6. <<inS,outS>>' = <<inS,outS>>      BY <4>1, <4>4, <4>5 DEF inS, outS                  
+      <4> QED 
+        BY <4>6
+    
+    <3>B. CASE C(I0,i)
+      <4>0. SUFFICES ASSUME C(I0,i)
+                     PROVE  UNCHANGED <<inS,outS>>
+        BY <2>0, <3>B DEF C
+      <4>1. /\ ~ wrt(c[I0][i])
+            /\ <<X,rs>>' = <<X,rs>>           BY <4>0 DEF C                
+      <4>2. ~ wrt(c[I0][i]) => ~ red(I0,i)    BY <3>5
+      <4>3. ~ red(I0,i)                       BY <4>1, <4>2
+      <4>4. ~ end(I0)                         BY <4>3 DEF end
+      <4>5. ~ end(I0)'                        BY <4>4, <4>1 DEF end, It
+      <4>6. <<inS,outS>>' = <<inS,outS>>      BY <4>1, <4>4, <4>5 DEF inS, outS                  
+      <4> QED 
+        BY <4>6    
+    
+    <3>C. CASE R(I0,i) /\ end(I0)'
+      <4>0. SUFFICES ASSUME R(I0,i),
+                            end(I0)'
+                     PROVE  outS' = A1step!A(x)
+        BY <2>0, <3>C DEF R, A1step!Next, inS    
+      <4> DEFINE g(j) == fr(x,c[I0],j)                         
+      <4>1. /\ ~ red(I0,i)
+            /\ wrts(c[I0],deps(x,Dep_cr,i))
+            /\ y'  = Op(y, g(i))
+            /\ rs' = [rs EXCEPT ![I0][i] = TRUE]
+            /\ X'  = X
+        BY <2>0, <4>0, <3>3 DEF TypeInv, R, St
+        
+      <4>2. /\ \A j \in It(x)\{i} : red(I0,j)
+            /\ ~ red(I0,i) 
+        <5>1. It(x)' = It(x)           
+          BY <4>1 DEF It, m, n    
+        <5>2. ~ red(I0,i)
+          BY <4>1
+        <5>3. rs' = [rs EXCEPT ![I0][i] = TRUE]
+          BY <4>1                 
+        <5>4. \A j \in It(x) : red(I0,j)'
+          BY <4>0, <5>1 DEF end
+        <5> QED 
+          BY <5>2, <5>3, <5>4 
+           
+      <4>3. /\ \A j \in It(x) : wrt(c[I0][j]) 
+            /\ \A j \in It(x) : wrt(p[I0][j])        
+        <5>1. \A j \in It(x) : wrt(c[I0][j])                
+          <6>1. wrt(c[I0][i]) 
+            BY <4>1 DEF wrts, deps
+          <6>2. \A j \in It(x)\{i} : wrt(c[I0][j])
+            BY <2>0, <3>3, <3>5, <4>2
+          <6> QED
+            BY <2>0, <3>3, <6>1, <6>2
+        <5>2. \A j \in It(x) : wrt(p[I0][j])
+          BY <3>5, <5>1 
+        <5> QED
+          BY <5>1, <5>2   
+      
+      <4>4. /\ \A j \in It(x) : Gp(x)[j] = p[I0][j]
+            /\ Gp(x) \in St(Tp) /\ p[I0] \in St(Tp)        
+        <5>1. Gp(x) \in St(Tp)
+          <6>1. \A j \in Nat : gp(x,j) \in Tp \union {Undef}
+            BY <3>2, <3>3, H_BFunType
+          <6> QED 
+            BY <3>3, <6>1 DEF Gp, St                 
+        <5>2. p[I0] \in St(Tp)
+          BY <2>0, <3>3 DEF TypeInv                                              
+        <5>3. \A j \in It(x) : Gp(x)[j] = p[I0][j]
+          <6>0. SUFFICES ASSUME NEW j \in It(x) 
+                         PROVE  gp(x,j) = fp(x,p[I0],j)
+            BY <2>0, <3>3, <4>3 DEF PInv, Gp           
+          <6> QED 
+            BY <3>2, <4>3, H_ProdEqInv                      
+        <5> QED 
+          BY <5>1, <5>2, <5>3 DEF St     
+      
+      <4>5. /\ \A j \in It(x) : Fc(x,Gp(x))[j] = c[I0][j]
+            /\ Fc(x,Gp(x)) \in St(Tc) /\ c[I0] \in St(Tc)               
+        <5>1. Fc(x,Gp(x)) \in St(Tc)   
+          <6>1. \A j \in Nat : fc(x,Gp(x),j) \in Tc \union {Undef}
+            BY <3>2, <3>3, <4>4, H_BFunType
+          <6> QED 
+            BY <3>3, <6>1 DEF Fc, St 
+        <5>2. c[I0] \in St(Tc)
+          BY <2>0, <3>3 DEF TypeInv                                       
+        <5>3. \A j \in It(x) : Fc(x,Gp(x))[j] = c[I0][j]
+          <6>0. SUFFICES ASSUME NEW j \in It(x) 
+                         PROVE  fc(x,Gp(x),j) = fc(x,p[I0],j)
+            BY <2>0, <3>3, <4>3 DEF CInv, Fc        
+          <6>1. eqs(Gp(x),p[I0],deps(x,Dep_pc,j))
+            <7>1. deps(x,Dep_pc,j) \subseteq It(x)  
+              BY <3>2, <3>3, H_Type DEF deps, It
+            <7>2. wrts(p[I0],deps(x,Dep_pc,j))
+              BY <4>3, <7>1 DEF wrts
+            <7>3. \A k \in deps(x,Dep_pc,j) : 
+                    wrt(p[I0][k]) /\ Gp(x)[k] = p[I0][k]
+              BY <4>4, <7>1, <7>2 DEF wrts         
+            <7> QED  
+              BY <7>3 DEF eqs                
+          <6>2. Gp(x) \in St(Tp) /\ p[I0] \in St(Tp)
+            BY <4>4                                             
+          <6>3. fc(x,Gp(x),j) = fc(x,p[I0],j)
+            BY <3>2, <3>3, <6>1, <6>2, H_fcRelevance     
+          <6> QED 
+            BY <6>3                                     
+        <5> QED  
+          BY <5>1, <5>2, <5>3 DEF St  
+      
+      <4>6. /\ \A j \in It(x) : f(j) = g(j)
+            /\ \A j \in It(x) : f(j) \in D /\ g(j) \in D      
+        <5>1. \A j \in It(x) : f(j) = g(j)
+          <6>0. SUFFICES ASSUME NEW j \in It(x)
+                         PROVE  fr(x,Fc(x,Gp(x)),j) = fr(x,c[I0],j)
+            BY <3>3 DEF Fr
+          <6>1. eqs(Fc(x,Gp(x)),c[I0],deps(x,Dep_cr,j))              
+            <7>1. deps(x,Dep_cr,j) \subseteq It(x)  
+              BY <3>2, <3>3, H_Type DEF deps, It
+            <7>2. wrts(c[I0],deps(x,Dep_cr,j))
+              BY <4>3, <7>1 DEF wrts              
+            <7>3. \A k \in deps(x,Dep_cr,j) :
+                    wrt(c[I0][k]) /\ Fc(x,Gp(x))[k] = c[I0][k]
+              BY <4>5, <7>1, <7>2 DEF wrts         
+            <7> QED  
+              BY <7>3 DEF eqs  
+          <6>2. Fc(x,Gp(x)) \in St(Tc) /\ c[I0] \in St(Tc)
+            BY <4>5                              
+          <6>3. fr(x,Fc(x,Gp(x)),j) = fr(x,c[I0],j)
+            BY <3>2, <3>3, <6>1, <6>2, H_frRelevance     
+          <6> QED 
+            BY <6>3                     
+        <5>2. \A j \in It(x) : f(j) \in D     
+          <6>1. \A j \in It(x) : deps(x,Dep_cr,j) \subseteq It(x)
+            BY <3>2, <3>3, H_Type DEF deps,It 
+          <6>2. \A j \in It(x) : fr(x,Fc(x,Gp(x)),j) \in D  
+            BY <3>2, <4>3, <4>5, <6>1, H_BFunWD DEF wrts
+          <6> QED
+            BY <3>3, <6>2 DEF Fr, St 
+        <5>3. \A j \in It(x) : g(j) \in D                   
+          <6>1. \A j \in It(x) : deps(x,Dep_cr,j) \subseteq It(x)
+            BY <3>2, <3>3, H_Type DEF deps, It
+          <6>2. \A j \in It(x) : fr(x,c[I0],j) \in D
+            BY <3>2, <4>3, <4>5, <6>1, H_BFunWD DEF wrts                        
+          <6> QED     
+            BY <6>2          
+        <5> QED
+          BY <5>1, <5>2, <5>3
+          
+      <4> DEFINE Q1(j) == Q(j) /\ j # i
+                 Q2(j) == Q(j) /\ red(I0,j)
+      <4> HIDE DEF Q, Q1, Q2, f, g, m, n 
+            
+      <4>7. M!BigOpP(m,n,Q,f) = Op(M!BigOpP(m,n,Q1,f), f(i))
+        <5>1. m \in Nat /\ n \in Nat /\ m <= n
+          BY <3>3, <3>4 
+        <5>2. i \in m..n /\ Q(i)  
+          BY <3>3 DEF Q
+        <5>3. \A j \in m..n : Q(j) \in BOOLEAN
+          BY <3>3, <3>2, H_Type, m..n \subseteq Nat DEF It, Q, m, n
+        <5>4. \A j \in {k \in m..n : Q(k)} : f(j) \in D
+          BY <4>6 DEF It, m, n, Q
+        <5>5. MT!BigOpP(m,n,Q,f) = Op(MT!BigOpP(m,n,Q1,f), f(i))
+          BY <5>1, <5>2, <5>3, <5>4, H_AMon, MT!SplitRandomP, Isa DEF Q1
+        <5> QED
+          BY <5>5, H_MeqMT
+      
+      <4>8. M!BigOpP(m,n,Q1,f) = M!BigOpP(m,n,Q2,f)
+        <5>1. m \in Nat /\ n \in Nat 
+          BY <3>4   
+        <5>2. \A j \in {k \in m..n : Q1(k) /\ Q2(k)} : f(j) \in D 
+          BY <4>6 DEF Q, Q1, Q2, It, m, n       
+        <5>3. /\ \A j \in m..n : Q1(j) \in BOOLEAN
+              /\ \A j \in m..n : Q2(j) \in BOOLEAN  
+          BY DEF Q1, Q2
+        <5>4. \A j \in m..n : Q1(j) <=> Q2(j)       
+          BY <3>3, <3>4, <4>2 DEF It, Q, Q1, Q2, m, n 
+        <5>5. MT!BigOpP(m,n,Q1,f) = MT!BigOpP(m,n,Q2,f)    
+          BY <5>1, <5>2, <5>3, <5>4, H_AMon, MT!PredicateEq, Isa
+        <5> QED 
+          BY <5>5, H_MeqMT
+                       
+      <4>9. /\ M!BigOpP(m,n,Q2,f) = M!BigOpP(m,n,Q2,g)
+            /\ f(i) = g(i) 
+        <5>1. m \in Nat /\ n \in Nat 
+          BY <3>4
+        <5>2. \A j \in m..n : Q2(j) \in BOOLEAN    
+          BY DEF Q2
+        <5>3. /\ \A j \in {k \in m..n : Q2(k)} : f(j) \in D
+              /\ \A j \in {k \in m..n : Q2(k)} : g(j) \in D  
+          BY <4>6 DEF Q, Q2, It, m, n
+        <5>4. \A j \in {k \in m..n : Q2(k)} : f(j) = g(j)   
+          BY <2>0, <3>3, <4>6 DEF Q, Q2, It, m, n 
+        <5>5. MT!BigOpP(m,n,Q2,f) = MT!BigOpP(m,n,Q2,g)  
+          BY <5>1, <5>2, <5>3, <5>4, H_AMon, MT!FunctionEqP, IsaM("blast") 
+        <5>6. f(i) = g(i) 
+          BY <4>6 
+        <5> QED    
+          BY <5>5, <5>6, H_MeqMT
+
+      <4>E1. A(x) = M!BigOpP(m,n,Q,f)              BY DEF A, Q, f, m, n 
+      <4>E2.    @ = Op(M!BigOpP(m,n,Q1,f), f(i))   BY <4>7
+      <4>E3.    @ = Op(M!BigOpP(m,n,Q2,f), f(i))   BY <4>8
+      <4>E4.    @ = Op(M!BigOpP(m,n,Q2,g), g(i))   BY <4>9
+      <4>E5.    @ = Op(y, g(i))                    BY <2>0, <3>3 DEF RInv2,Q,Q2,g,m,n
+      <4>E6.    @ = y'                             BY <4>1
+
+      <4>10. outS' = y'            BY <4>0 DEF outS, y
+      <4>11.     @ = A(x)          BY <4>E1, <4>E2, <4>E3, <4>E4, <4>E5, <4>E6       
+      <4>12.     @ = A1step!A(x)   BY H_A1stepEqA         
+      <4> QED
+        BY <4>10, <4>11, <4>12
+ 
+(*    A shorter proof, reusing the Correctness property:        
+
+      <4>2. outS' = y'             BY <4>0 DEF outS, y
+      <4>3.     @ = A(x)'          BY <2>0, <4>0 DEF Correctness        
+      <4>4.     @ = A(x)           BY <4>1 DEF A, M!BigOpP, M!BigOp, M!bigOp        
+      <4>5.     @ = A1step!A(x)    BY H_A1stepEqA
+      <4> QED   
+        BY <4>2, <4>3, <4>4, <4>5                 
+*)  
+
+    <3>D. CASE R(I0,i) /\ ~ end(I0)'
+      <4>0. SUFFICES ASSUME R(I0,i),
+                            ~ end(I0)'
+                     PROVE  UNCHANGED <<inS,outS>>
+        BY <2>0, <3>D DEF R, A1step!Next, inS                              
+      <4>1. /\ ~ red(I0,i)
+            /\ X' = X            
+        BY <4>0 DEF R      
+      <4>2. ~ end(I0)
+        BY <4>1 DEF end          
+      <4>3. outS  = id 
+        BY <4>2 DEF outS
+      <4>4. outS' = id     
+        BY <4>0 DEF outS               
+      <4> QED
+        BY <4>1, <4>3, <4>4 DEF inS     
+        
+    <3> QED
+      BY <3>1, <3>A, <3>B, <3>C, <3>D 
+  <2>B. CASE Done
+    <3>0. SUFFICES ASSUME UNCHANGED <<in,vs>> 
+                   PROVE  UNCHANGED <<inS,outS>>
+      BY <2>B DEF Done, vs
+    <3>1. <<inS,outS>>' = <<inS,outS>> 
+      BY <3>0 DEF inS, outS, vs, end
+    <3> QED    
+      BY <3>1
+  <2>C. CASE UNCHANGED <<in,vs>>
+    <3>0. SUFFICES ASSUME UNCHANGED <<in,vs>> 
+                   PROVE  UNCHANGED <<inS,outS>>
+      BY <2>C DEF vs
+    <3>1. <<inS,outS>>' = <<inS,outS>>
+      BY <3>0 DEF inS, outS, vs, end
+    <3> QED    
+      BY <3>1
+  <2> QED
+    BY <2>0, <2>A, <2>B, <2>C DEF Next
+<1> QED 
+  BY <1>1, <1>2, Thm_Inv, Thm_Correctness, PTL DEF Spec, A1step!Spec
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Sep 08 01:49:54 UYT 2021 by josedu
+\* Last modified Mon Dec 20 14:28:20 UYT 2021 by josedu
 \* Last modified Thu Jul 08 02:50:17 GMT-03:00 2021 by JosEdu
 \* Created Sat Jun 19 01:21:17 UYT 2021 by josedu

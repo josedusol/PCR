@@ -222,7 +222,7 @@ Inv == /\ TypeInv
        /\ RInv1
        /\ RInv2
 
-ISpec == Inv /\ [][Next]_<<vs>>
+ISpec == Inv /\ [][Next]_vs
              
 Correctness == end(I0) => r[I0] = A(X[I0])
 
@@ -235,7 +235,7 @@ Termination == <> end(I0)
 inS  == X[I0]
 outS == IF end(I0) THEN r[I0] ELSE id
 
-A1step == INSTANCE PCR_A1step
+A1step == INSTANCE PCR_A1step 
   WITH in <- inS, out <- outS,
        T <- T, D <- D, 
        id <- id, Op <- Op,
@@ -244,7 +244,7 @@ A1step == INSTANCE PCR_A1step
 
 ============================================================================
 \* Modification History
-\* Last modified Tue Sep 28 18:04:03 UYT 2021 by josedu
+\* Last modified Thu Nov 18 21:10:43 UYT 2021 by josedu
 \* Last modified Thu Jul 08 02:51:43 GMT-03:00 2021 by JosEdu
 \* Last modified Fri Jul 17 16:28:02 UYT 2020 by josed
 \* Created Mon Jul 06 13:03:07 UYT 2020 by josed

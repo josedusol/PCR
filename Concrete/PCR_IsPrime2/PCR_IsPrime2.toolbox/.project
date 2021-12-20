@@ -20,5 +20,10 @@
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/PCR_IsPrime2.tla</locationURI>
 		</link>
+		<link>
+			<name>PCR_IsPrime2_Thms.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCR_IsPrime2_Thms.tla</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>
