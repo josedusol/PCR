@@ -71,6 +71,12 @@ INSTANCE PCR_A_Thms
 ----------------------------------------------------------------------------
 
 (* 
+  Basic functions are still assumed to be partial functions.
+*)
+
+AXIOM H_BFunType_FP1 == H_BFunType
+
+(* 
   Most axioms can be promoted to ordinary mathematical lemmas. 
   These are proved in module PCR_FibPrimes1_Lems.
 *)

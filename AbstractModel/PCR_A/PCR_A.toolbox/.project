@@ -21,6 +21,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/PCR_A.tla</locationURI>
 		</link>
 		<link>
+			<name>PCR_A2.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/PCR_A2.tla</locationURI>
+		</link>
+		<link>
 			<name>PCR_A_Thms.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/PCR_A_Thms.tla</locationURI>

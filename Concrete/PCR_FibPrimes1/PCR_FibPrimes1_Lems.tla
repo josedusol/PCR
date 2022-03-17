@@ -151,6 +151,6 @@ LEMMA Lem_Algebra
 
 ============================================================================
 \* Modification History
-\* Last modified Wed Sep 08 18:42:19 UYT 2021 by josedu
+\* Last modified Fri Mar 11 19:23:59 UYT 2022 by josedu
 \* Last modified Tue Jul 06 15:39:14 GMT-03:00 2021 by JosEdu
 \* Created Mon Jul 05 18:48:36 GMT-03:00 2021 by JosEdu

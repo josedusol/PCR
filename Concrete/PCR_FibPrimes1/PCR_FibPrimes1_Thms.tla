@@ -2,7 +2,20 @@
 
 EXTENDS PCR_FibPrimes1, PCR_FibPrimes1_Lems
 
-USE DEF Index, Assig, Lem_Algebra, Lem_Type, Lem_BFunWD, Lem_fpRelevance
+USE DEF Index, Assig, Lem_Algebra, Lem_Type, Lem_BFunWD, 
+        Lem_fpRelevance, Lem_fcRelevance, Lem_frRelevance
+
+THEOREM Thm_IndexInv_FP1 == Spec => []IndexInv
+  BY Thm_IndexInv, H_Type, H_BFunType_FP1, H_BFunWD, H_Algebra,
+     H_fpRelevance, H_fcRelevance, H_frRelevance, PTL
+     
+THEOREM Thm_TypeInv_FP1 == Spec => []TypeInv
+  BY Thm_TypeInv, H_Type, H_BFunType_FP1, H_BFunWD, H_Algebra,
+     H_fpRelevance, H_fcRelevance, H_frRelevance, PTL
+     
+THEOREM Thm_PInv_FP1 == Spec => []PInv
+  BY Thm_PInv, H_Type, H_BFunType_FP1, H_BFunWD, H_Algebra,
+     H_fpRelevance, H_fcRelevance, H_frRelevance, PTL           
 
 THEOREM Thm_ProdEqInv == Spec => []ProdEqInv
 <1> DEFINE x == X[I0]
@@ -15,7 +28,7 @@ THEOREM Thm_ProdEqInv == Spec => []ProdEqInv
                  PROVE  FALSE
     BY DEF ProdEqInv
   <2>1. /\ I0    \in Seq(Nat) 
-        /\ x     \in Nat        
+        /\ x     \in Nat      
         /\ It(x) \subseteq Nat
         /\ i     \in Nat 
     BY <2>0, Lem_Type DEF Init, It, deps, T 
@@ -165,10 +178,10 @@ THEOREM Thm_ProdEqInv == Spec => []ProdEqInv
   <2> QED
     BY <2>0, <2>A, <2>B, <2>C DEF Next            
 <1> QED      
-  BY <1>1, <1>2, Thm_IndexInv, Thm_TypeInv, Thm_PInv, PTL DEF Spec 
+  BY <1>1, <1>2, Thm_IndexInv_FP1, Thm_TypeInv_FP1, Thm_PInv_FP1, PTL DEF Spec 
 
 ============================================================================
 \* Modification History
-\* Last modified Wed Sep 08 18:40:20 UYT 2021 by josedu
+\* Last modified Fri Mar 11 19:20:27 UYT 2022 by josedu
 \* Last modified Wed Jul 07 17:17:17 GMT-03:00 2021 by JosEdu
 \* Created Sun Jul 04 20:40:25 GMT-03:00 2021 by JosEdu

@@ -1734,6 +1734,6 @@ THEOREM Thm_Refinement == Spec => A1step!Spec
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Dec 20 14:28:20 UYT 2021 by josedu
+\* Last modified Fri Mar 11 16:20:23 UYT 2022 by josedu
 \* Last modified Thu Jul 08 02:50:17 GMT-03:00 2021 by JosEdu
 \* Created Sat Jun 19 01:21:17 UYT 2021 by josedu
